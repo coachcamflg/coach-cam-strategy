@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Strategy Playbook — Coach Cam</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e0e0e0; line-height: 1.7; }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1a1a1a;
+    padding: 12px 24px;
+    display: flex; gap: 16px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a {
+    color: #888; text-decoration: none; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; white-space: nowrap; padding: 6px 14px;
+    border-radius: 20px; border: 1px solid transparent; transition: all 0.2s;
+  }
+  .nav a:hover { color: #fff; border-color: #333; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0a0a2e 0%, #0a0a0a 40%, #1a0a0a 100%);
+    padding: 80px 40px 60px; text-align: center;
+    border-bottom: 3px solid #ff3333;
+  }
+  .hero .tag {
+    display: inline-block; background: linear-gradient(90deg, #ff3333, #ff6644);
+    color: #fff; font-weight: 800; font-size: 12px; letter-spacing: 3px;
+    padding: 6px 20px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .hero h1 { font-size: 52px; font-weight: 900; color: #fff; margin-bottom: 12px; }
+  .hero h1 span { background: linear-gradient(90deg, #ff3333, #ff6644); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 18px; color: #888; max-width: 650px; margin: 0 auto; }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px; color: #ff3333;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .section-title {
+    font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 8px;
+  }
+  .section-sub { font-size: 15px; color: #888; margin-bottom: 32px; max-width: 700px; }
+
+  /* CARDS */
+  .card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 32px; margin-bottom: 20px;
+  }
+  .card h3 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+  .card p { font-size: 14px; color: #aaa; }
+
+  /* PILLAR GRID */
+  .pillar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 40px; }
+  .pillar-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 28px; position: relative; overflow: hidden;
+  }
+  .pillar-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 4px;
+  }
+  .pillar-card.p1::before { background: #ff3333; }
+  .pillar-card.p2::before { background: #3399ff; }
+  .pillar-card.p3::before { background: #9933ff; }
+  .pillar-card.p4::before { background: #33cc66; }
+  .pillar-pct {
+    font-size: 36px; font-weight: 900; margin-bottom: 4px;
+  }
+  .pillar-card.p1 .pillar-pct { color: #ff3333; }
+  .pillar-card.p2 .pillar-pct { color: #3399ff; }
+  .pillar-card.p3 .pillar-pct { color: #9933ff; }
+  .pillar-card.p4 .pillar-pct { color: #33cc66; }
+  .pillar-card h4 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .pillar-card p { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .pillar-examples {
+    background: #0d0d0d; border-radius: 8px; padding: 12px;
+    font-size: 13px; color: #aaa;
+  }
+  .pillar-examples strong { color: #fff; display: block; font-size: 11px; letter-spacing: 1px; margin-bottom: 6px; }
+
+  /* CALENDAR */
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+    margin-bottom: 40px;
+  }
+  .cal-header {
+    background: #1a1a1a; padding: 12px 8px; text-align: center;
+    font-size: 11px; font-weight: 700; color: #888;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .cal-cell {
+    background: #111; padding: 14px 10px; min-height: 120px;
+    border-radius: 4px;
+  }
+  .cal-cell.rest { background: #0a0a0a; }
+  .cal-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px; margin-bottom: 6px;
+  }
+  .cal-badge.ig { background: rgba(255,51,51,0.2); color: #ff5555; }
+  .cal-badge.tt { background: rgba(0,200,200,0.2); color: #00cccc; }
+  .cal-badge.li { background: rgba(0,119,181,0.2); color: #0077b5; }
+  .cal-badge.yt { background: rgba(255,0,0,0.2); color: #ff4444; }
+  .cal-badge.all { background: rgba(255,170,0,0.2); color: #ffaa00; }
+  .cal-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .cal-desc { font-size: 11px; color: #666; }
+
+  /* TEMPLATE BLOCKS */
+  .template-block {
+    background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 12px;
+    padding: 24px; margin: 16px 0; position: relative;
+  }
+  .template-label {
+    position: absolute; top: -10px; left: 16px;
+    background: #ff3333; color: #fff; font-size: 10px; font-weight: 700;
+    padding: 2px 10px; border-radius: 10px; letter-spacing: 1px;
+  }
+  .template-block pre {
+    font-family: 'Inter', sans-serif; font-size: 14px; color: #ccc;
+    white-space: pre-wrap; word-wrap: break-word; line-height: 1.8;
+  }
+  .template-block .placeholder {
+    background: rgba(255,170,0,0.15); color: #ffaa00;
+    padding: 1px 6px; border-radius: 4px; font-weight: 600;
+  }
+
+  /* HOOK TABLE */
+  .hook-table { width: 100%; border-collapse: collapse; }
+  .hook-table th {
+    text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    color: #666; text-transform: uppercase; padding: 12px 16px;
+    border-bottom: 1px solid #222; background: #0d0d0d;
+  }
+  .hook-table td {
+    padding: 14px 16px; border-bottom: 1px solid #1a1a1a;
+    font-size: 14px; color: #ccc;
+  }
+  .hook-table tr:hover { background: #111; }
+  .hook-cat {
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 4px; letter-spacing: 0.5px;
+  }
+  .hook-cat.provoke { background: rgba(255,51,51,0.2); color: #ff5555; }
+  .hook-cat.curiosity { background: rgba(51,153,255,0.2); color: #5599ff; }
+  .hook-cat.story { background: rgba(153,51,255,0.2); color: #bb77ff; }
+  .hook-cat.authority { background: rgba(51,204,102,0.2); color: #55dd77; }
+  .hook-cat.result { background: rgba(255,170,0,0.2); color: #ffbb33; }
+
+  /* REPURPOSE ENGINE */
+  .engine-flow {
+    display: flex; align-items: center; gap: 0; margin: 24px 0;
+    overflow-x: auto;
+  }
+  .engine-step {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 12px;
+    padding: 20px; min-width: 160px; text-align: center; flex-shrink: 0;
+  }
+  .engine-step .num {
+    font-size: 28px; font-weight: 900; margin-bottom: 4px;
+  }
+  .engine-step h4 { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .engine-step p { font-size: 11px; color: #888; }
+  .engine-arrow {
+    font-size: 24px; color: #333; padding: 0 8px; flex-shrink: 0;
+  }
+
+  /* PLATFORM GUIDES */
+  .platform-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 32px; margin-bottom: 20px;
+  }
+  .platform-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .platform-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px; color: #fff;
+  }
+  .platform-icon.ig { background: linear-gradient(135deg, #833AB4, #E1306C, #F77737); }
+  .platform-icon.tt { background: #000; border: 1px solid #333; }
+  .platform-icon.li { background: #0077b5; }
+  .platform-icon.yt { background: #ff0000; }
+  .platform-header h3 { font-size: 20px; font-weight: 700; color: #fff; }
+  .platform-header .handle { font-size: 13px; color: #888; }
+  .metric-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-bottom: 20px;
+  }
+  .metric-box {
+    background: #0d0d0d; border-radius: 8px; padding: 12px; text-align: center;
+  }
+  .metric-box .val { font-size: 18px; font-weight: 800; color: #fff; }
+  .metric-box .lbl { font-size: 11px; color: #666; }
+  .tip-list { list-style: none; }
+  .tip-list li {
+    padding: 10px 0; border-bottom: 1px solid #1a1a1a;
+    font-size: 14px; color: #ccc; display: flex; gap: 10px;
+  }
+  .tip-list li::before {
+    content: ''; width: 6px; height: 6px; background: #ff3333;
+    border-radius: 50%; flex-shrink: 0; margin-top: 8px;
+  }
+
+  /* HASHTAG SETS */
+  .hashtag-group { margin-bottom: 20px; }
+  .hashtag-group h4 {
+    font-size: 13px; font-weight: 700; color: #ff3333; margin-bottom: 8px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .hashtag-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .hashtag-tag {
+    background: #1a1a1a; border: 1px solid #222; border-radius: 20px;
+    padding: 4px 12px; font-size: 12px; color: #aaa;
+  }
+
+  /* CAPTION FORMULAS */
+  .formula-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 12px;
+    padding: 24px; margin-bottom: 16px;
+  }
+  .formula-card h4 {
+    font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;
+  }
+  .formula-card .formula {
+    font-size: 13px; color: #ffaa00; margin-bottom: 12px;
+    padding: 8px 12px; background: rgba(255,170,0,0.05);
+    border-radius: 8px; border-left: 3px solid #ffaa00;
+  }
+  .formula-card .example {
+    font-size: 14px; color: #ccc; padding: 12px;
+    background: #0d0d0d; border-radius: 8px; white-space: pre-line;
+  }
+
+  /* 90 DAY PLAN */
+  .phase-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 32px; margin-bottom: 16px; position: relative; overflow: hidden;
+  }
+  .phase-card::before {
+    content: ''; position: absolute; left: 0; top: 0;
+    width: 4px; height: 100%;
+  }
+  .phase-card.ph1::before { background: #ff3333; }
+  .phase-card.ph2::before { background: #ffaa00; }
+  .phase-card.ph3::before { background: #33cc66; }
+  .phase-tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    padding: 4px 12px; border-radius: 4px; display: inline-block;
+    margin-bottom: 12px;
+  }
+  .phase-tag.ph1 { background: rgba(255,51,51,0.2); color: #ff3333; }
+  .phase-tag.ph2 { background: rgba(255,170,0,0.2); color: #ffaa00; }
+  .phase-tag.ph3 { background: rgba(51,204,102,0.2); color: #33cc66; }
+  .phase-card h3 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+  .phase-goals {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  }
+  .phase-goal {
+    background: #0d0d0d; border-radius: 8px; padding: 14px; font-size: 13px; color: #ccc;
+  }
+  .phase-goal strong { color: #fff; }
+
+  .footer {
+    text-align: center; padding: 60px 40px; border-top: 1px solid #1a1a1a;
+    color: #444; font-size: 13px;
+  }
+
+  @media (max-width: 768px) {
+    .pillar-grid { grid-template-columns: 1fr; }
+    .metric-row { grid-template-columns: repeat(2, 1fr); }
+    .cal-grid { grid-template-columns: repeat(3, 1fr); }
+    .phase-goals { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <a href="#pillars">Content Pillars</a>
+  <a href="#calendar">Weekly Calendar</a>
+  <a href="#hooks">Hook Formulas</a>
+  <a href="#scripts">Video Scripts</a>
+  <a href="#captions">Caption Formulas</a>
+  <a href="#repurpose">Repurposing Engine</a>
+  <a href="#platforms">Platform Guides</a>
+  <a href="#hashtags">Hashtag Sets</a>
+  <a href="#plan">90-Day Plan</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">CONTENT STRATEGY PLAYBOOK</div>
+  <h1>The <span>Coach Cam</span> Content Machine</h1>
+  <p>Everything you need to go from posting weekly to building a content engine that runs on autopilot. Templates, scripts, hooks, and a week-by-week execution plan.</p>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════ CONTENT PILLARS ═══════════════════ -->
+<div id="pillars" style="padding-top: 20px;">
+  <div class="section-label">Part 1</div>
+  <div class="section-title">Your 4 Content Pillars</div>
+  <div class="section-sub">Every piece of content you create falls into one of these four categories. This isn't a suggestion — it's your operating system. If a post doesn't fit a pillar, don't post it.</div>
+</div>
+
+<div class="pillar-grid">
+  <div class="pillar-card p1">
+    <div class="pillar-pct">35%</div>
+    <h4>Leadership Lessons</h4>
+    <p>You are the expert. Teach what you know. Frameworks, principles, and tactical advice that positions you as the go-to voice in leadership coaching.</p>
+    <div class="pillar-examples">
+      <strong>CONTENT IDEAS:</strong>
+      "The 3 questions every leader should ask their team on Monday"<br>
+      "Why most managers confuse delegation with dumping"<br>
+      "The military leadership tactic Fortune 500 CEOs steal"<br>
+      "Stop saying 'I'm busy' — here's what leaders say instead"<br>
+      "The #1 reason new managers fail in the first 90 days"
+    </div>
+  </div>
+
+  <div class="pillar-card p2">
+    <div class="pillar-pct">25%</div>
+    <h4>Business & AI Insights</h4>
+    <p>You sit at the intersection of business coaching and tech. This is your differentiator. Talk about how AI is changing business, optimization, and how small businesses can leverage it.</p>
+    <div class="pillar-examples">
+      <strong>CONTENT IDEAS:</strong>
+      "I replaced a 4-hour weekly meeting with this AI workflow"<br>
+      "3 AI tools every small business should be using yesterday"<br>
+      "Why your business doesn't need more data — it needs better questions"<br>
+      "The optimization mistake 90% of businesses make"<br>
+      "How I use AI to prep for coaching calls in 10 minutes"
+    </div>
+  </div>
+
+  <div class="pillar-card p3">
+    <div class="pillar-pct">25%</div>
+    <h4>Podcast Clips & Conversations</h4>
+    <p>You have 80+ episodes on The L3 Perspective. That's a goldmine of content sitting dormant. Pull the best moments and repurpose them as standalone clips.</p>
+    <div class="pillar-examples">
+      <strong>CONTENT IDEAS:</strong>
+      Best guest one-liners (15-30 sec clips)<br>
+      "Hot take" moments where you or Glenn say something bold<br>
+      Debate/disagreement moments (these get SHARED)<br>
+      Guest introductions: "This person went from ___ to ___"<br>
+      Behind-the-scenes podcast setup / bloopers
+    </div>
+  </div>
+
+  <div class="pillar-card p4">
+    <div class="pillar-pct">15%</div>
+    <h4>Personal Story & Identity</h4>
+    <p>Your Air Force background, your veteran identity, your journey building Forward Learning Group. This is what makes people connect with YOU specifically vs. any other coach.</p>
+    <div class="pillar-examples">
+      <strong>CONTENT IDEAS:</strong>
+      "What the Air Force taught me about leadership that business school can't"<br>
+      "Why I left a stable career to start a coaching business"<br>
+      "The moment I knew I had to help other leaders"<br>
+      "What my first client taught ME about coaching"<br>
+      Day-in-the-life: coaching sessions, events, speaking
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ WEEKLY CALENDAR ═══════════════════ -->
+<div id="calendar" style="padding-top: 20px;">
+  <div class="section-label">Part 2</div>
+  <div class="section-title">Your Weekly Content Calendar</div>
+  <div class="section-sub">5 posts per week across platforms. This is the minimum viable cadence to grow. Each day has a specific content type and platform focus so you never ask "what should I post?"</div>
+</div>
+
+<div class="cal-grid">
+  <div class="cal-header">MON</div>
+  <div class="cal-header">TUE</div>
+  <div class="cal-header">WED</div>
+  <div class="cal-header">THU</div>
+  <div class="cal-header">FRI</div>
+  <div class="cal-header">SAT</div>
+  <div class="cal-header">SUN</div>
+
+  <div class="cal-cell">
+    <span class="cal-badge li">LINKEDIN</span><br>
+    <div class="cal-title">Text Post</div>
+    <div class="cal-desc">Leadership lesson or framework. Storytelling format. 800-1200 words.</div>
+  </div>
+  <div class="cal-cell">
+    <span class="cal-badge ig">IG REEL</span>
+    <span class="cal-badge tt">TIKTOK</span><br>
+    <div class="cal-title">Short-Form Video</div>
+    <div class="cal-desc">15-30 sec tip or insight. Film once, post to both platforms.</div>
+  </div>
+  <div class="cal-cell">
+    <span class="cal-badge ig">CAROUSEL</span><br>
+    <div class="cal-title">IG Carousel</div>
+    <div class="cal-desc">5-10 slides. Framework, listicle, or myth-busting. Educational content.</div>
+  </div>
+  <div class="cal-cell">
+    <span class="cal-badge li">LINKEDIN</span>
+    <span class="cal-badge ig">IG REEL</span>
+    <span class="cal-badge tt">TIKTOK</span><br>
+    <div class="cal-title">Podcast Clip</div>
+    <div class="cal-desc">Best 30-60 sec moment from latest L3 Perspective episode.</div>
+  </div>
+  <div class="cal-cell">
+    <span class="cal-badge ig">IG STORY</span><br>
+    <div class="cal-title">Behind-the-Scenes</div>
+    <div class="cal-desc">Quick stories: coaching prep, event setup, your workspace, personal day.</div>
+  </div>
+  <div class="cal-cell rest">
+    <div class="cal-title" style="color: #444;">REST</div>
+    <div class="cal-desc">Batch film next week's content. Review analytics.</div>
+  </div>
+  <div class="cal-cell">
+    <span class="cal-badge li">LINKEDIN</span><br>
+    <div class="cal-title">Personal Story</div>
+    <div class="cal-desc">Sunday reflections. Veteran story, lesson learned, or vulnerable moment. High engagement day on LinkedIn.</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 40px; border-left: 3px solid #ffaa00;">
+  <h3 style="color: #ffaa00;">The "Film Once, Post Everywhere" Rule</h3>
+  <p>Every video you film gets posted to Instagram Reels, TikTok, AND YouTube Shorts. That's 3 platforms from 1 recording session. Your Tuesday video takes 5 minutes to film and reaches 3 audiences. Your Thursday podcast clip takes 2 minutes to cut and hits 3 platforms + LinkedIn. You're creating 5 pieces of content but getting 10+ platform impressions.</p>
+</div>
+
+<!-- ═══════════════════ HOOK FORMULAS ═══════════════════ -->
+<div id="hooks" style="padding-top: 20px;">
+  <div class="section-label">Part 3</div>
+  <div class="section-title">40 Video Hooks — Ready to Use</div>
+  <div class="section-sub">The first 2 seconds of your video determine everything. These hooks are specifically written for your niche: leadership coaching, business optimization, and veteran entrepreneurship. Film yourself saying these as your opening line.</div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden; margin-bottom: 40px;">
+<table class="hook-table">
+  <thead>
+    <tr><th>#</th><th>Hook</th><th>Type</th><th>Best For</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>"Stop telling your team to 'do their best.' Here's why."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>2</td><td>"I coached a CEO who was about to lose his entire team. Here's what happened."</td><td><span class="hook-cat story">STORY</span></td><td>LinkedIn / Reel</td></tr>
+    <tr><td>3</td><td>"3 things the Air Force taught me that MBA programs won't."</td><td><span class="hook-cat authority">AUTHORITY</span></td><td>All platforms</td></tr>
+    <tr><td>4</td><td>"Your business doesn't have a revenue problem. It has a leadership problem."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>LinkedIn / Reel</td></tr>
+    <tr><td>5</td><td>"I just helped a client cut 12 hours of meetings per week using AI."</td><td><span class="hook-cat result">RESULT</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>6</td><td>"The worst leadership advice I hear coaches give."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>7</td><td>"Nobody talks about this part of being a veteran entrepreneur."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>All platforms</td></tr>
+    <tr><td>8</td><td>"If your team isn't performing, ask yourself this one question."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>LinkedIn / Reel</td></tr>
+    <tr><td>9</td><td>"Here's the AI tool I recommend to every single client."</td><td><span class="hook-cat result">RESULT</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>10</td><td>"I went from the military to coaching Fortune 500 teams. Here's what I learned."</td><td><span class="hook-cat story">STORY</span></td><td>LinkedIn / YouTube</td></tr>
+    <tr><td>11</td><td>"Most business coaches will never tell you this."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>12</td><td>"The meeting that changed how I run my entire business."</td><td><span class="hook-cat story">STORY</span></td><td>LinkedIn</td></tr>
+    <tr><td>13</td><td>"Your employees don't quit because of money. They quit because of THIS."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>All platforms</td></tr>
+    <tr><td>14</td><td>"One leadership mistake is costing you your best people."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>15</td><td>"I tested this AI workflow for 30 days. Here are the results."</td><td><span class="hook-cat result">RESULT</span></td><td>LinkedIn / YouTube</td></tr>
+    <tr><td>16</td><td>"How I prepare for a $10K coaching session in 15 minutes."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>17</td><td>"The #1 thing holding your business back isn't what you think."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>All platforms</td></tr>
+    <tr><td>18</td><td>"I made this mistake as a leader for 5 years before someone told me."</td><td><span class="hook-cat story">STORY</span></td><td>LinkedIn / Reel</td></tr>
+    <tr><td>19</td><td>"Great leaders do this every single morning. Do you?"</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>20</td><td>"A client came to me ready to shut down their business. 90 days later..."</td><td><span class="hook-cat result">RESULT</span></td><td>All platforms</td></tr>
+    <tr><td>21</td><td>"If you're a new manager, don't do this on day one."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>22</td><td>"The simplest business optimization no one talks about."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>LinkedIn / YouTube</td></tr>
+    <tr><td>23</td><td>"Why 'hustle culture' is killing your leadership potential."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>All platforms</td></tr>
+    <tr><td>24</td><td>"This is what an ICF-credentialed coach actually does differently."</td><td><span class="hook-cat authority">AUTHORITY</span></td><td>LinkedIn / Reel</td></tr>
+    <tr><td>25</td><td>"Name a leader you admire. Now ask: do they do THIS?"</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>26</td><td>"Unpopular opinion: team building events don't build teams."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>All platforms</td></tr>
+    <tr><td>27</td><td>"I've coached over 100 leaders. Here's the pattern I see in ALL of them."</td><td><span class="hook-cat authority">AUTHORITY</span></td><td>LinkedIn / YouTube</td></tr>
+    <tr><td>28</td><td>"The 60-second exercise that fixes bad team communication."</td><td><span class="hook-cat result">RESULT</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>29</td><td>"Here's what happens when a veteran runs a boardroom."</td><td><span class="hook-cat story">STORY</span></td><td>All platforms</td></tr>
+    <tr><td>30</td><td>"The leadership book everyone recommends is actually terrible. Here's why."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>TikTok / YouTube</td></tr>
+    <tr><td>31</td><td>"Small business owners: stop doing your own ___. Here's what to do instead."</td><td><span class="hook-cat result">RESULT</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>32</td><td>"The difference between a $50K coach and a $500K coach is this one thing."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>LinkedIn / Reel</td></tr>
+    <tr><td>33</td><td>"Your team doesn't need another motivational speech. They need this."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>All platforms</td></tr>
+    <tr><td>34</td><td>"Day 1 in the Air Force vs Day 1 running my own business."</td><td><span class="hook-cat story">STORY</span></td><td>TikTok / Reel</td></tr>
+    <tr><td>35</td><td>"This AI prompt saved my client $40K last quarter."</td><td><span class="hook-cat result">RESULT</span></td><td>LinkedIn / TikTok</td></tr>
+    <tr><td>36</td><td>"If you have to micromanage your team, you're not leading — you're babysitting."</td><td><span class="hook-cat provoke">PROVOKE</span></td><td>Reel / TikTok</td></tr>
+    <tr><td>37</td><td>"The question I ask in every first coaching session."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>All platforms</td></tr>
+    <tr><td>38</td><td>"How to turn a 1-hour podcast into 15 pieces of content."</td><td><span class="hook-cat result">RESULT</span></td><td>LinkedIn / YouTube</td></tr>
+    <tr><td>39</td><td>"The Solano County Chamber didn't hire me because of my resume."</td><td><span class="hook-cat story">STORY</span></td><td>LinkedIn</td></tr>
+    <tr><td>40</td><td>"You're one system away from doubling your business. Let me explain."</td><td><span class="hook-cat curiosity">CURIOSITY</span></td><td>All platforms</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══════════════════ VIDEO SCRIPT TEMPLATES ═══════════════════ -->
+<div id="scripts" style="padding-top: 20px;">
+  <div class="section-label">Part 4</div>
+  <div class="section-title">Video Script Templates</div>
+  <div class="section-sub">Fill in the blanks and hit record. These are proven structures for short-form videos. Each one is designed for 15-60 seconds.</div>
+</div>
+
+<div class="template-block">
+  <div class="template-label">TEMPLATE 1: THE CONTRARIAN TAKE</div>
+  <pre>
+[HOOK - look at camera, slight pause]
+"Everyone tells you to <span class="placeholder">[common advice]</span>. That's wrong."
+
+[BODY - 15 seconds]
+"Here's what actually works:
+<span class="placeholder">[Your alternative approach - 2-3 sentences]</span>"
+
+[PROOF - 10 seconds]
+"I used this with <span class="placeholder">[client/team/example]</span> and
+<span class="placeholder">[specific result]</span>."
+
+[CTA - 3 seconds]
+"Follow for more leadership frameworks that actually work."
+  </pre>
+</div>
+
+<div class="template-block">
+  <div class="template-label">TEMPLATE 2: THE QUICK TIP</div>
+  <pre>
+[HOOK - direct to camera]
+"Here's one thing you can do TODAY to <span class="placeholder">[benefit]</span>."
+
+[THE TIP - 15-20 seconds]
+"<span class="placeholder">[Step 1]</span>,
+<span class="placeholder">[Step 2]</span>,
+<span class="placeholder">[Step 3]</span>."
+
+[WHY IT WORKS - 10 seconds]
+"This works because <span class="placeholder">[brief explanation]</span>."
+
+[CTA]
+"Save this for later. You'll need it."
+  </pre>
+</div>
+
+<div class="template-block">
+  <div class="template-label">TEMPLATE 3: THE STORY ARC</div>
+  <pre>
+[HOOK - emotional or surprising]
+"<span class="placeholder">[Dramatic opening line about a situation]</span>."
+
+[SETUP - 10 seconds]
+"<span class="placeholder">[Context: who, what, when]</span>"
+
+[TENSION - 10 seconds]
+"But then <span class="placeholder">[the problem/challenge]</span>."
+
+[RESOLUTION - 10 seconds]
+"So I told them: <span class="placeholder">[your advice/intervention]</span>."
+
+[RESULT - 5 seconds]
+"<span class="placeholder">[What happened next - specific outcome]</span>."
+
+[LESSON]
+"The lesson? <span class="placeholder">[One-line takeaway]</span>."
+  </pre>
+</div>
+
+<div class="template-block">
+  <div class="template-label">TEMPLATE 4: THE "DO THIS, NOT THAT"</div>
+  <pre>
+[HOOK]
+"Stop saying '<span class="placeholder">[common phrase]</span>' to your team."
+
+[THE BAD WAY - 5 seconds]
+"Most leaders say: '<span class="placeholder">[bad example]</span>'"
+
+[THE BETTER WAY - 10 seconds]
+"Instead, try: '<span class="placeholder">[your recommended approach]</span>'"
+
+[WHY]
+"The difference? <span class="placeholder">[explains the impact]</span>."
+
+[CTA]
+"Comment which one you've been guilty of."
+  </pre>
+</div>
+
+<div class="template-block">
+  <div class="template-label">TEMPLATE 5: THE AI DEMO</div>
+  <pre>
+[HOOK - screen recording or face-to-camera]
+"This AI tool just saved me <span class="placeholder">[time/money amount]</span>."
+
+[SHOW IT - 15-20 seconds]
+"Here's exactly what I did:
+<span class="placeholder">[Step-by-step with screen recording or description]</span>"
+
+[THE RESULT]
+"Now instead of <span class="placeholder">[old way]</span>, I can <span class="placeholder">[new way]</span>
+in <span class="placeholder">[fraction of time]</span>."
+
+[CTA]
+"Want the full breakdown? Link in bio."
+  </pre>
+</div>
+
+<!-- ═══════════════════ CAPTION FORMULAS ═══════════════════ -->
+<div id="captions" style="padding-top: 20px;">
+  <div class="section-label">Part 5</div>
+  <div class="section-title">Caption Formulas</div>
+  <div class="section-sub">For Instagram carousels, LinkedIn posts, and any text-based content. Each formula includes the structure and a filled-in example you can model.</div>
+</div>
+
+<div class="formula-card">
+  <h4>The PAS Framework (Problem → Agitate → Solve)</h4>
+  <div class="formula">PROBLEM [1 line] → AGITATE [2-3 lines making it worse] → SOLVE [your framework/tip] → CTA</div>
+  <div class="example">Your best employees are quietly disengaging.
+
+They're showing up on time, hitting deadlines, doing the bare minimum — and you think everything is fine.
+
+But here's what's actually happening: they stopped bringing ideas to meetings. They stopped volunteering for projects. They're updating their LinkedIn on their lunch break.
+
+By the time you notice, they already have an offer letter.
+
+Here are 3 things you can do THIS WEEK to re-engage your top performers:
+
+1. Ask them what they'd change if they ran the department
+2. Give them one project that scares them (growth = engagement)
+3. Have a real conversation — not a review, a conversation
+
+Which one are you trying first? Drop it below.</div>
+</div>
+
+<div class="formula-card">
+  <h4>The Listicle (numbered tips with micro-stories)</h4>
+  <div class="formula">HOOK [bold claim or number] → LIST [3-7 tips with 1-2 line explanations] → WRAP [encouragement] → CTA</div>
+  <div class="example">5 leadership habits that separate good managers from great ones:
+
+1. They ask before they tell. Great leaders lead with questions, not answers.
+
+2. They give credit publicly and give feedback privately. Every single time.
+
+3. They protect their team's time like it's their own. No unnecessary meetings.
+
+4. They hire people who challenge them. Not people who agree with them.
+
+5. They admit when they're wrong. Out loud. In front of the team.
+
+Which one do you need to work on most?
+
+Save this and revisit it on Monday morning.</div>
+</div>
+
+<div class="formula-card">
+  <h4>The LinkedIn Story Post</h4>
+  <div class="formula">HOOK [1 line, punchy] → STORY [6-10 lines, personal] → LESSON [2-3 lines] → QUESTION [engagement driver]</div>
+  <div class="example">I almost got fired from my first leadership role.
+
+Not because I wasn't working hard. I was putting in 14-hour days.
+
+The problem? I was doing everything myself.
+
+My team felt ignored. My boss felt I couldn't delegate. My results were good on paper but I was burning out everyone around me.
+
+One mentor pulled me aside and said something I'll never forget:
+
+"If you're the hardest worker in the room, you're the worst leader in the room."
+
+That changed everything.
+
+I started giving away my best work. I started trusting people who weren't perfect yet. I started measuring my success by my team's success.
+
+That's when everything took off.
+
+What's the best leadership advice someone ever gave you?</div>
+</div>
+
+<div class="formula-card">
+  <h4>The Carousel Opener (Slide 1 text)</h4>
+  <div class="formula">BIG CLAIM or QUESTION + "Swipe to learn" or visual cue → Keep it to 6-10 words max</div>
+  <div class="example">Slide 1: "5 signs your team is about to quit"
+Slide 2: "1. They stopped asking questions in meetings"
+Slide 3: "2. They're 'fine' when you ask how they're doing"
+Slide 4: "3. They've gone from suggesting ideas to just executing"
+Slide 5: "4. They're not engaging with company culture anymore"
+Slide 6: "5. Their LinkedIn activity just spiked"
+Slide 7: "What to do about it (save this slide)"
+Slide 8: [Your 3-step framework]
+Slide 9: "Follow @iamcmacias for more leadership insights"</div>
+</div>
+
+<!-- ═══════════════════ REPURPOSING ENGINE ═══════════════════ -->
+<div id="repurpose" style="padding-top: 20px;">
+  <div class="section-label">Part 6</div>
+  <div class="section-title">The Podcast Repurposing Engine</div>
+  <div class="section-sub">You have 80+ episodes on The L3 Perspective. That's not a podcast library — it's an untapped content factory. Here's how to turn 1 episode into 10-15 pieces of content.</div>
+</div>
+
+<div class="engine-flow">
+  <div class="engine-step">
+    <div class="num" style="color: #ff3333;">1</div>
+    <h4>Record Episode</h4>
+    <p>1 hour podcast with Glenn + guest</p>
+  </div>
+  <div class="engine-arrow">&#10132;</div>
+  <div class="engine-step">
+    <div class="num" style="color: #ffaa00;">2</div>
+    <h4>Extract 3-5 Clips</h4>
+    <p>Best 15-60 sec moments</p>
+  </div>
+  <div class="engine-arrow">&#10132;</div>
+  <div class="engine-step">
+    <div class="num" style="color: #3399ff;">3</div>
+    <h4>Post Clips</h4>
+    <p>IG Reels, TikTok, YT Shorts, LinkedIn</p>
+  </div>
+  <div class="engine-arrow">&#10132;</div>
+  <div class="engine-step">
+    <div class="num" style="color: #9933ff;">4</div>
+    <h4>Write Posts</h4>
+    <p>Turn insights into carousels + text posts</p>
+  </div>
+  <div class="engine-arrow">&#10132;</div>
+  <div class="engine-step">
+    <div class="num" style="color: #33cc66;">5</div>
+    <h4>Quote Graphics</h4>
+    <p>Best one-liners as shareable images</p>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 20px;">
+  <h3>The Math: 1 Episode = 12-15 Pieces of Content</h3>
+  <p style="margin-top: 12px; color: #ccc;">
+    <strong style="color: #ff3333;">3-5 video clips</strong> → posted to IG Reels, TikTok, YouTube Shorts (that's 9-15 platform posts from clips alone)<br><br>
+    <strong style="color: #3399ff;">2-3 carousels</strong> → take the best frameworks/lists discussed and turn them into IG carousels<br><br>
+    <strong style="color: #9933ff;">1-2 LinkedIn story posts</strong> → use the best anecdote or lesson from the episode<br><br>
+    <strong style="color: #33cc66;">2-3 quote graphics</strong> → pull the most shareable one-liners for IG Stories and feed posts<br><br>
+    <strong style="color: #ffaa00;">1 email newsletter</strong> → summarize the key takeaway for your email list<br><br>
+    That means <strong style="color: #fff;">1 podcast recording per week</strong> generates your <strong style="color: #fff;">entire content calendar</strong>.
+  </p>
+</div>
+
+<div class="card" style="margin-bottom: 40px; border-left: 3px solid #33cc66;">
+  <h3 style="color: #33cc66;">Immediate Win: Mine Your Back Catalog</h3>
+  <p>You have 80+ episodes already recorded. Spend 2 hours going through your best-performing episodes (sort by views on YouTube) and pull 20 clips. That's a month of content done in one sitting. Use tools like Opus Clip, Descript, or CapCut to auto-detect the best moments.</p>
+</div>
+
+<!-- ═══════════════════ PLATFORM GUIDES ═══════════════════ -->
+<div id="platforms" style="padding-top: 20px;">
+  <div class="section-label">Part 7</div>
+  <div class="section-title">Platform-Specific Guides</div>
+  <div class="section-sub">Each platform has different rules. Here's exactly how to optimize your content for each one.</div>
+</div>
+
+<!-- LINKEDIN -->
+<div class="platform-card">
+  <div class="platform-header">
+    <div class="platform-icon li">in</div>
+    <div>
+      <h3>LinkedIn</h3>
+      <div class="handle">@cameronmacias — 7,007 followers — YOUR STRONGEST PLATFORM</div>
+    </div>
+  </div>
+  <div class="metric-row">
+    <div class="metric-box"><div class="val">3x/week</div><div class="lbl">Post Frequency</div></div>
+    <div class="metric-box"><div class="val">Text + PDF</div><div class="lbl">Top Formats</div></div>
+    <div class="metric-box"><div class="val">Tue-Thu</div><div class="lbl">Best Days</div></div>
+    <div class="metric-box"><div class="val">7-9 AM</div><div class="lbl">Best Time</div></div>
+  </div>
+  <ul class="tip-list">
+    <li>PDF carousels get 11x more impressions than text posts in 2026. Create 2 per month minimum.</li>
+    <li>LinkedIn's algorithm now penalizes "engagement bait" (like "comment YES if you agree"). Focus on genuine questions that spark conversation.</li>
+    <li>Your posts should be 800-1200 words for text posts. Long-form storytelling is rewarded. Start every post with a one-line hook, leave a line break, then deliver the story.</li>
+    <li>Video is growing 2x faster than all other formats on LinkedIn. Post 1 vertical video per week (60-90 seconds, captioned).</li>
+    <li>Sunday personal stories consistently get the highest engagement for coaches/consultants. This is your "vulnerable leadership moment" day.</li>
+    <li>Comment on 10-15 posts from your target audience BEFORE you post your own content. This warms up the algorithm and puts you on people's radar.</li>
+  </ul>
+</div>
+
+<!-- INSTAGRAM -->
+<div class="platform-card">
+  <div class="platform-header">
+    <div class="platform-icon ig">IG</div>
+    <div>
+      <h3>Instagram</h3>
+      <div class="handle">@iamcmacias — 1,294 followers — HIGHEST GROWTH POTENTIAL</div>
+    </div>
+  </div>
+  <div class="metric-row">
+    <div class="metric-box"><div class="val">4-5x/week</div><div class="lbl">Post Frequency</div></div>
+    <div class="metric-box"><div class="val">Reels + Carousels</div><div class="lbl">Top Formats</div></div>
+    <div class="metric-box"><div class="val">Tue/Wed/Thu</div><div class="lbl">Best Days</div></div>
+    <div class="metric-box"><div class="val">11AM-1PM</div><div class="lbl">Best Time</div></div>
+  </div>
+  <ul class="tip-list">
+    <li>Carousels are now outperforming Reels for engagement on Instagram. Alternate: Reel → Carousel → Reel → Carousel.</li>
+    <li>Reels should be 15-30 seconds for maximum reach. Completion rate matters more than length — a 15-sec video watched 3 times beats a 60-sec video watched once.</li>
+    <li>Use the "Save" metric as your north star. Content people save gets dramatically more distribution. Educational content and frameworks get saved most.</li>
+    <li>Post to Stories daily (even on non-post days). Polls, Q&As, and behind-the-scenes keep you at the top of followers' feeds.</li>
+    <li>Pin your top 3 posts to the top of your grid: (1) An introduction video, (2) Your best performing Reel, (3) A carousel showing what you do.</li>
+    <li>Every post caption should end with a CTA: "Save this," "Share with a leader who needs this," or "Drop your answer below."</li>
+  </ul>
+</div>
+
+<!-- TIKTOK -->
+<div class="platform-card">
+  <div class="platform-header">
+    <div class="platform-icon tt">TT</div>
+    <div>
+      <h3>TikTok</h3>
+      <div class="handle">@iamcmacias — 239 followers — FRESH START OPPORTUNITY</div>
+    </div>
+  </div>
+  <div class="metric-row">
+    <div class="metric-box"><div class="val">3-5x/week</div><div class="lbl">Post Frequency</div></div>
+    <div class="metric-box"><div class="val">Raw Video</div><div class="lbl">Top Format</div></div>
+    <div class="metric-box"><div class="val">Any Day</div><div class="lbl">Best Days</div></div>
+    <div class="metric-box"><div class="val">6-10 PM</div><div class="lbl">Best Time</div></div>
+  </div>
+  <ul class="tip-list">
+    <li>TikTok rewards authenticity over production quality. Film on your phone, no fancy lighting needed. Speak directly to camera like you're talking to a friend.</li>
+    <li>Keep videos 15-30 seconds. The algorithm prioritizes completion rate above all else. A shorter video that gets replayed will always outperform a long one.</li>
+    <li>Post the same content as your Instagram Reels — with one difference: use TikTok-native captions and trending sounds where relevant.</li>
+    <li>Reply to comments with video responses. This creates a conversation loop and the algorithm loves it.</li>
+    <li>Use the "Stitch" feature to react to other business/leadership content. This borrows their audience.</li>
+    <li>Your TikTok audience skews younger. Frame content as "What I wish someone told me when I was starting out" to connect with emerging leaders.</li>
+  </ul>
+</div>
+
+<!-- YOUTUBE -->
+<div class="platform-card">
+  <div class="platform-header">
+    <div class="platform-icon yt">YT</div>
+    <div>
+      <h3>YouTube</h3>
+      <div class="handle">@thel3perspective7 — 1,870 subs — YOUR CONTENT LIBRARY</div>
+    </div>
+  </div>
+  <div class="metric-row">
+    <div class="metric-box"><div class="val">1 long + 3 Shorts/wk</div><div class="lbl">Post Frequency</div></div>
+    <div class="metric-box"><div class="val">Shorts + Podcasts</div><div class="lbl">Top Formats</div></div>
+    <div class="metric-box"><div class="val">Mon/Thu</div><div class="lbl">Best Days</div></div>
+    <div class="metric-box"><div class="val">2-4 PM</div><div class="lbl">Best Time</div></div>
+  </div>
+  <ul class="tip-list">
+    <li>You already have 80+ episodes. The priority isn't creating more long-form — it's extracting Shorts from what exists. Post 3+ Shorts per week from your podcast archive.</li>
+    <li>YouTube Shorts get pushed to non-subscribers. This is your best channel for discovery beyond your current audience.</li>
+    <li>Optimize existing video titles and thumbnails. Many of your older videos have generic titles. Spend 1 hour renaming your top 20 videos with curiosity-driven titles.</li>
+    <li>Add end screens to all podcast episodes pointing viewers to your website (forward-learn.com) and asking them to subscribe.</li>
+    <li>Create a "Start Here" playlist that introduces new viewers to your best content. Pin it to the top of your channel.</li>
+    <li>Consider launching a separate "Coach Cam" YouTube channel for solo content (not podcast). This gives you a personal brand presence on YouTube separate from the show.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════════ HASHTAG SETS ═══════════════════ -->
+<div id="hashtags" style="padding-top: 20px;">
+  <div class="section-label">Part 8</div>
+  <div class="section-title">Hashtag Sets</div>
+  <div class="section-sub">Copy-paste these hashtag sets for each content pillar. Mix large (1M+), medium (100K-1M), and niche (&lt;100K) tags for maximum reach.</div>
+</div>
+
+<div class="card" style="margin-bottom: 40px;">
+  <div class="hashtag-group">
+    <h4>Leadership Content</h4>
+    <div class="hashtag-tags">
+      <span class="hashtag-tag">#leadership</span>
+      <span class="hashtag-tag">#leadershipcoach</span>
+      <span class="hashtag-tag">#leadershipdevelopment</span>
+      <span class="hashtag-tag">#teambuilding</span>
+      <span class="hashtag-tag">#executivecoach</span>
+      <span class="hashtag-tag">#managementtips</span>
+      <span class="hashtag-tag">#leadershipmindset</span>
+      <span class="hashtag-tag">#peoplefirst</span>
+      <span class="hashtag-tag">#leadbyexample</span>
+      <span class="hashtag-tag">#leadershiplessons</span>
+      <span class="hashtag-tag">#coachcam</span>
+    </div>
+  </div>
+  <div class="hashtag-group">
+    <h4>Business & AI</h4>
+    <div class="hashtag-tags">
+      <span class="hashtag-tag">#businesscoach</span>
+      <span class="hashtag-tag">#businessoptimization</span>
+      <span class="hashtag-tag">#aitools</span>
+      <span class="hashtag-tag">#aiforbusiness</span>
+      <span class="hashtag-tag">#smallbusinesstips</span>
+      <span class="hashtag-tag">#entrepreneurship</span>
+      <span class="hashtag-tag">#businessgrowth</span>
+      <span class="hashtag-tag">#worksmarter</span>
+      <span class="hashtag-tag">#aicoach</span>
+      <span class="hashtag-tag">#businessstrategy</span>
+      <span class="hashtag-tag">#coachcam</span>
+    </div>
+  </div>
+  <div class="hashtag-group">
+    <h4>Veteran Entrepreneur</h4>
+    <div class="hashtag-tags">
+      <span class="hashtag-tag">#veteranowned</span>
+      <span class="hashtag-tag">#veteranentrepreneur</span>
+      <span class="hashtag-tag">#militaryleadership</span>
+      <span class="hashtag-tag">#vetbiz</span>
+      <span class="hashtag-tag">#militarytobusiness</span>
+      <span class="hashtag-tag">#airforcevet</span>
+      <span class="hashtag-tag">#servicetosuccess</span>
+      <span class="hashtag-tag">#veterancoach</span>
+      <span class="hashtag-tag">#militarytransition</span>
+      <span class="hashtag-tag">#supportveterans</span>
+      <span class="hashtag-tag">#coachcam</span>
+    </div>
+  </div>
+  <div class="hashtag-group">
+    <h4>Podcast / L3 Perspective</h4>
+    <div class="hashtag-tags">
+      <span class="hashtag-tag">#podcast</span>
+      <span class="hashtag-tag">#podcastclips</span>
+      <span class="hashtag-tag">#thel3perspective</span>
+      <span class="hashtag-tag">#l3perspective</span>
+      <span class="hashtag-tag">#leadershipconversation</span>
+      <span class="hashtag-tag">#podcastlife</span>
+      <span class="hashtag-tag">#lifeloveleadership</span>
+      <span class="hashtag-tag">#realtalk</span>
+      <span class="hashtag-tag">#podcastguest</span>
+      <span class="hashtag-tag">#coachcam</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 90 DAY PLAN ═══════════════════ -->
+<div id="plan" style="padding-top: 20px;">
+  <div class="section-label">Part 9</div>
+  <div class="section-title">Your 90-Day Execution Plan</div>
+  <div class="section-sub">Don't try to do everything at once. Here's the phased rollout so you build momentum without burning out.</div>
+</div>
+
+<div class="phase-card ph1">
+  <span class="phase-tag ph1">DAYS 1-30: FOUNDATION</span>
+  <h3>Fix, Clean, and Start</h3>
+  <div class="phase-goals">
+    <div class="phase-goal"><strong>Week 1:</strong> Complete all emergency fixes (broken links, bios, brand names). Archive old Instagram posts. Set up consistent profile photos.</div>
+    <div class="phase-goal"><strong>Week 2:</strong> Batch-film 8 short videos using the hook formulas and script templates above. Create your first 2 carousels. Set up a content folder on your phone.</div>
+    <div class="phase-goal"><strong>Week 3:</strong> Start posting: 3 videos + 1 carousel + 1 LinkedIn text post. Pull 5 clips from your L3 Perspective archive.</div>
+    <div class="phase-goal"><strong>Week 4:</strong> Post consistently all week. Review analytics. Double down on what got the most saves/shares. Engage with 10-15 accounts daily.</div>
+  </div>
+</div>
+
+<div class="phase-card ph2">
+  <span class="phase-tag ph2">DAYS 31-60: MOMENTUM</span>
+  <h3>Scale and Systematize</h3>
+  <div class="phase-goals">
+    <div class="phase-goal"><strong>Week 5-6:</strong> Increase to 5 posts/week across platforms. Start the repurposing engine: 1 podcast episode → full week of content. Create your "Start Here" YouTube playlist.</div>
+    <div class="phase-goal"><strong>Week 7-8:</strong> Launch a recurring series (e.g., "Monday Leadership Minute" or "AI Tool of the Week"). Series content creates habitual viewing which the algorithm rewards. Start collaborating: stitch/remix 2 other creators' content per week.</div>
+  </div>
+</div>
+
+<div class="phase-card ph3">
+  <span class="phase-tag ph3">DAYS 61-90: ACCELERATION</span>
+  <h3>Optimize and Convert</h3>
+  <div class="phase-goals">
+    <div class="phase-goal"><strong>Week 9-10:</strong> Analyze your top 5 performing posts. Create 3 variations of each (same topic, different angle). This is the "outlier video" strategy — when you find something that works, make more of it.</div>
+    <div class="phase-goal"><strong>Week 11-12:</strong> Launch your lead magnet funnel: bio link → free resource → email capture. Start emailing your list weekly with exclusive insights not on social. Set up your content batching system: 1 day per week to film and schedule everything.</div>
+  </div>
+</div>
+
+<div class="card" style="border: 2px solid #ff3333; margin-top: 20px; margin-bottom: 40px;">
+  <h3 style="color: #ff3333;">The Non-Negotiable: Consistency Over Creativity</h3>
+  <p style="color: #ccc; margin-top: 8px;">A mediocre post published on schedule will always outperform a perfect post that never goes live. Your enemy isn't bad content — it's no content. Post 5 times a week for 90 days straight and you will see results. The algorithm rewards consistency above all else. Don't overthink it. Use the templates, hit record, and ship.</p>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Content Strategy Playbook for Coach Cam (Cameron Macias) — February 2026<br>
+  Built for: Instagram @iamcmacias | TikTok @iamcmacias | LinkedIn /cameronmacias | YouTube @thel3perspective7<br><br>
+  <span style="color: #666;">Also in your folder: <a href="coach-cam-growth-strategy.html" style="color: #ff3333;">Full Growth Strategy</a> | <a href="coach-cam-emergency-fixes.html" style="color: #ff3333;">Emergency Fixes Guide</a></span>
+</div>
+
+</body>
+</html>

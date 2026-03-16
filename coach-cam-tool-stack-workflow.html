@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach Cam | Content Production Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #111118;
+    --bg-card: #16161f;
+    --bg-elevated: #1e1e2a;
+    --text-primary: #f0f0f5;
+    --text-secondary: #9999b0;
+    --text-muted: #666680;
+    --accent-blue: #4d7cff;
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-pink: #ec4899;
+    --accent-cyan: #06b6d4;
+    --border: #2a2a3a;
+    --gradient-1: linear-gradient(135deg, #4d7cff, #8b5cf6);
+    --gradient-2: linear-gradient(135deg, #10b981, #06b6d4);
+    --gradient-3: linear-gradient(135deg, #f59e0b, #ef4444);
+    --gradient-4: linear-gradient(135deg, #ec4899, #8b5cf6);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    background: linear-gradient(180deg, #0f0f1a 0%, var(--bg-primary) 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(77,124,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(139,92,246,0.08) 0%, transparent 50%);
+    animation: heroGlow 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroGlow {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(77,124,255,0.15);
+    border: 1px solid rgba(77,124,255,0.3);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-blue);
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff, #ccc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 32px;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+  .flow-container {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px;
+    margin-bottom: 60px;
+    overflow-x: auto;
+  }
+
+  .flow-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-blue);
+    margin-bottom: 32px;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .flow-node {
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 140px;
+  }
+
+  .flow-node.source { background: rgba(77,124,255,0.15); border: 1px solid rgba(77,124,255,0.4); color: var(--accent-blue); }
+  .flow-node.tool { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: var(--accent-purple); }
+  .flow-node.ai { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: var(--accent-green); }
+  .flow-node.output { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: var(--accent-orange); }
+  .flow-node.platform { background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.4); color: var(--accent-pink); }
+  .flow-node.track { background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.4); color: var(--accent-cyan); }
+
+  .flow-arrow { color: var(--text-muted); font-size: 20px; font-weight: 300; }
+
+  .flow-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 16px 0 8px;
+  }
+
+  .section-header { text-align: center; margin-bottom: 48px; }
+  .section-header h2 { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+  .section-header p { color: var(--text-secondary); font-size: 16px; }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
+  }
+
+  .tool-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tool-card:hover { transform: translateY(-4px); border-color: rgba(77,124,255,0.3); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+
+  .tool-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .tool-card.record::before { background: var(--gradient-3); }
+  .tool-card.clip::before { background: var(--gradient-4); }
+  .tool-card.design::before { background: var(--gradient-1); }
+  .tool-card.video::before { background: var(--gradient-2); }
+  .tool-card.write::before { background: linear-gradient(135deg, #06b6d4, #4d7cff); }
+  .tool-card.research::before { background: linear-gradient(135deg, #f59e0b, #10b981); }
+  .tool-card.track::before { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+  .tool-card.enhance::before { background: linear-gradient(135deg, #ef4444, #f59e0b); }
+
+  .tool-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+
+  .tool-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; flex-shrink: 0;
+  }
+
+  .tool-card.record .tool-icon { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+  .tool-card.clip .tool-icon { background: rgba(236,72,153,0.15); color: var(--accent-pink); }
+  .tool-card.design .tool-icon { background: rgba(77,124,255,0.15); color: var(--accent-blue); }
+  .tool-card.video .tool-icon { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+  .tool-card.write .tool-icon { background: rgba(6,182,212,0.15); color: var(--accent-cyan); }
+  .tool-card.research .tool-icon { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+  .tool-card.track .tool-icon { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+  .tool-card.enhance .tool-icon { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+  .tool-name { font-size: 20px; font-weight: 700; }
+  .tool-role { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .tool-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; line-height: 1.7; }
+
+  .tool-tasks { list-style: none; margin-bottom: 20px; }
+  .tool-tasks li {
+    padding: 8px 0; font-size: 13px; color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .tool-tasks li::before { content: '>'; color: var(--accent-blue); font-weight: 700; font-size: 12px; margin-top: 2px; flex-shrink: 0; }
+
+  .tool-output { background: var(--bg-elevated); border-radius: 10px; padding: 14px 16px; }
+  .tool-output-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .tool-output-value { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+
+  .workflow-table-container {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 48px;
+  }
+
+  .workflow-table { width: 100%; border-collapse: collapse; }
+  .workflow-table th {
+    padding: 16px 20px; text-align: left; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted);
+    background: var(--bg-elevated); border-bottom: 1px solid var(--border);
+  }
+  .workflow-table td { padding: 16px 20px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+  .workflow-table tr:last-child td { border-bottom: none; }
+  .workflow-table tr:hover { background: rgba(77,124,255,0.03); }
+
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  }
+  .step-num.s1 { background: rgba(77,124,255,0.15); color: var(--accent-blue); }
+  .step-num.s2 { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+  .step-num.s3 { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+  .step-num.s4 { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+  .step-num.s5 { background: rgba(236,72,153,0.15); color: var(--accent-pink); }
+  .step-num.s6 { background: rgba(6,182,212,0.15); color: var(--accent-cyan); }
+
+  .time-badge {
+    display: inline-block; padding: 4px 10px;
+    background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--accent-green);
+  }
+
+  .weekly-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 48px; }
+  .day-col { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 12px; text-align: center; }
+  .day-col.active { border-color: rgba(77,124,255,0.3); background: var(--bg-elevated); }
+  .day-name { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+  .day-col.active .day-name { color: var(--accent-blue); }
+  .day-task { padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 500; margin-bottom: 6px; text-align: left; line-height: 1.4; }
+  .day-task.record { background: rgba(245,158,11,0.1); color: var(--accent-orange); }
+  .day-task.edit { background: rgba(139,92,246,0.1); color: var(--accent-purple); }
+  .day-task.design { background: rgba(77,124,255,0.1); color: var(--accent-blue); }
+  .day-task.post { background: rgba(16,185,129,0.1); color: var(--accent-green); }
+  .day-task.write { background: rgba(6,182,212,0.1); color: var(--accent-cyan); }
+  .day-task.rest { background: rgba(255,255,255,0.03); color: var(--text-muted); }
+
+  .repurpose-engine {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 20px; padding: 48px; margin-bottom: 48px;
+  }
+  .repurpose-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+  .repurpose-subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 32px; font-size: 14px; }
+  .repurpose-flow { display: flex; align-items: stretch; gap: 16px; overflow-x: auto; padding: 8px 0; }
+  .repurpose-step {
+    flex: 1; min-width: 180px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 12px; padding: 24px 16px; text-align: center;
+  }
+  .repurpose-step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%; font-size: 14px; font-weight: 800; margin-bottom: 12px;
+  }
+  .repurpose-step:nth-child(1) .repurpose-step-num { background: var(--gradient-3); color: #fff; }
+  .repurpose-step:nth-child(3) .repurpose-step-num { background: var(--gradient-4); color: #fff; }
+  .repurpose-step:nth-child(5) .repurpose-step-num { background: var(--gradient-1); color: #fff; }
+  .repurpose-step:nth-child(7) .repurpose-step-num { background: var(--gradient-2); color: #fff; }
+  .repurpose-step h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .repurpose-step p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .repurpose-step .tool-used {
+    margin-top: 12px; padding: 6px 12px; background: var(--bg-elevated);
+    border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--accent-purple); display: inline-block;
+  }
+  .repurpose-arrow { display: flex; align-items: center; color: var(--text-muted); font-size: 20px; flex-shrink: 0; }
+
+  .output-math {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 48px;
+  }
+  .math-title { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-green); margin-bottom: 24px; }
+  .math-grid { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .math-item { padding: 16px 24px; background: var(--bg-elevated); border-radius: 12px; text-align: center; }
+  .math-num { font-size: 36px; font-weight: 900; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .math-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .math-op { font-size: 28px; font-weight: 300; color: var(--text-muted); }
+
+  .notion-section {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: 20px; padding: 48px; margin-bottom: 48px;
+  }
+  .notion-header { text-align: center; margin-bottom: 32px; }
+  .notion-header h3 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .notion-header p { color: var(--text-secondary); font-size: 14px; }
+  .notion-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .notion-field { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .notion-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 8px; }
+  .notion-field-value { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.5; }
+  .status-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .status-pill { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .status-pill.gray { background: rgba(255,255,255,0.06); color: var(--text-muted); }
+  .status-pill.blue { background: rgba(77,124,255,0.15); color: var(--accent-blue); }
+  .status-pill.purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+  .status-pill.orange { background: rgba(245,158,11,0.15); color: var(--accent-orange); }
+  .status-pill.green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+  .status-arrow { color: var(--text-muted); font-size: 10px; }
+
+  .sop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 48px; }
+  .sop-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .sop-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .sop-card .sop-time { font-size: 12px; color: var(--accent-green); font-weight: 600; margin-bottom: 16px; }
+  .sop-steps { list-style: none; counter-reset: sop; }
+  .sop-steps li {
+    counter-increment: sop; padding: 10px 0; font-size: 13px; color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; gap: 12px; align-items: flex-start;
+  }
+  .sop-steps li::before {
+    content: counter(sop); display: inline-flex; align-items: center; justify-content: center;
+    min-width: 22px; height: 22px; border-radius: 6px;
+    background: rgba(77,124,255,0.1); color: var(--accent-blue);
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .sop-steps li:last-child { border-bottom: none; }
+
+  .footer { padding: 40px; text-align: center; border-top: 1px solid var(--border); margin-top: 40px; }
+  .footer p { color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
+  .footer-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .footer-links a { color: var(--accent-blue); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .footer-links a:hover { color: var(--accent-purple); }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+    .hero { padding: 60px 20px 40px; }
+    .container { padding: 0 20px; }
+    .flow-container { padding: 24px; }
+    .tools-grid { grid-template-columns: 1fr; }
+    .weekly-grid { grid-template-columns: repeat(3, 1fr); }
+    .repurpose-flow { flex-direction: column; }
+    .repurpose-arrow { transform: rotate(90deg); justify-content: center; }
+    .math-grid { flex-direction: column; }
+    .sop-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Production Pipeline v1.0</div>
+    <h1>Your 8-Tool Content Machine</h1>
+    <p>One unified system that turns 1 podcast episode into 15+ pieces of content across 5 platforms — tracked, scheduled, and measured in Notion.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="flow-container">
+    <div class="flow-title">Master Content Production Flow</div>
+    <div class="flow-label">Step 1: Create Raw Content</div>
+    <div class="flow-row">
+      <div class="flow-node source">Podcast Episode</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node tool">Riverside</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node output">HD Video + Audio + Transcript</div>
+    </div>
+    <div class="flow-label">Step 2: AI-Powered Clipping</div>
+    <div class="flow-row">
+      <div class="flow-node output">Full Episode</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node tool">Opus Clips</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node output">8-12 Short Clips (auto-captioned)</div>
+    </div>
+    <div class="flow-label">Step 3: Research & Script</div>
+    <div class="flow-row">
+      <div class="flow-node ai">ChatGPT / Gemini</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node output">Scripts, Hooks, Captions</div>
+    </div>
+    <div class="flow-row" style="margin-top:-8px">
+      <div class="flow-node ai">NotebookLM</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node output">Research Summaries, Show Notes</div>
+    </div>
+    <div class="flow-label">Step 4: Design & Enhance</div>
+    <div class="flow-row">
+      <div class="flow-node output">Clips + Scripts</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node tool">Canva</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node output">Carousels, Thumbnails, Stories</div>
+    </div>
+    <div class="flow-row" style="margin-top:-8px">
+      <div class="flow-node output">Short Clips</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node tool">Higgsfield / Nano Banana</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node output">Enhanced Reels + AI Effects</div>
+    </div>
+    <div class="flow-label">Step 5: Distribute</div>
+    <div class="flow-row">
+      <div class="flow-node platform">Instagram</div>
+      <div class="flow-node platform">TikTok</div>
+      <div class="flow-node platform">YouTube</div>
+      <div class="flow-node platform">LinkedIn</div>
+      <div class="flow-node platform">Facebook</div>
+    </div>
+    <div class="flow-label">Step 6: Track & Optimize</div>
+    <div class="flow-row">
+      <div class="flow-node track">Notion Content Calendar</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node track">Performance Review</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node track">Refine Strategy</div>
+    </div>
+  </div>
+
+  <section style="padding:60px 0">
+    <div class="section-header">
+      <h2>Your Tool Stack, Explained</h2>
+      <p>What each tool does, when to use it, and what it outputs</p>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card record">
+        <div class="tool-header">
+          <div class="tool-icon">R</div>
+          <div><div class="tool-name">Riverside</div><div class="tool-role">Recording Studio</div></div>
+        </div>
+        <div class="tool-desc">Your content factory starts here. Riverside records The L3 Perspective podcast in studio-quality — separate video and audio tracks, local recording (no quality loss), and built-in transcription.</div>
+        <ul class="tool-tasks">
+          <li>Record L3 Perspective podcast episodes (solo + guest)</li>
+          <li>Capture separate video tracks for each speaker</li>
+          <li>Auto-generate transcripts for repurposing</li>
+          <li>Export HD video, isolated audio, and SRT captions</li>
+          <li>Use "Magic Clips" feature to auto-detect best moments</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Full HD video, WAV audio, transcript (.txt/.srt), magic clip suggestions</div>
+        </div>
+      </div>
+
+      <div class="tool-card clip">
+        <div class="tool-header">
+          <div class="tool-icon">O</div>
+          <div><div class="tool-name">Opus Clips</div><div class="tool-role">AI Clipper</div></div>
+        </div>
+        <div class="tool-desc">The multiplier. Drop in a full podcast episode and Opus uses AI to find the most viral-worthy moments, auto-crops to vertical (9:16), adds animated captions, and scores each clip by virality potential.</div>
+        <ul class="tool-tasks">
+          <li>Upload full Riverside export after each episode</li>
+          <li>AI selects top 8-12 clip-worthy moments automatically</li>
+          <li>Auto-crops to 9:16 vertical format with speaker tracking</li>
+          <li>Adds animated captions (customize to brand colors)</li>
+          <li>Review "virality score" — prioritize clips scoring 80+</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">8-12 captioned vertical clips per episode, ranked by virality score</div>
+        </div>
+      </div>
+
+      <div class="tool-card design">
+        <div class="tool-header">
+          <div class="tool-icon">C</div>
+          <div><div class="tool-name">Canva</div><div class="tool-role">Design Studio</div></div>
+        </div>
+        <div class="tool-desc">Your visual brand engine. Canva handles everything from carousel posts to YouTube thumbnails to LinkedIn banners. Set up brand templates once, then you or Jazz can crank out on-brand content in minutes.</div>
+        <ul class="tool-tasks">
+          <li>Create branded carousel templates (Coach Cam + L3 Perspective)</li>
+          <li>Design YouTube thumbnails with consistent style</li>
+          <li>Build Instagram Story templates for daily engagement</li>
+          <li>Create quote graphics from podcast highlights</li>
+          <li>Design LinkedIn post graphics and article headers</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Carousels, thumbnails, stories, quote cards, banners — all brand-consistent</div>
+        </div>
+      </div>
+
+      <div class="tool-card video">
+        <div class="tool-header">
+          <div class="tool-icon">H</div>
+          <div><div class="tool-name">Higgsfield</div><div class="tool-role">AI Video Enhancer</div></div>
+        </div>
+        <div class="tool-desc">The scroll-stopper. Higgsfield's AI video tools add dynamic visual effects, transitions, and AI-generated B-roll. Use this to turn talking-head clips into visually rich content that grabs attention in the first 0.5 seconds.</div>
+        <ul class="tool-tasks">
+          <li>Add AI-generated visual effects to top-performing clips</li>
+          <li>Create dynamic transitions between clip segments</li>
+          <li>Generate eye-catching intros for your best Reels</li>
+          <li>Enhance podcast clips with visual storytelling elements</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Enhanced short-form videos with effects, transitions, and AI visuals</div>
+        </div>
+      </div>
+
+      <div class="tool-card enhance">
+        <div class="tool-header">
+          <div class="tool-icon">N</div>
+          <div><div class="tool-name">Nano Banana</div><div class="tool-role">Creative Effects</div></div>
+        </div>
+        <div class="tool-desc">Your wildcard creative tool. Nano Banana generates unique AI-powered video effects and animations. Perfect for trend-jacking — quickly create content that matches viral formats with your own spin.</div>
+        <ul class="tool-tasks">
+          <li>Generate AI-enhanced video content for trend formats</li>
+          <li>Create attention-grabbing visual hooks for Reels/TikToks</li>
+          <li>Add unique creative effects that differentiate your content</li>
+          <li>Experiment with emerging AI video formats early</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Creative AI video content, trend-format videos, unique visual hooks</div>
+        </div>
+      </div>
+
+      <div class="tool-card write">
+        <div class="tool-header">
+          <div class="tool-icon">G</div>
+          <div><div class="tool-name">ChatGPT</div><div class="tool-role">Writing Co-Pilot</div></div>
+        </div>
+        <div class="tool-desc">Your caption and script writer. Feed it transcript excerpts and get platform-optimized captions, hooks, CTAs, and hashtag sets. Set up a custom GPT with your brand voice for consistency.</div>
+        <ul class="tool-tasks">
+          <li>Generate 5 hook variations per clip (test what stops the scroll)</li>
+          <li>Write platform-specific captions (LinkedIn long-form vs IG punchy)</li>
+          <li>Create CTAs optimized for saves/shares (not just likes)</li>
+          <li>Draft LinkedIn articles from podcast transcripts</li>
+          <li>Build a custom GPT trained on your tone and brand voice</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Hooks, captions, CTAs, hashtags, LinkedIn posts, video scripts</div>
+        </div>
+      </div>
+
+      <div class="tool-card research">
+        <div class="tool-header">
+          <div class="tool-icon">Ge</div>
+          <div><div class="tool-name">Google Gemini</div><div class="tool-role">Research & Ideas</div></div>
+        </div>
+        <div class="tool-desc">Your research engine and idea generator. Gemini excels at analyzing trends, generating content angles, and researching topics. Use alongside ChatGPT — Gemini for research, ChatGPT for writing.</div>
+        <ul class="tool-tasks">
+          <li>Research trending topics in leadership, AI, and coaching</li>
+          <li>Analyze competitor content for gap opportunities</li>
+          <li>Generate episode topic ideas with audience-first angles</li>
+          <li>Fact-check claims before posting thought-leadership content</li>
+          <li>Brainstorm carousel ideas and content series concepts</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Topic research, trend analysis, content ideas, fact-checks, series concepts</div>
+        </div>
+      </div>
+
+      <div class="tool-card track">
+        <div class="tool-header">
+          <div class="tool-icon">N</div>
+          <div><div class="tool-name">NotebookLM</div><div class="tool-role">Knowledge Base</div></div>
+        </div>
+        <div class="tool-desc">Your podcast brain. Upload all L3 Perspective transcripts and NotebookLM becomes a searchable knowledge base of everything you've ever discussed. 80+ episodes = a gold mine of content waiting to be repurposed.</div>
+        <ul class="tool-tasks">
+          <li>Upload every podcast transcript (80+ episodes of content)</li>
+          <li>Search past episodes: "What have I said about leadership?"</li>
+          <li>Generate show notes and episode summaries automatically</li>
+          <li>Find quotable moments for carousel content</li>
+          <li>Cross-reference topics to build content series from archives</li>
+        </ul>
+        <div class="tool-output">
+          <div class="tool-output-label">Outputs</div>
+          <div class="tool-output-value">Searchable podcast archive, show notes, quote extraction, topic maps</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:60px 0">
+    <div class="section-header">
+      <h2>Weekly Production Workflow</h2>
+      <p>The exact steps, in order, for one content production cycle</p>
+    </div>
+    <div class="workflow-table-container">
+      <table class="workflow-table">
+        <thead>
+          <tr><th>Step</th><th>Action</th><th>Tool</th><th>Output</th><th>Time</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="step-num s1">1</span></td>
+            <td><strong>Record podcast episode</strong><br><span style="color:var(--text-muted);font-size:12px">Solo take or guest interview. 20-45 min.</span></td>
+            <td>Riverside</td>
+            <td>HD video + audio + transcript</td>
+            <td><span class="time-badge">45 min</span></td>
+          </tr>
+          <tr>
+            <td><span class="step-num s2">2</span></td>
+            <td><strong>Auto-clip best moments</strong><br><span style="color:var(--text-muted);font-size:12px">Upload full episode. AI finds top clips.</span></td>
+            <td>Opus Clips</td>
+            <td>8-12 captioned vertical clips</td>
+            <td><span class="time-badge">15 min</span></td>
+          </tr>
+          <tr>
+            <td><span class="step-num s3">3</span></td>
+            <td><strong>Write captions, hooks & scripts</strong><br><span style="color:var(--text-muted);font-size:12px">Feed transcript excerpts to AI.</span></td>
+            <td>ChatGPT + Gemini</td>
+            <td>5 hooks, 5 captions, 2 LinkedIn posts</td>
+            <td><span class="time-badge">30 min</span></td>
+          </tr>
+          <tr>
+            <td><span class="step-num s4">4</span></td>
+            <td><strong>Design visual assets</strong><br><span style="color:var(--text-muted);font-size:12px">Carousels, thumbnails, story graphics.</span></td>
+            <td>Canva</td>
+            <td>2 carousels, 1 thumbnail, 3 stories</td>
+            <td><span class="time-badge">30 min</span></td>
+          </tr>
+          <tr>
+            <td><span class="step-num s5">5</span></td>
+            <td><strong>Enhance top 3 clips</strong><br><span style="color:var(--text-muted);font-size:12px">Add effects to highest-scoring clips.</span></td>
+            <td>Higgsfield + Nano Banana</td>
+            <td>3 enhanced Reels/TikToks</td>
+            <td><span class="time-badge">20 min</span></td>
+          </tr>
+          <tr>
+            <td><span class="step-num s6">6</span></td>
+            <td><strong>Schedule & track in Notion</strong><br><span style="color:var(--text-muted);font-size:12px">Calendar entries with captions & hashtags.</span></td>
+            <td>Notion</td>
+            <td>7-10 posts scheduled across 5 platforms</td>
+            <td><span class="time-badge">15 min</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="output-math">
+      <div class="math-title">Weekly Output Math</div>
+      <div class="math-grid">
+        <div class="math-item"><div class="math-num">1</div><div class="math-label">Podcast Episode</div></div>
+        <div class="math-op">=</div>
+        <div class="math-item"><div class="math-num">8-12</div><div class="math-label">Short Clips</div></div>
+        <div class="math-op">+</div>
+        <div class="math-item"><div class="math-num">2</div><div class="math-label">Carousels</div></div>
+        <div class="math-op">+</div>
+        <div class="math-item"><div class="math-num">2</div><div class="math-label">LinkedIn Posts</div></div>
+        <div class="math-op">=</div>
+        <div class="math-item"><div class="math-num" style="font-size:42px">15+</div><div class="math-label">Pieces / Week</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <h2>Weekly Content Rhythm</h2>
+      <p>What to do each day — production, posting, and engagement</p>
+    </div>
+    <div class="weekly-grid">
+      <div class="day-col active">
+        <div class="day-name">Mon</div>
+        <div class="day-task record">Record podcast (Riverside)</div>
+        <div class="day-task edit">Upload to Opus Clips</div>
+        <div class="day-task write">Research topics (Gemini)</div>
+      </div>
+      <div class="day-col active">
+        <div class="day-name">Tue</div>
+        <div class="day-task write">Write captions (ChatGPT)</div>
+        <div class="day-task design">Design carousels (Canva)</div>
+        <div class="day-task post">Post: IG Reel + TikTok</div>
+      </div>
+      <div class="day-col active">
+        <div class="day-name">Wed</div>
+        <div class="day-task edit">Enhance clips (Higgsfield)</div>
+        <div class="day-task post">Post: LinkedIn article</div>
+        <div class="day-task post">Post: IG carousel</div>
+      </div>
+      <div class="day-col active">
+        <div class="day-name">Thu</div>
+        <div class="day-task post">Post: IG Reel + TikTok</div>
+        <div class="day-task post">Post: YouTube Short</div>
+        <div class="day-task write">Engage comments 15 min</div>
+      </div>
+      <div class="day-col active">
+        <div class="day-name">Fri</div>
+        <div class="day-task post">Post: LinkedIn text post</div>
+        <div class="day-task post">Post: IG carousel</div>
+        <div class="day-task design">Create weekend stories</div>
+      </div>
+      <div class="day-col">
+        <div class="day-name">Sat</div>
+        <div class="day-task post">Post: IG Story (BTS)</div>
+        <div class="day-task rest">Light engagement only</div>
+      </div>
+      <div class="day-col">
+        <div class="day-name">Sun</div>
+        <div class="day-task write">Plan next week (Notion)</div>
+        <div class="day-task rest">Rest + review metrics</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="repurpose-engine">
+      <div class="repurpose-title">The Podcast Repurpose Engine</div>
+      <div class="repurpose-subtitle">80+ episodes sitting in your YouTube channel. Here's how to mine them.</div>
+      <div class="repurpose-flow">
+        <div class="repurpose-step">
+          <div class="repurpose-step-num">1</div>
+          <h4>Extract</h4>
+          <p>Download top-performing episodes from YouTube. Upload transcripts to NotebookLM to build your searchable content brain.</p>
+          <div class="tool-used">NotebookLM + YouTube</div>
+        </div>
+        <div class="repurpose-arrow">&rarr;</div>
+        <div class="repurpose-step">
+          <div class="repurpose-step-num">2</div>
+          <h4>Clip</h4>
+          <p>Feed full episodes into Opus Clips. AI identifies the most engaging 30-60 second moments. Prioritize clips scoring 80+.</p>
+          <div class="tool-used">Opus Clips</div>
+        </div>
+        <div class="repurpose-arrow">&rarr;</div>
+        <div class="repurpose-step">
+          <div class="repurpose-step-num">3</div>
+          <h4>Polish</h4>
+          <p>Design carousels from key quotes in Canva. Enhance best clips with Higgsfield effects. Write captions with ChatGPT.</p>
+          <div class="tool-used">Canva + Higgsfield + ChatGPT</div>
+        </div>
+        <div class="repurpose-arrow">&rarr;</div>
+        <div class="repurpose-step">
+          <div class="repurpose-step-num">4</div>
+          <h4>Distribute</h4>
+          <p>Post across all 5 platforms with platform-specific formatting. Track everything in your Notion Content Calendar.</p>
+          <div class="tool-used">Notion + All Platforms</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="notion-section">
+      <div class="notion-header">
+        <h3>Your Notion Command Center</h3>
+        <p>Everything flows into your existing Content Calendar database</p>
+      </div>
+      <div class="notion-fields">
+        <div class="notion-field">
+          <div class="notion-field-label">Title Field</div>
+          <div class="notion-field-value">Description — name your content piece</div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">Account</div>
+          <div class="notion-field-value">The L3 Perspective, @iamcmacias, L3 Media, FLG, Post and Destroy</div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">Platforms</div>
+          <div class="notion-field-value">Instagram, TikTok, YouTube, Facebook, <strong style="color:var(--accent-green)">LinkedIn (NEW)</strong></div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">Progress Workflow</div>
+          <div class="status-flow">
+            <span class="status-pill gray">Not started</span>
+            <span class="status-arrow">&rarr;</span>
+            <span class="status-pill blue">Scripting</span>
+            <span class="status-arrow">&rarr;</span>
+            <span class="status-pill purple">Filming</span>
+            <span class="status-arrow">&rarr;</span>
+            <span class="status-pill orange">Editing</span>
+            <span class="status-arrow">&rarr;</span>
+            <span class="status-pill blue">In progress</span>
+            <span class="status-arrow">&rarr;</span>
+            <span class="status-pill green">Scheduled</span>
+            <span class="status-arrow">&rarr;</span>
+            <span class="status-pill green">Posted</span>
+          </div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">Caption</div>
+          <div class="notion-field-value">Full post caption text from ChatGPT</div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">CTA</div>
+          <div class="notion-field-value">Save, share, comment, link in bio, DM me</div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">Hashtags</div>
+          <div class="notion-field-value">Pre-built sets per content pillar</div>
+        </div>
+        <div class="notion-field">
+          <div class="notion-field-label">Date</div>
+          <div class="notion-field-value">Scheduled post date (use Calendar view)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <h2>Production SOPs</h2>
+      <p>Step-by-step playbooks for you and Jazz</p>
+    </div>
+    <div class="sop-grid">
+      <div class="sop-card">
+        <h4>SOP #1: Podcast Day (Monday)</h4>
+        <div class="sop-time">Total: ~60 min production + upload</div>
+        <ul class="sop-steps">
+          <li>Open Riverside. Check mic, camera, lighting</li>
+          <li>Record episode (20-45 min). Save project</li>
+          <li>Export: HD video (.mp4), audio (.wav), transcript (.txt)</li>
+          <li>Upload full video to Opus Clips — let AI process</li>
+          <li>Upload transcript to NotebookLM notebook "L3 Archive"</li>
+          <li>Create Notion entry: title, date, status = "Editing"</li>
+        </ul>
+      </div>
+      <div class="sop-card">
+        <h4>SOP #2: Clip Review (Tue AM)</h4>
+        <div class="sop-time">Total: ~15 min</div>
+        <ul class="sop-steps">
+          <li>Open Opus Clips — review AI-generated clips</li>
+          <li>Sort by virality score. Select top 5-8 (score 70+)</li>
+          <li>Download selected clips (.mp4, vertical format)</li>
+          <li>Send top 3 clips to Higgsfield for enhancement</li>
+          <li>Update Notion: add entries for each clip, status = "Editing"</li>
+        </ul>
+      </div>
+      <div class="sop-card">
+        <h4>SOP #3: Caption Writing (Tue/Wed)</h4>
+        <div class="sop-time">Total: ~30 min</div>
+        <ul class="sop-steps">
+          <li>Copy clip transcript excerpts</li>
+          <li>Open ChatGPT: paste excerpt + prompt for 3 hook variations</li>
+          <li>Generate IG caption (PAS), LinkedIn post (story format)</li>
+          <li>Use Gemini for supporting data/stats if needed</li>
+          <li>Generate hashtag set (pillar-based from strategy)</li>
+          <li>Paste final captions into Notion (Caption + CTA + Hashtags)</li>
+        </ul>
+      </div>
+      <div class="sop-card">
+        <h4>SOP #4: Design Day (Wed/Thu)</h4>
+        <div class="sop-time">Total: ~30 min</div>
+        <ul class="sop-steps">
+          <li>Open Canva. Use Coach Cam brand template</li>
+          <li>Create 2 carousels from podcast key points (5-7 slides)</li>
+          <li>Design YouTube thumbnail if uploading full episode</li>
+          <li>Create 2-3 Story templates (quote, poll, BTS)</li>
+          <li>Export all assets. Organize by platform</li>
+          <li>Update Notion: attach assets, move to "Scheduled"</li>
+        </ul>
+      </div>
+      <div class="sop-card">
+        <h4>SOP #5: Daily Posting (15 min/day)</h4>
+        <div class="sop-time">Total: ~15 min per platform</div>
+        <ul class="sop-steps">
+          <li>Check Notion Calendar view for today's posts</li>
+          <li>Open each platform. Post with pre-written caption</li>
+          <li>IG: Reel/Carousel + Story + Close Friends share</li>
+          <li>TikTok: post with trending sounds, 3-5 hashtags</li>
+          <li>LinkedIn: text or article, tag relevant people</li>
+          <li>Update Notion: status to "Posted", add post link</li>
+        </ul>
+      </div>
+      <div class="sop-card">
+        <h4>SOP #6: Sunday Planning (30 min)</h4>
+        <div class="sop-time">Total: ~30 min</div>
+        <ul class="sop-steps">
+          <li>Review past week's metrics (saves, shares, follows)</li>
+          <li>Identify top-performing content — note what worked</li>
+          <li>Open Notion Calendar for upcoming week</li>
+          <li>Plan 5 posts: match content pillars to days</li>
+          <li>Create Notion entries with status "Not started"</li>
+          <li>Prep Monday podcast topic (Gemini for research)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="footer">
+  <p>Coach Cam Content Production Pipeline &bull; Built for Cameron Macias &bull; February 2026</p>
+  <div class="footer-links">
+    <a href="coach-cam-growth-strategy.html">Growth Strategy</a>
+    <a href="coach-cam-emergency-fixes.html">Emergency Fixes</a>
+    <a href="coach-cam-content-strategy.html">Content Strategy</a>
+  </div>
+</div>
+
+</body>
+</html>

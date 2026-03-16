@@ -1,0 +1,3149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Cam — Social Media Strategy Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #0A0A0A;
+            color: #FFFFFF;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Password gate */
+        body.locked > *:not(#pw-gate) { display:none !important; }
+        #pw-gate { display:none; position:fixed; inset:0; z-index:99999; background:#0a0a0a; font-family:'Inter',sans-serif; align-items:center; justify-content:center; flex-direction:column; }
+        body.locked #pw-gate { display:flex; }
+        #pw-gate .gate-box { text-align:center; max-width:360px; padding:48px 32px; }
+        #pw-gate .gate-tag { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#6c5ce7; margin-bottom:16px; }
+        #pw-gate h1 { font-size:28px; font-weight:800; color:#fff; margin-bottom:8px; }
+        #pw-gate p { color:#888; font-size:14px; margin-bottom:32px; }
+        #pw-gate input { width:100%; padding:14px 18px; border:1px solid #222; border-radius:10px; background:#111; color:#fff; font-size:16px; font-family:'Inter',sans-serif; text-align:center; outline:none; transition:border-color .2s; }
+        #pw-gate input:focus { border-color:#6c5ce7; }
+        #pw-gate input.shake { animation:shake .4s; border-color:#ff3333; }
+        #pw-gate .gate-hint { color:#555; font-size:12px; margin-top:16px; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+        /* HEADER */
+        header {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #1A1A1A;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .header-container {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 2rem;
+        }
+        .header-left { flex: 1; min-width: 300px; }
+        .logo {
+            font-size: 1.8rem; font-weight: 800;
+            background: linear-gradient(135deg, #00B3B3, #008080, #006666);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.5px; margin-bottom: 0.25rem;
+        }
+        .subtitle { font-size: 0.95rem; color: #A0A0A0; font-weight: 500; }
+        .attribution { font-size: 0.85rem; color: #606060; margin-top: 0.25rem; }
+        .header-right { display: flex; align-items: center; gap: 3rem; flex-wrap: wrap; }
+        .current-date { font-size: 0.95rem; color: #A0A0A0; font-weight: 500; }
+        .save-indicator { font-size: 0.8rem; color: #22C55E; font-weight: 500; opacity: 0; transition: opacity 0.3s; }
+        .save-indicator.visible { opacity: 1; }
+        .nav-quick-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+        .nav-link {
+            font-size: 0.9rem; color: #A0A0A0; cursor: pointer;
+            transition: all 0.3s ease; font-weight: 500;
+            padding: 0.5rem 0; border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover { color: #008080; border-bottom-color: #008080; }
+
+        /* MAIN */
+        .container { max-width: 1400px; margin: 0 auto; padding: 3rem 2rem; }
+        section { margin-bottom: 4rem; scroll-margin-top: 120px; }
+        section h2 {
+            font-size: 2rem; font-weight: 700; margin-bottom: 2rem;
+            display: flex; align-items: center; gap: 1rem;
+        }
+        section h2::before {
+            content: ''; display: inline-block; width: 4px; height: 2rem;
+            background: linear-gradient(135deg, #00B3B3, #008080); border-radius: 2px;
+        }
+
+        /* TIMELINE */
+        .timeline-container {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem;
+        }
+        .timeline { position: relative; padding: 1rem 0; overflow-x: auto; }
+        .timeline-track {
+            position: relative; height: 280px; min-width: 1500px;
+            padding: 0 40px;
+        }
+        .timeline-bar {
+            position: absolute; left: 30px; right: 30px; height: 4px;
+            background: #1A1A1A; border-radius: 4px; overflow: hidden;
+            top: 140px;
+        }
+        .timeline-progress {
+            position: absolute; height: 100%;
+            background: linear-gradient(135deg, #00B3B3, #008080, #006666);
+            border-radius: 4px; top: 0; left: 0;
+            box-shadow: 0 0 20px rgba(0, 128, 128, 0.5);
+            animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 128, 128, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(0, 179, 179, 0.8); }
+        }
+
+        /* Timeline item: a vertical column centered on the bar */
+        .timeline-item {
+            position: absolute; display: flex; flex-direction: column;
+            align-items: center; z-index: 10; transform: translateX(-50%);
+        }
+        /* ABOVE items: positioned so marker sits on bar, label + stem go upward */
+        .timeline-item.above {
+            bottom: calc(100% - 140px - 7px); /* marker bottom aligns with bar center */
+            flex-direction: column-reverse;
+        }
+        /* BELOW items: positioned so marker sits on bar, label + stem go downward */
+        .timeline-item.below {
+            top: 133px; /* bar center minus half marker */
+        }
+
+        .timeline-item-marker {
+            width: 14px; height: 14px; background: #111111;
+            border: 3px solid #008080; border-radius: 50%;
+            cursor: pointer; transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .timeline-item-marker:hover {
+            border-color: #00B3B3; box-shadow: 0 0 15px rgba(0, 179, 179, 0.6);
+        }
+        .timeline-item-marker.major {
+            width: 18px; height: 18px; background: #D4A843;
+            border-color: #D4A843;
+            box-shadow: 0 0 12px rgba(212, 168, 67, 0.4);
+        }
+        .timeline-item-marker.major:hover {
+            box-shadow: 0 0 20px rgba(212, 168, 67, 0.8);
+        }
+        .timeline-item-marker.checkin {
+            width: 10px; height: 10px;
+            border: 2px solid #06B6D4; background: #111;
+        }
+        .timeline-item-stem {
+            width: 1px; flex-shrink: 0;
+        }
+        .timeline-item-stem.regular { height: 32px; background: rgba(0, 128, 128, 0.3); }
+        .timeline-item-stem.major { height: 32px; background: rgba(212, 168, 67, 0.4); }
+        .timeline-item-stem.checkin { height: 16px; background: rgba(6, 182, 212, 0.25); }
+
+        .timeline-item-label {
+            font-size: 0.68rem; color: #808080; font-weight: 500;
+            white-space: nowrap; line-height: 1.25; text-align: center;
+            padding: 2px 0;
+        }
+        .timeline-item-label.major { color: #D4A843; font-weight: 700; font-size: 0.72rem; }
+        .timeline-item-label.checkin { color: #06B6D4; font-size: 0.6rem; }
+
+        .timeline-tooltip {
+            display: none; position: absolute; background: #1A1A1A;
+            border: 1px solid #008080; border-radius: 8px;
+            padding: 0.5rem 0.75rem; font-size: 0.75rem;
+            white-space: nowrap; z-index: 30;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            left: 50%; transform: translateX(-50%);
+        }
+        .timeline-item.above .timeline-tooltip { top: -30px; transform: translateX(-50%) translateY(-100%); }
+        .timeline-item.below .timeline-tooltip { bottom: -30px; transform: translateX(-50%) translateY(100%); }
+        .timeline-item:hover .timeline-tooltip { display: block; }
+        .timeline-phases {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #1A1A1A;
+        }
+        .phase-card {
+            background: rgba(0, 128, 128, 0.05); border: 1px solid #008080;
+            border-radius: 8px; padding: 1rem; text-align: center; transition: all 0.3s ease;
+        }
+        .phase-card.active {
+            background: rgba(0, 128, 128, 0.15); border-color: #00B3B3;
+            box-shadow: 0 0 20px rgba(0, 128, 128, 0.3);
+        }
+        .phase-card:hover { transform: translateY(-4px); }
+        .phase-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .phase-card p { font-size: 0.8rem; color: #A0A0A0; }
+
+        /* KPI CARDS */
+        .kpi-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: #111111; border: 1px solid #1A1A1A; border-radius: 12px;
+            padding: 2rem; transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer;
+        }
+        .kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #00B3B3, #008080, #006666); opacity: 0; transition: opacity 0.3s ease;
+        }
+        .kpi-card:hover { border-color: #008080; box-shadow: 0 8px 32px rgba(0, 128, 128, 0.15); }
+        .kpi-card:hover::before { opacity: 1; }
+        .kpi-label { font-size: 0.95rem; color: #A0A0A0; font-weight: 500; margin-bottom: 1rem; }
+        .kpi-value {
+            font-size: 2.2rem; font-weight: 700;
+            background: linear-gradient(135deg, #00B3B3, #008080);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 1.5rem;
+        }
+        .kpi-meta { font-size: 0.85rem; color: #606060; margin-bottom: 1rem; }
+        .progress-bar { width: 100%; height: 8px; background: #1A1A1A; border-radius: 4px; overflow: hidden; margin-bottom: 0.75rem; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #008080, #006666);
+            border-radius: 4px; transition: width 0.6s ease;
+            box-shadow: 0 0 10px rgba(0, 128, 128, 0.5);
+        }
+        .kpi-breakdown {
+            display: none; margin-top: 1rem; padding-top: 1rem;
+            border-top: 1px solid #1A1A1A; font-size: 0.85rem; color: #A0A0A0;
+        }
+        .kpi-breakdown.visible { display: block; }
+        .breakdown-item { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .breakdown-label { color: #808080; }
+        .breakdown-value { color: #D4A843; font-weight: 600; }
+
+        /* CHARTS */
+        .charts-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem; margin-bottom: 2rem;
+        }
+        .chart-card {
+            background: #111111; border: 1px solid #1A1A1A; border-radius: 12px;
+            padding: 2rem; transition: all 0.3s ease;
+        }
+        .chart-card:hover { border-color: #008080; box-shadow: 0 8px 32px rgba(0, 128, 128, 0.15); }
+        .chart-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; }
+        .chart-wrapper { position: relative; height: 350px; }
+
+        /* CONTENT CALENDAR */
+        .content-calendar {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .calendar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .calendar-header h3 { font-size: 1.1rem; font-weight: 600; }
+        .calendar-nav { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .calendar-btn, .btn {
+            background: rgba(0, 128, 128, 0.1); border: 1px solid #008080;
+            color: #008080; padding: 0.5rem 1rem; border-radius: 6px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            transition: all 0.3s ease; font-family: 'Inter', sans-serif;
+        }
+        .calendar-btn:hover, .btn:hover {
+            background: rgba(0, 128, 128, 0.2); box-shadow: 0 0 12px rgba(0, 128, 128, 0.4);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #008080, #006666);
+            border: none; color: #FFFFFF;
+        }
+        .btn-primary:hover { box-shadow: 0 8px 20px rgba(0, 128, 128, 0.4); }
+        .btn-success {
+            background: rgba(34, 197, 94, 0.15); border-color: #22C55E; color: #22C55E;
+        }
+        .btn-success:hover { background: rgba(34, 197, 94, 0.25); }
+        .btn-gold {
+            background: rgba(212, 168, 67, 0.15); border-color: #D4A843; color: #D4A843;
+        }
+        .btn-gold:hover { background: rgba(212, 168, 67, 0.25); }
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15); border-color: #EF4444; color: #EF4444;
+        }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.3); }
+
+        /* Timeline controls */
+        .timeline-controls {
+            display: flex; justify-content: flex-end; gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .timeline-add-btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: rgba(0, 128, 128, 0.15); border: 1px solid #008080;
+            color: #008080; padding: 0.5rem 1rem; border-radius: 8px;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.3s ease;
+        }
+        .timeline-add-btn:hover {
+            background: rgba(0, 128, 128, 0.25); box-shadow: 0 4px 12px rgba(0, 128, 128, 0.2);
+        }
+        .timeline-item-marker.editable { cursor: pointer; }
+        .timeline-item-marker.editable:hover {
+            transform: scale(1.4);
+        }
+        .social-profile-links {
+            display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .social-profile-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 1.2rem; border-radius: 8px;
+            font-size: 0.85rem; font-weight: 600; text-decoration: none;
+            transition: all 0.3s ease; border: 1px solid;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+        }
+        .social-profile-btn:hover { transform: translateY(-2px); }
+        .social-btn-ig { background: rgba(225, 48, 108, 0.12); border-color: #E1306C; color: #E1306C; }
+        .social-btn-ig:hover { background: rgba(225, 48, 108, 0.25); box-shadow: 0 6px 16px rgba(225, 48, 108, 0.3); }
+        .social-btn-tt { background: rgba(255, 255, 255, 0.08); border-color: #fff; color: #fff; }
+        .social-btn-tt:hover { background: rgba(255, 255, 255, 0.18); box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2); }
+        .social-btn-fb { background: rgba(24, 119, 242, 0.12); border-color: #1877F2; color: #1877F2; }
+        .social-btn-fb:hover { background: rgba(24, 119, 242, 0.25); box-shadow: 0 6px 16px rgba(24, 119, 242, 0.3); }
+        .social-btn-li { background: rgba(10, 102, 194, 0.12); border-color: #0A66C2; color: #0A66C2; }
+        .social-btn-li:hover { background: rgba(10, 102, 194, 0.25); box-shadow: 0 6px 16px rgba(10, 102, 194, 0.3); }
+        .social-btn-yt { background: rgba(255, 0, 0, 0.12); border-color: #FF0000; color: #FF0000; }
+        .social-btn-yt:hover { background: rgba(255, 0, 0, 0.25); box-shadow: 0 6px 16px rgba(255, 0, 0, 0.3); }
+        .status-filter-bar {
+            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .filter-chip {
+            padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; cursor: pointer; border: 1px solid #333;
+            background: transparent; color: #A0A0A0; transition: all 0.2s;
+        }
+        .filter-chip.active { background: rgba(0, 128, 128, 0.2); border-color: #008080; color: #008080; }
+        .filter-chip[data-filter="Ready"].active { background: rgba(34, 197, 94, 0.2); border-color: #22C55E; color: #22C55E; }
+        .filter-chip[data-filter="In Production"].active { background: rgba(235, 160, 30, 0.2); border-color: #EBA01E; color: #EBA01E; }
+        .filter-chip[data-filter="Shot"].active { background: rgba(6, 182, 212, 0.2); border-color: #06B6D4; color: #06B6D4; }
+        .filter-chip[data-filter="Posted"].active { background: rgba(0, 179, 179, 0.2); border-color: #00B3B3; color: #00B3B3; }
+        .filter-chip[data-filter="Scheduled"].active { background: rgba(0, 128, 128, 0.2); border-color: #008080; color: #008080; }
+
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+        }
+        .content-card {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1.25rem; transition: all 0.3s ease; cursor: pointer;
+        }
+        .content-card:hover {
+            border-color: #008080; box-shadow: 0 8px 24px rgba(0, 128, 128, 0.2);
+            transform: translateY(-4px);
+        }
+        .content-date { font-size: 0.85rem; color: #06B6D4; font-weight: 600; margin-bottom: 0.5rem; }
+        .content-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.75rem; line-height: 1.4; color: #FFFFFF; }
+        .content-platforms { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+        .platform-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px; background: rgba(0, 128, 128, 0.1);
+            border: 1px solid #008080; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; color: #008080; transition: all 0.2s ease;
+        }
+        .content-pillar {
+            display: inline-block; padding: 0.35rem 0.75rem; border-radius: 4px;
+            font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; margin-right: 0.5rem;
+        }
+        .pillar-military { background: rgba(0, 128, 128, 0.2); border: 1px solid #008080; color: #008080; }
+        .pillar-lifestyle { background: rgba(0, 179, 179, 0.2); border: 1px solid #00B3B3; color: #00B3B3; }
+        .pillar-tours { background: rgba(6, 182, 212, 0.2); border: 1px solid #06B6D4; color: #06B6D4; }
+        .pillar-market { background: rgba(212, 168, 67, 0.2); border: 1px solid #D4A843; color: #D4A843; }
+        .pillar-trust { background: rgba(0, 102, 102, 0.2); border: 1px solid #006666; color: #006666; }
+        .content-status {
+            font-size: 0.75rem; font-weight: 700; padding: 0.4rem 0.75rem;
+            border-radius: 4px; display: inline-block;
+        }
+        .status-ready { background: rgba(34, 197, 94, 0.2); color: #22C55E; border: 1px solid #22C55E; }
+        .status-production { background: rgba(235, 160, 30, 0.2); color: #EBA01E; border: 1px solid #EBA01E; }
+        .status-scheduled { background: rgba(0, 128, 128, 0.2); color: #008080; border: 1px solid #008080; }
+        .status-shot { background: rgba(6, 182, 212, 0.2); color: #06B6D4; border: 1px solid #06B6D4; }
+        .status-posted { background: rgba(0, 179, 179, 0.2); color: #00B3B3; border: 1px solid #00B3B3; }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); z-index: 2000;
+            justify-content: center; align-items: center; padding: 2rem;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #111111; border: 1px solid #008080; border-radius: 16px;
+            padding: 2.5rem; max-width: 600px; width: 100%; max-height: 90vh;
+            overflow-y: auto; position: relative;
+            box-shadow: 0 24px 80px rgba(0, 128, 128, 0.3);
+        }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem; background: none;
+            border: none; color: #A0A0A0; font-size: 1.5rem; cursor: pointer;
+            transition: color 0.2s; line-height: 1;
+        }
+        .modal-close:hover { color: #FFFFFF; }
+        .modal h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; padding-right: 2rem; }
+        .modal-field { margin-bottom: 1.25rem; }
+        .modal-field label {
+            display: block; font-size: 0.85rem; color: #A0A0A0;
+            font-weight: 600; margin-bottom: 0.5rem;
+        }
+        .modal-field select, .modal-field input, .modal-field textarea {
+            width: 100%; background: #0A0A0A; border: 1px solid #333;
+            color: #FFFFFF; padding: 0.75rem 1rem; border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        .modal-field select:focus, .modal-field input:focus, .modal-field textarea:focus {
+            outline: none; border-color: #008080;
+        }
+        .modal-field textarea { resize: vertical; min-height: 80px; }
+        .modal-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .modal-actions .btn { flex: 1; padding: 0.75rem; text-align: center; }
+
+        /* STRATEGY DOCUMENTS */
+        .documents-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+        .document-card {
+            background: #111111; border: 1px solid #1A1A1A; border-radius: 12px;
+            padding: 2rem; transition: all 0.3s ease; display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+        }
+        .document-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(0, 179, 179, 0.05), rgba(0, 128, 128, 0.05));
+            opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+        }
+        .document-card:hover {
+            border-color: #008080; box-shadow: 0 12px 40px rgba(0, 128, 128, 0.25);
+            transform: translateY(-8px);
+        }
+        .document-card:hover::before { opacity: 1; }
+        .document-card.highlighted { border: 2px solid #D4A843; background: rgba(212, 168, 67, 0.03); }
+        .document-card.highlighted:hover { box-shadow: 0 12px 40px rgba(212, 168, 67, 0.25); }
+        .document-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #00B3B3, #008080);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;
+        }
+        .document-card.highlighted .document-icon { background: linear-gradient(135deg, #D4A843, #B8881F); }
+        .document-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+        .document-description { font-size: 0.9rem; color: #A0A0A0; margin-bottom: 1.5rem; flex-grow: 1; }
+        .document-btn {
+            background: linear-gradient(135deg, #008080, #006666); color: #FFFFFF;
+            border: none; padding: 0.75rem 1.5rem; border-radius: 6px;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; font-family: 'Inter', sans-serif; text-align: center;
+        }
+        .document-card.highlighted .document-btn { background: linear-gradient(135deg, #D4A843, #B8881F); }
+        .document-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 128, 128, 0.4); }
+        .strategy-header-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, #D4A843, #B8881F); color: #FFFFFF;
+            border: none; padding: 0.6rem 1.2rem; border-radius: 6px;
+            font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            font-family: 'Inter', sans-serif; text-decoration: none;
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .strategy-header-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212, 168, 67, 0.4); }
+        .strategy-hub-intro {
+            background: linear-gradient(135deg, rgba(212, 168, 67, 0.08), rgba(0, 128, 128, 0.08));
+            border: 1px solid rgba(212, 168, 67, 0.2); border-radius: 12px;
+            padding: 2rem; margin-bottom: 2rem; text-align: center;
+        }
+        .strategy-hub-intro h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .strategy-hub-intro p { color: #A0A0A0; font-size: 0.95rem; max-width: 600px; margin: 0 auto; }
+        .strategy-hub-master {
+            margin-bottom: 2rem; text-align: center;
+        }
+        .strategy-master-btn {
+            display: inline-flex; align-items: center; gap: 0.75rem;
+            background: linear-gradient(135deg, #D4A843, #B8881F); color: #FFFFFF;
+            border: none; padding: 1rem 2.5rem; border-radius: 8px;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            font-family: 'Inter', sans-serif; text-decoration: none;
+            transition: all 0.3s ease; letter-spacing: 0.5px;
+        }
+        .strategy-master-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(212, 168, 67, 0.4); }
+        .strategy-divider {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; color: #555;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
+        }
+        .strategy-divider::before, .strategy-divider::after {
+            content: ''; flex: 1; height: 1px; background: #1A1A1A;
+        }
+
+        /* CHECKLIST */
+        .checklist-container {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .checklist-progress { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #1A1A1A; }
+        .progress-text { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .progress-bar-large { width: 100%; height: 12px; background: #1A1A1A; border-radius: 6px; overflow: hidden; }
+        .progress-fill-large {
+            height: 100%; background: linear-gradient(90deg, #008080, #006666);
+            border-radius: 6px; transition: width 0.6s ease;
+            box-shadow: 0 0 12px rgba(0, 128, 128, 0.5);
+        }
+        .checklist {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;
+        }
+        .checklist-item {
+            display: flex; align-items: center; gap: 1rem; padding: 1rem;
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            cursor: pointer; transition: all 0.3s ease; user-select: none;
+        }
+        .checklist-item:hover { border-color: #008080; background: rgba(0, 128, 128, 0.03); }
+        .checklist-item.completed { border-color: #22C55E; background: rgba(34, 197, 94, 0.05); }
+        .checklist-checkbox {
+            width: 24px; height: 24px; border: 2px solid #008080; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            transition: all 0.3s ease; background: transparent; font-size: 0.9rem; font-weight: 700;
+        }
+        .checklist-item.completed .checklist-checkbox { background: #22C55E; border-color: #22C55E; color: #FFFFFF; }
+        .checklist-label { font-size: 0.95rem; font-weight: 500; color: #FFFFFF; flex: 1; }
+        .checklist-item.completed .checklist-label { color: #A0A0A0; text-decoration: line-through; }
+
+        /* REVENUE */
+        .revenue-container {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .revenue-total { font-size: 1.3rem; font-weight: 700; color: #D4A843; margin-bottom: 2rem; text-align: center; }
+        .revenue-chart-wrapper { position: relative; height: 140px; margin-bottom: 2rem; }
+        .revenue-items {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;
+        }
+        .revenue-item {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1.25rem; transition: all 0.3s ease;
+        }
+        .revenue-item:hover { border-color: #008080; transform: translateY(-4px); }
+        .revenue-label { font-size: 0.9rem; color: #A0A0A0; margin-bottom: 0.5rem; }
+        .revenue-amount { font-size: 1.2rem; font-weight: 700; color: #D4A843; }
+        .revenue-breakdown { font-size: 0.8rem; color: #606060; margin-top: 0.5rem; }
+
+        /* SOCIAL MEDIA TRACKER */
+        .social-tracker {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .tracker-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .tracker-header h3 { font-size: 1.1rem; font-weight: 600; }
+        .platform-stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-bottom: 2rem;
+        }
+        .platform-stat-card {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1.25rem; transition: all 0.3s ease;
+        }
+        .platform-stat-card:hover { border-color: #008080; }
+        .platform-stat-card .platform-name {
+            font-size: 0.85rem; color: #A0A0A0; font-weight: 600; margin-bottom: 0.5rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .platform-stat-card .platform-icon {
+            width: 24px; height: 24px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; font-weight: 700;
+        }
+        .platform-stat-card .follower-count {
+            font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem;
+        }
+        .platform-stat-card .follower-change {
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .change-positive { color: #22C55E; }
+        .change-neutral { color: #606060; }
+        .follower-input-row {
+            display: flex; gap: 0.5rem; align-items: center; margin-top: 0.75rem;
+        }
+        .follower-input-row input {
+            width: 100px; background: #0A0A0A; border: 1px solid #333;
+            color: #FFFFFF; padding: 0.4rem 0.6rem; border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem;
+        }
+        .follower-input-row input:focus { outline: none; border-color: #008080; }
+        .follower-input-row button {
+            background: rgba(0, 128, 128, 0.15); border: 1px solid #008080;
+            color: #008080; padding: 0.4rem 0.6rem; border-radius: 6px;
+            cursor: pointer; font-size: 0.75rem; font-weight: 600;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .follower-input-row button:hover { background: rgba(0, 128, 128, 0.3); }
+        .snapshot-history {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1.5rem; margin-top: 1.5rem;
+        }
+        .snapshot-history h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; }
+        .snapshot-table {
+            width: 100%; border-collapse: collapse; font-size: 0.85rem;
+        }
+        .snapshot-table th {
+            text-align: left; color: #A0A0A0; font-weight: 600;
+            padding: 0.5rem 0.75rem; border-bottom: 1px solid #1A1A1A;
+        }
+        .snapshot-table td {
+            padding: 0.5rem 0.75rem; border-bottom: 1px solid #111;
+            color: #FFFFFF;
+        }
+        .snapshot-table tr:hover td { background: rgba(0, 128, 128, 0.05); }
+        .snapshot-delete {
+            background: none; border: none; color: #606060; cursor: pointer;
+            font-size: 0.8rem; transition: color 0.2s;
+        }
+        .snapshot-delete:hover { color: #EF4444; }
+
+        /* POST LOG */
+        .post-log { margin-top: 2rem; }
+        .post-log h4 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+        .post-log-form {
+            display: grid; grid-template-columns: 1fr 1fr 2fr 1fr auto;
+            gap: 0.75rem; align-items: end; margin-bottom: 1.5rem;
+        }
+        .post-log-form .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+        .post-log-form label { font-size: 0.75rem; color: #A0A0A0; font-weight: 600; }
+        .post-log-form input, .post-log-form select {
+            background: #0A0A0A; border: 1px solid #333; color: #FFFFFF;
+            padding: 0.5rem 0.75rem; border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem;
+        }
+        .post-log-form input:focus, .post-log-form select:focus { outline: none; border-color: #008080; }
+        .post-log-entries { max-height: 400px; overflow-y: auto; }
+        .post-entry {
+            display: grid; grid-template-columns: 100px 80px 1fr 100px auto;
+            gap: 0.75rem; align-items: center; padding: 0.75rem 1rem;
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 6px;
+            margin-bottom: 0.5rem; font-size: 0.85rem;
+        }
+        .post-entry:hover { border-color: #333; }
+        .post-entry .post-platform {
+            font-weight: 600; font-size: 0.75rem;
+            padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center;
+        }
+        .post-entry-delete {
+            background: none; border: none; color: #606060; cursor: pointer;
+            font-size: 0.8rem; transition: color 0.2s;
+        }
+        .post-entry-delete:hover { color: #EF4444; }
+
+        /* FOOTER */
+        footer {
+            background: #111111; border-top: 1px solid #1A1A1A;
+            padding: 3rem 2rem; margin-top: 4rem;
+        }
+        .footer-container {
+            max-width: 1400px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem;
+        }
+        .footer-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.5rem; }
+        .footer-section p { font-size: 0.95rem; color: #A0A0A0; line-height: 1.8; margin-bottom: 0.75rem; }
+        .footer-section a { color: #008080; text-decoration: none; transition: color 0.3s ease; }
+        .footer-section a:hover { color: #00B3B3; }
+        .team-member { font-size: 0.9rem; color: #A0A0A0; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #1A1A1A; }
+        .team-member:last-child { border-bottom: none; }
+        .member-name { font-weight: 600; color: #FFFFFF; }
+        .member-title { font-size: 0.85rem; color: #606060; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header-container { gap: 1rem; }
+            .header-right { width: 100%; gap: 1rem; }
+            .nav-quick-links { width: 100%; flex-wrap: wrap; }
+            .charts-row { grid-template-columns: 1fr; }
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            section h2 { font-size: 1.5rem; }
+            .container { padding: 2rem 1.5rem; }
+            .post-log-form { grid-template-columns: 1fr 1fr; }
+            .post-entry { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        }
+        @media (max-width: 480px) {
+            .header-container { flex-direction: column; gap: 1rem; }
+            header { padding: 1rem; }
+            .logo { font-size: 1.3rem; }
+            .kpi-row { grid-template-columns: 1fr; }
+            .calendar-grid { grid-template-columns: 1fr; }
+            .nav-quick-links { gap: 0.5rem; font-size: 0.8rem; }
+            .post-log-form { grid-template-columns: 1fr; }
+            .post-entry { grid-template-columns: 1fr; }
+        }
+        /* TIMELINE CHECK-IN MARKERS */
+        .timeline-item-marker.checkin {
+            width: 10px; height: 10px; background: #06B6D4;
+            border-color: #06B6D4;
+            box-shadow: 0 0 6px rgba(6, 182, 212, 0.4);
+        }
+        .timeline-item-marker.checkin:hover {
+            width: 14px; height: 14px;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.8);
+        }
+        .timeline-item-label.checkin { color: #06B6D4; font-size: 0.65rem; }
+
+        /* GOOGLE DRIVE SECTION */
+        .drive-section {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .drive-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .drive-header h3 { font-size: 1.1rem; font-weight: 600; }
+        .drive-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;
+        }
+        .drive-link-card {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1.25rem; transition: all 0.3s ease; cursor: pointer;
+        }
+        .drive-link-card:hover { border-color: #008080; transform: translateY(-2px); }
+        .drive-link-card a {
+            color: #008080; text-decoration: none; font-weight: 600;
+            font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .drive-link-card a:hover { color: #00B3B3; }
+        .drive-link-card .drive-desc {
+            font-size: 0.8rem; color: #606060; margin-top: 0.4rem;
+        }
+        .drive-link-card .drive-icon {
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .drive-edit-row {
+            display: grid; grid-template-columns: 1fr 2fr 1fr auto; gap: 0.5rem;
+            align-items: end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #1A1A1A;
+        }
+        .drive-edit-row .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .drive-edit-row label { font-size: 0.75rem; color: #A0A0A0; font-weight: 600; }
+        .drive-edit-row input, .drive-edit-row select {
+            background: #0A0A0A; border: 1px solid #333; color: #FFFFFF;
+            padding: 0.5rem 0.75rem; border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem;
+        }
+        .drive-edit-row input:focus { outline: none; border-color: #008080; }
+
+        /* CONTENT IDEAS SECTION */
+        .ideas-section {
+            background: #111111; border: 1px solid #1A1A1A;
+            border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+        }
+        .ideas-tabs {
+            display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #1A1A1A;
+        }
+        .idea-tab {
+            padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 600;
+            color: #606060; cursor: pointer; border-bottom: 2px solid transparent;
+            transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .idea-tab.active { color: #008080; border-bottom-color: #008080; }
+        .idea-tab:hover { color: #A0A0A0; }
+        .idea-panel { display: none; }
+        .idea-panel.active { display: block; }
+
+        /* Notepad */
+        .notepad-form {
+            display: grid; grid-template-columns: 2fr 1fr auto; gap: 0.75rem;
+            align-items: end; margin-bottom: 1.5rem;
+        }
+        .notepad-form .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .notepad-form label { font-size: 0.75rem; color: #A0A0A0; font-weight: 600; }
+        .notepad-form input, .notepad-form select {
+            background: #0A0A0A; border: 1px solid #333; color: #FFFFFF;
+            padding: 0.5rem 0.75rem; border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem;
+        }
+        .notepad-form input:focus { outline: none; border-color: #008080; }
+        .idea-card {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1rem; margin-bottom: 0.5rem; display: flex;
+            justify-content: space-between; align-items: center; gap: 1rem;
+            transition: all 0.2s;
+        }
+        .idea-card:hover { border-color: #333; }
+        .idea-card .idea-text { flex: 1; font-size: 0.9rem; }
+        .idea-card .idea-pillar-tag {
+            font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.5rem;
+            border-radius: 3px; flex-shrink: 0;
+        }
+        .idea-card .idea-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+        .idea-card .idea-actions button {
+            background: none; border: 1px solid #333; color: #A0A0A0; cursor: pointer;
+            font-size: 0.7rem; padding: 0.3rem 0.5rem; border-radius: 4px;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .idea-card .idea-actions button:hover { border-color: #008080; color: #008080; }
+        .idea-card .idea-actions button.delete-btn:hover { border-color: #EF4444; color: #EF4444; }
+
+        /* Generator */
+        .generator-controls {
+            display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 0.75rem;
+            align-items: end; margin-bottom: 1.5rem;
+        }
+        .generator-controls .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .generator-controls label { font-size: 0.75rem; color: #A0A0A0; font-weight: 600; }
+        .generator-controls select {
+            background: #0A0A0A; border: 1px solid #333; color: #FFFFFF;
+            padding: 0.5rem 0.75rem; border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem;
+        }
+        .generator-controls select:focus { outline: none; border-color: #008080; }
+        .generated-ideas { min-height: 100px; }
+        .gen-idea-card {
+            background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px;
+            padding: 1rem 1.25rem; margin-bottom: 0.5rem; display: flex;
+            justify-content: space-between; align-items: center; gap: 1rem;
+            transition: all 0.2s;
+        }
+        .gen-idea-card:hover { border-color: #008080; }
+        .gen-idea-card .idea-text { flex: 1; font-size: 0.9rem; }
+        .gen-idea-card button {
+            background: rgba(34, 197, 94, 0.1); border: 1px solid #22C55E;
+            color: #22C55E; cursor: pointer; font-size: 0.75rem; font-weight: 600;
+            padding: 0.4rem 0.75rem; border-radius: 4px;
+            font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap;
+        }
+        .gen-idea-card button:hover { background: rgba(34, 197, 94, 0.2); }
+
+        @media (max-width: 768px) {
+            .drive-edit-row { grid-template-columns: 1fr 1fr; }
+            .notepad-form { grid-template-columns: 1fr; }
+            .generator-controls { grid-template-columns: 1fr 1fr; }
+            .action-item { grid-template-columns: 32px 1fr; }
+            .action-item .action-status-select { grid-column: 2; }
+            .revenue-bridge { grid-template-columns: 1fr 1fr; }
+            .ownership-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .drive-edit-row { grid-template-columns: 1fr; }
+            .generator-controls { grid-template-columns: 1fr; }
+            .action-item { grid-template-columns: 1fr; }
+            .revenue-bridge { grid-template-columns: 1fr; }
+            .scorecard-input { width: 60px; }
+            .rhythm-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ACTION PLAN */
+        .action-plan-container { background: #111111; border: 1px solid #1A1A1A; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .action-plan-progress { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #1A1A1A; }
+        .action-plan-progress-bar { width: 100%; height: 8px; background: #1A1A1A; border-radius: 4px; overflow: hidden; margin-top: 0.5rem; }
+        .action-plan-progress-fill { height: 100%; background: linear-gradient(90deg, #008080, #00B3B3); border-radius: 4px; transition: width 0.6s ease; box-shadow: 0 0 12px rgba(0,128,128,0.4); }
+        .progress-stats { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        .progress-stat { font-size: 0.85rem; color: #A0A0A0; }
+        .progress-stat strong { color: #FFFFFF; }
+
+        /* Revenue Bridge */
+        .revenue-bridge { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #1A1A1A; }
+        .bridge-card { background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 8px; padding: 1.25rem; transition: all 0.3s ease; }
+        .bridge-card:hover { border-color: #008080; transform: translateY(-2px); }
+        .bridge-stream { font-size: 0.85rem; color: #A0A0A0; font-weight: 600; margin-bottom: 0.75rem; }
+        .bridge-amounts { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+        .bridge-current { font-size: 1rem; color: #808080; }
+        .bridge-target { font-size: 1.2rem; font-weight: 700; color: #D4A843; }
+        .bridge-bar { width: 100%; height: 6px; background: #1A1A1A; border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem; }
+        .bridge-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+        .bridge-fill.on-track { background: linear-gradient(90deg, #22C55E, #16A34A); box-shadow: 0 0 8px rgba(34,197,94,0.3); }
+        .bridge-fill.at-risk { background: linear-gradient(90deg, #EBA01E, #D4A843); box-shadow: 0 0 8px rgba(235,160,30,0.3); }
+        .bridge-fill.behind { background: linear-gradient(90deg, #EF4444, #DC2626); box-shadow: 0 0 8px rgba(239,68,68,0.3); }
+        .bridge-fill.complete { background: linear-gradient(90deg, #008080, #006666); box-shadow: 0 0 8px rgba(0,128,128,0.3); }
+        .bridge-numbers { font-size: 1.1rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.5rem; }
+        .bridge-how { font-size: 0.78rem; color: #606060; }
+        .bridge-delta { font-size: 0.8rem; font-weight: 600; color: #22C55E; margin-top: 0.25rem; }
+        .bridge-total { font-size: 0.95rem; color: #A0A0A0; margin-bottom: 1.5rem; }
+
+        /* Month Tabs */
+        .month-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #1A1A1A; overflow-x: auto; }
+        .month-tab { padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 600; color: #606060; cursor: pointer; border: none; border-bottom: 2px solid transparent; transition: all 0.2s; background: none; font-family: 'Inter', sans-serif; position: relative; white-space: nowrap; }
+        .month-tab.active { color: #008080; border-bottom-color: #008080; }
+        .month-tab:hover { color: #A0A0A0; }
+        .month-tab .tab-progress { position: absolute; top: 4px; right: 4px; font-size: 0.65rem; background: rgba(0,128,128,0.2); color: #008080; padding: 1px 5px; border-radius: 8px; font-weight: 700; }
+        .month-panel { display: none; }
+        .month-panel.active { display: block; }
+
+        /* Week Group */
+        .week-group { margin-bottom: 1.5rem; }
+        .week-header { font-size: 0.9rem; font-weight: 700; color: #00B3B3; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(0,128,128,0.2); }
+
+        /* Action Item */
+        .action-item { display: grid; grid-template-columns: 32px 1fr 100px; gap: 0.75rem; align-items: center; padding: 0.75rem 1rem; background: #0F0F0F; border: 1px solid #1A1A1A; border-radius: 6px; margin-bottom: 0.4rem; transition: all 0.2s; cursor: pointer; }
+        .action-item:hover { border-color: #333; background: rgba(0,128,128,0.02); }
+        .action-item.done { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.03); }
+        .action-item.in_progress { border-color: rgba(235,160,30,0.3); background: rgba(235,160,30,0.03); }
+        .action-item.blocked { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.03); }
+        .action-checkbox { width: 24px; height: 24px; border: 2px solid #333; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; font-size: 0.8rem; font-weight: 700; color: transparent; }
+        .action-item.done .action-checkbox { background: #22C55E; border-color: #22C55E; color: #fff; }
+        .action-item.in_progress .action-checkbox { background: #EBA01E; border-color: #EBA01E; color: #fff; }
+        .action-item.blocked .action-checkbox { background: #EF4444; border-color: #EF4444; color: #fff; }
+        .action-content { min-width: 0; }
+        .action-title { font-size: 0.88rem; font-weight: 500; color: #FFFFFF; margin-bottom: 0.2rem; }
+        .action-item.done .action-title { color: #606060; text-decoration: line-through; }
+        .action-meta { font-size: 0.75rem; color: #606060; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+        .owner-tag { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 3px; font-weight: 600; font-size: 0.7rem; }
+        .owner-cam { background: rgba(212,168,67,0.15); color: #D4A843; }
+        .owner-claude { background: rgba(0,128,128,0.15); color: #008080; }
+        .owner-both { background: rgba(139,92,246,0.15); color: #a29bfe; }
+        .action-status-select { background: #0A0A0A; border: 1px solid #333; color: #FFFFFF; padding: 0.3rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-family: 'Inter', sans-serif; cursor: pointer; }
+        .action-status-select:focus { outline: none; border-color: #008080; }
+
+        /* Scorecard */
+        .scorecard-container { background: #111111; border: 1px solid #1A1A1A; border-radius: 12px; padding: 2rem; overflow-x: auto; }
+        .scorecard-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .scorecard-table th { text-align: left; color: #A0A0A0; font-weight: 600; padding: 0.75rem; border-bottom: 1px solid #1A1A1A; }
+        .scorecard-table th.month-col { text-align: center; min-width: 90px; }
+        .scorecard-table th.target-col { text-align: center; color: #D4A843; }
+        .scorecard-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #111; }
+        .scorecard-table td.metric-label { font-weight: 500; color: #FFFFFF; }
+        .scorecard-input { width: 80px; background: #0A0A0A; border: 1px solid #333; color: #FFFFFF; padding: 0.3rem 0.4rem; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.85rem; text-align: center; }
+        .scorecard-input:focus { outline: none; border-color: #008080; }
+        .scorecard-table tr:hover td { background: rgba(0,128,128,0.03); }
+
+        /* Rhythm & Risks */
+        .rhythm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .rhythm-card { background: #111111; border: 1px solid #1A1A1A; border-radius: 12px; padding: 1.5rem; }
+        .rhythm-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; color: #00B3B3; }
+        .rhythm-item { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #1A1A1A; font-size: 0.85rem; }
+        .rhythm-item:last-child { border-bottom: none; }
+        .rhythm-day { font-weight: 700; color: #D4A843; min-width: 90px; flex-shrink: 0; }
+        .rhythm-action { color: #A0A0A0; }
+        .risk-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .risk-table th { text-align: left; color: #A0A0A0; font-weight: 600; padding: 0.5rem 0.75rem; border-bottom: 1px solid #1A1A1A; }
+        .risk-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #1A1A1A; color: #e0e0e0; vertical-align: top; }
+        .risk-table tr:hover td { background: rgba(0,128,128,0.03); }
+        .risk-impact { color: #EF4444; font-weight: 600; font-size: 0.8rem; }
+        .risk-mitigation { color: #22C55E; font-size: 0.8rem; }
+        .ownership-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .ownership-card { background: #111111; border: 1px solid #1A1A1A; border-radius: 12px; padding: 1.5rem; }
+        .ownership-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; }
+        .ownership-card ul { list-style: none; padding: 0; }
+        .ownership-card li { font-size: 0.85rem; color: #A0A0A0; padding: 0.35rem 0; border-bottom: 1px solid #111; }
+        .ownership-card li::before { margin-right: 0.5rem; }
+
+        @media print {
+            header { position: static; margin-bottom: 2rem; }
+            .nav-quick-links, .calendar-nav { display: none; }
+            section { page-break-inside: avoid; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="locked">
+<div id="pw-gate">
+  <div class="gate-box">
+    <div class="gate-tag">Private Document</div>
+    <h1>Coach Cam Dashboard</h1>
+    <p>Enter the password to access this document.</p>
+    <input type="password" id="pw-input" placeholder="Password" autofocus>
+    <div class="gate-hint">Press Enter to submit</div>
+  </div>
+</div>
+<script>
+(function(){
+  var h='e7ee6c621fb623c05c34cb5c6472faff207a2e685a01b9aa38993dd218f2f893';
+  async function check(p){
+    var b=new TextEncoder().encode(p);
+    var d=await crypto.subtle.digest('SHA-256',b);
+    return Array.from(new Uint8Array(d)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')===h;
+  }
+  if(sessionStorage.getItem('pw-ok')==='1'){document.body.classList.remove('locked');}
+  document.getElementById('pw-input').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){
+      var inp=this;
+      check(inp.value).then(function(ok){
+        if(ok){sessionStorage.setItem('pw-ok','1');document.body.classList.remove('locked');}
+        else{inp.classList.add('shake');inp.value='';setTimeout(function(){inp.classList.remove('shake')},400);}
+      });
+    }
+  });
+})();
+</script>
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">COACH CAM</div>
+                <div class="subtitle">Strategy & Execution Dashboard</div>
+                <div class="attribution">Prepared by Forward Learning Group</div>
+            </div>
+            <div class="header-right">
+                <div class="current-date" id="currentDate"></div>
+                <a href="./" target="_blank" class="strategy-header-btn">&#x1F4D6; Full Strategy</a>
+                <div class="save-indicator" id="saveIndicator">All changes saved</div>
+                <nav class="nav-quick-links">
+                    <a class="nav-link" onclick="scrollToSection('timeline')">Timeline</a>
+                    <a class="nav-link" onclick="scrollToSection('kpis')">KPIs</a>
+                    <a class="nav-link" onclick="scrollToSection('actionplan')">Action Plan</a>
+                    <a class="nav-link" onclick="scrollToSection('calendar')">Calendar</a>
+                    <a class="nav-link" onclick="scrollToSection('social')">Social Tracker</a>
+                    <a class="nav-link" onclick="scrollToSection('drive')">Drive</a>
+                    <a class="nav-link" onclick="scrollToSection('ideas')">Ideas</a>
+                    <a class="nav-link" onclick="scrollToSection('strategy')">Strategy</a>
+                    <a class="nav-link" onclick="scrollToSection('scorecard')">Scorecard</a>
+                    <a class="nav-link" onclick="scrollToSection('revenue')">Revenue</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT DETAIL MODAL -->
+    <div class="modal-overlay" id="contentModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h3 id="modalTitle"></h3>
+            <div class="modal-field">
+                <label>Date</label>
+                <div id="modalDate" style="color:#06B6D4;font-weight:600;"></div>
+            </div>
+            <div class="modal-field">
+                <label>Content Pillar</label>
+                <div id="modalPillar"></div>
+            </div>
+            <div class="modal-field">
+                <label>Platforms</label>
+                <div id="modalPlatforms" style="display:flex;gap:0.5rem;flex-wrap:wrap;"></div>
+            </div>
+            <div class="modal-field">
+                <label>Production Status</label>
+                <select id="modalStatus">
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="In Production">In Production</option>
+                    <option value="Shot">Shot / Filmed</option>
+                    <option value="Ready">Ready to Post</option>
+                    <option value="Posted">Posted</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label>Notes</label>
+                <textarea id="modalNotes" placeholder="Add production notes, links, or details..."></textarea>
+            </div>
+            <div class="modal-field">
+                <label>Post URL (if posted)</label>
+                <input type="url" id="modalPostUrl" placeholder="https://instagram.com/p/...">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveContentChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- TIMELINE -->
+        <section id="timeline">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                <h2 style="margin-bottom:0;">Project Timeline</h2>
+                <button class="timeline-add-btn" onclick="openTimelineModal()">+ Add Event</button>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline">
+                    <div class="timeline-track" id="timelineTrack">
+                        <div class="timeline-bar">
+                            <div class="timeline-progress" id="timelineProgress"></div>
+                        </div>
+                    </div>
+                    <div class="timeline-phases" id="timelinePhases"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPIs -->
+        <section id="kpis">
+            <h2>Key Performance Indicators</h2>
+            <div class="kpi-row" id="kpiRow"></div>
+        </section>
+
+        <!-- PHASE 1 ACTION PLAN -->
+        <section id="actionplan">
+            <h2>Phase 1 Action Plan</h2>
+            <div class="action-plan-container">
+                <div style="font-size:0.95rem;color:#A0A0A0;margin-bottom:1.5rem;">
+                    <strong style="color:#D4A843;">Target:</strong> $19,660/mo → $31,000/mo by June 30, 2026
+                </div>
+
+                <!-- Revenue Bridge -->
+                <div style="font-size:0.9rem;font-weight:600;color:#FFFFFF;margin-bottom:0.75rem;">Revenue Bridge</div>
+                <div id="bridgeTotal" class="bridge-total"></div>
+                <div class="revenue-bridge" id="revenueBridgeCards"></div>
+
+                <!-- Progress -->
+                <div class="action-plan-progress">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:0.9rem;font-weight:600;color:#FFFFFF;" id="actionPlanProgressText">0 of 55 actions complete</span>
+                    </div>
+                    <div class="action-plan-progress-bar">
+                        <div class="action-plan-progress-fill" id="actionPlanProgressBar" style="width:0%;"></div>
+                    </div>
+                    <div class="progress-stats" id="actionPlanStats"></div>
+                </div>
+
+                <!-- Month Tabs -->
+                <div class="month-tabs">
+                    <button class="month-tab active" data-month="March" onclick="switchMonth('March')">March <span class="tab-progress">0/0</span></button>
+                    <button class="month-tab" data-month="April" onclick="switchMonth('April')">April <span class="tab-progress">0/0</span></button>
+                    <button class="month-tab" data-month="May" onclick="switchMonth('May')">May <span class="tab-progress">0/0</span></button>
+                    <button class="month-tab" data-month="June" onclick="switchMonth('June')">June <span class="tab-progress">0/0</span></button>
+                </div>
+
+                <!-- Month Panels -->
+                <div class="month-panel active" id="month-March"></div>
+                <div class="month-panel" id="month-April"></div>
+                <div class="month-panel" id="month-May"></div>
+                <div class="month-panel" id="month-June"></div>
+            </div>
+        </section>
+
+        <!-- CHARTS -->
+        <section id="charts">
+            <h2>Analytics & Growth Projection</h2>
+            <div class="charts-row">
+                <div class="chart-card">
+                    <h3>Content Pillar Distribution</h3>
+                    <div class="chart-wrapper"><canvas id="pillarChart"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Follower Growth — Projected vs. Actual</h3>
+                    <div class="chart-wrapper"><canvas id="growthChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTENT CALENDAR -->
+        <section id="calendar">
+            <h2>Content Calendar</h2>
+            <div class="content-calendar">
+                <div class="calendar-header">
+                    <h3 id="calendarTitle">Content Schedule</h3>
+                    <div class="calendar-nav">
+                        <button class="btn btn-success" onclick="openAddContent()">+ Add Content</button>
+                    </div>
+                </div>
+                <div class="status-filter-bar" id="statusFilters">
+                    <div class="filter-chip active" data-filter="All" onclick="filterCalendar('All')">All</div>
+                    <div class="filter-chip" data-filter="Scheduled" onclick="filterCalendar('Scheduled')">Scheduled</div>
+                    <div class="filter-chip" data-filter="In Production" onclick="filterCalendar('In Production')">In Production</div>
+                    <div class="filter-chip" data-filter="Shot" onclick="filterCalendar('Shot')">Shot</div>
+                    <div class="filter-chip" data-filter="Ready" onclick="filterCalendar('Ready')">Ready</div>
+                    <div class="filter-chip" data-filter="Posted" onclick="filterCalendar('Posted')">Posted</div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+        </section>
+
+        <!-- SOCIAL MEDIA TRACKER -->
+        <section id="social">
+            <h2>Social Media Tracker</h2>
+            <div class="social-profile-links">
+                <a href="https://instagram.com/iamcmacias" target="_blank" class="social-profile-btn social-btn-ig">&#x1F4F7; IG: @iamcmacias</a>
+                <a href="https://tiktok.com/@iamcmacias" target="_blank" class="social-profile-btn social-btn-ig">&#x1F3B5; TikTok: @iamcmacias</a>
+                <a href="https://linkedin.com/in/cameronmacias" target="_blank" class="social-profile-btn social-btn-fb">&#x1F4BC; LinkedIn</a>
+            </div>
+            <div class="social-tracker">
+                <div class="tracker-header">
+                    <h3>Platform Performance</h3>
+                    <button class="btn btn-gold" onclick="takeSnapshot()">Take Monthly Snapshot</button>
+                </div>
+                <div class="platform-stats" id="platformStats"></div>
+
+                <div class="snapshot-history" id="snapshotHistory">
+                    <h4>Monthly Snapshots</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="snapshot-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>IG</th>
+                                    <th>TikTok</th>
+                                    <th>Facebook</th>
+                                    <th>LinkedIn</th>
+                                    <th>YouTube</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="snapshotTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="post-log">
+                    <h4>Post Log — Track Published Content</h4>
+                    <div class="post-log-form" id="postLogForm">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="postDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Platform</label>
+                            <select id="postPlatform">
+                                <option value="IG">Instagram</option>
+                                <option value="TT">TikTok</option>
+                                <option value="FB">Facebook</option>
+                                <option value="LI">LinkedIn</option>
+                                <option value="YT">YouTube</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Content Title / Description</label>
+                            <input type="text" id="postTitle" placeholder="What was posted?">
+                        </div>
+                        <div class="form-group">
+                            <label>Link</label>
+                            <input type="url" id="postLink" placeholder="https://...">
+                        </div>
+                        <button class="btn btn-primary" onclick="addPostEntry()" style="align-self:end;">Add</button>
+                    </div>
+                    <div class="post-log-entries" id="postLogEntries"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GOOGLE DRIVE -->
+        <section id="drive">
+            <h2>Google Drive — Project Files</h2>
+            <div class="drive-section">
+                <div class="drive-header">
+                    <h3>Key Documents & Folders</h3>
+                    <button class="btn btn-primary" onclick="toggleDriveEdit()">+ Add Link</button>
+                </div>
+                <div class="drive-grid" id="driveGrid"></div>
+                <div class="drive-edit-row" id="driveEditRow" style="display:none;">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="driveLinkTitle" placeholder="Document name">
+                    </div>
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="driveLinkUrl" placeholder="https://drive.google.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="driveLinkType">
+                            <option value="📁">📁 Folder</option>
+                            <option value="📄">📄 Document</option>
+                            <option value="📊">📊 Spreadsheet</option>
+                            <option value="🎨">🎨 Design</option>
+                            <option value="📸">📸 Media</option>
+                            <option value="📝">📝 Notes</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="addDriveLink()" style="align-self:end;">Save</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTENT IDEAS -->
+        <section id="ideas">
+            <h2>Content Ideas Lab</h2>
+            <div class="ideas-section">
+                <div class="ideas-tabs">
+                    <button class="idea-tab active" onclick="switchIdeaTab('notepad')">Brainstorm Notepad</button>
+                    <button class="idea-tab" onclick="switchIdeaTab('generator')">Idea Generator</button>
+                </div>
+
+                <!-- Notepad Panel -->
+                <div class="idea-panel active" id="notepadPanel">
+                    <div class="notepad-form">
+                        <div class="form-group">
+                            <label>Content Idea</label>
+                            <input type="text" id="ideaText" placeholder="Describe your content idea...">
+                        </div>
+                        <div class="form-group">
+                            <label>Pillar</label>
+                            <select id="ideaPillar">
+                                <option value="Leadership Frameworks">Leadership Frameworks</option>
+                                <option value="Military to Corporate">Military to Corporate</option>
+                                <option value="Burnout Recovery">Burnout Recovery</option>
+                                <option value="AI + Business">AI + Business</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="addIdea()" style="align-self:end;">Add</button>
+                    </div>
+                    <div id="ideasList"></div>
+                </div>
+
+                <!-- Generator Panel -->
+                <div class="idea-panel" id="generatorPanel">
+                    <div class="generator-controls">
+                        <div class="form-group">
+                            <label>Content Pillar</label>
+                            <select id="genPillar">
+                                <option value="any">Any Pillar</option>
+                                <option value="Leadership Frameworks">Leadership Frameworks</option>
+                                <option value="Military to Corporate">Military to Corporate</option>
+                                <option value="Burnout Recovery">Burnout Recovery</option>
+                                <option value="AI + Business">AI + Business</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Platform</label>
+                            <select id="genPlatform">
+                                <option value="any">Any Platform</option>
+                                <option value="IG">Instagram</option>
+                                <option value="TT">TikTok</option>
+                                <option value="YT">YouTube</option>
+                                <option value="LI">LinkedIn</option>
+                                <option value="FB">Facebook</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tone</label>
+                            <select id="genTone">
+                                <option value="any">Any Tone</option>
+                                <option value="hype">Hype / Exciting</option>
+                                <option value="educational">Educational</option>
+                                <option value="behind-scenes">Behind the Scenes</option>
+                                <option value="luxury">Luxury / Aspirational</option>
+                                <option value="community">Community / Interactive</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="generateIdeas()" style="align-self:end;">Generate</button>
+                    </div>
+                    <div class="generated-ideas" id="generatedIdeas">
+                        <div style="text-align:center;color:#606060;padding:2rem;font-size:0.9rem;">Select your filters and click Generate to get content ideas</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STRATEGY DOCUMENTS -->
+        <section id="strategy">
+            <h2>Your Strategy</h2>
+            <div class="strategy-hub-intro">
+                <h3>Your Complete Strategy Suite</h3>
+                <p>Every document behind your brand growth — from high-level strategy to daily production workflows. Click any card to open that section.</p>
+            </div>
+            <div class="strategy-hub-master">
+                <a href="./" target="_blank" class="strategy-master-btn">&#x1F4D6; View Complete Strategy (All Sections)</a>
+            </div>
+            <div class="strategy-divider">or jump to a specific section</div>
+            <div class="documents-grid">
+                <div class="document-card highlighted" onclick="window.open('coach-cam-growth-strategy.html','_blank')">
+                    <div class="document-icon">&#x1F4C8;</div>
+                    <div class="document-title">Growth Strategy</div>
+                    <div class="document-description">Your 12-month growth roadmap — phases, platform strategies, content pillars, monetization, and success metrics.</div>
+                    <button class="document-btn" onclick="event.stopPropagation();window.open('coach-cam-growth-strategy.html','_blank')">Open Growth Strategy →</button>
+                </div>
+                <div class="document-card" onclick="window.open('coach-cam-emergency-fixes.html','_blank')">
+                    <div class="document-icon">&#x1F527;</div>
+                    <div class="document-title">Emergency Fixes</div>
+                    <div class="document-description">Quick wins and immediate action items — account optimization, bio updates, hashtag strategy, and posting schedules.</div>
+                    <button class="document-btn" onclick="event.stopPropagation();window.open('coach-cam-emergency-fixes.html','_blank')">Open Emergency Fixes →</button>
+                </div>
+                <div class="document-card" onclick="window.open('coach-cam-content-strategy.html','_blank')">
+                    <div class="document-icon">&#x1F4CB;</div>
+                    <div class="document-title">Content Strategy</div>
+                    <div class="document-description">Content pillars, posting cadence, hooks library, templates, repurposing workflows, and platform-specific tactics.</div>
+                    <button class="document-btn" onclick="event.stopPropagation();window.open('coach-cam-content-strategy.html','_blank')">Open Content Strategy →</button>
+                </div>
+                <div class="document-card" onclick="window.open('coach-cam-tool-stack-workflow.html','_blank')">
+                    <div class="document-icon">&#x2699;&#xFE0F;</div>
+                    <div class="document-title">Tool Stack & Workflow</div>
+                    <div class="document-description">Production flow, recommended tools, weekly schedule, and the content math behind hitting your posting targets.</div>
+                    <button class="document-btn" onclick="event.stopPropagation();window.open('coach-cam-tool-stack-workflow.html','_blank')">Open Tool Stack →</button>
+                </div>
+                <div class="document-card" onclick="window.open('coach-cam-visual-style-guide.html','_blank')">
+                    <div class="document-icon">&#x1F3A8;</div>
+                    <div class="document-title">Visual Style Guide</div>
+                    <div class="document-description">Brand colors, typography, logo usage, image treatments, and visual identity guidelines for all content.</div>
+                    <button class="document-btn" onclick="event.stopPropagation();window.open('coach-cam-visual-style-guide.html','_blank')">Open Style Guide →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- DELIVERABLES CHECKLIST -->
+        <section id="deliverables">
+            <h2>Deliverables Checklist</h2>
+            <div class="checklist-container">
+                <div class="checklist-progress">
+                    <div class="progress-text">Progress: <span id="checklistProgress">0 of 0</span> deliverables complete</div>
+                    <div class="progress-bar-large">
+                        <div class="progress-fill-large" id="checklistProgressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="checklist" id="checklistItems"></div>
+            </div>
+        </section>
+
+        <!-- MONTHLY SCORECARD -->
+        <section id="scorecard">
+            <h2>Monthly Scorecard</h2>
+            <div class="scorecard-container">
+                <div style="overflow-x:auto;">
+                    <table class="scorecard-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width:180px;">Metric</th>
+                                <th class="month-col">Mar</th>
+                                <th class="month-col">Apr</th>
+                                <th class="month-col">May</th>
+                                <th class="month-col">Jun</th>
+                                <th class="target-col">Target</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scorecardBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- REVENUE -->
+        <section id="revenue">
+            <h2>Revenue Model & Projections</h2>
+            <div class="revenue-container">
+                <div class="revenue-total">PHASE 1 TARGET: <span id="revenueTotal" style="color:#D4A843;">$30,560/mo</span> <span style="font-size:0.8rem;color:#606060;font-weight:400;">(net profit ~$14,060)</span></div>
+                <div class="revenue-chart-wrapper"><canvas id="revenueChart"></canvas></div>
+                <div class="revenue-items" id="revenueItems"></div>
+            </div>
+        </section>
+
+        <!-- WEEKLY RHYTHM & RISK REGISTER -->
+        <section id="rhythm">
+            <h2>Weekly Rhythm & Risk Register</h2>
+            <div class="rhythm-grid">
+                <div class="rhythm-card">
+                    <h4>Standing Weekly Actions</h4>
+                    <div class="rhythm-item"><span class="rhythm-day">Monday</span><span class="rhythm-action">Review pipeline, follow up on open proposals</span></div>
+                    <div class="rhythm-item"><span class="rhythm-day">Wednesday</span><span class="rhythm-action">AI live stream 6PM PT (virtual)</span></div>
+                    <div class="rhythm-item"><span class="rhythm-day">Thursday</span><span class="rhythm-action">VA check-in with managers (15 min)</span></div>
+                    <div class="rhythm-item"><span class="rhythm-day">Sunday</span><span class="rhythm-action">AI live stream 3PM PT (in-studio)</span></div>
+                    <div class="rhythm-item"><span class="rhythm-day">Last Fri/mo</span><span class="rhythm-action">P&L review with Claude, update scorecard</span></div>
+                </div>
+                <div class="rhythm-card">
+                    <h4>Dependencies & Risk Register</h4>
+                    <table class="risk-table">
+                        <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+                        <tbody>
+                            <tr><td>Artmersive doesn't close</td><td class="risk-impact">-$3,000/mo</td><td class="risk-mitigation">Accelerate L3 prospecting — need 2 retainers</td></tr>
+                            <tr><td>VA pipeline slow</td><td class="risk-impact">Can't hit 5 placements</td><td class="risk-mitigation">Post immediately Mar W2, use existing network</td></tr>
+                            <tr><td>Elevare drip &lt; 2%</td><td class="risk-impact">-$1,500/mo</td><td class="risk-mitigation">Optimize emails at Week 4, add personal outreach</td></tr>
+                            <tr><td>Mixer attendance low</td><td class="risk-impact">Fewer conversions</td><td class="risk-mitigation">Pre-event outreach, early-bird pricing</td></tr>
+                            <tr><td>L3 prospect says no</td><td class="risk-impact">-$2,500/mo</td><td class="risk-mitigation">Keep pipeline of 5 prospects</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ownership-grid">
+                <div class="ownership-card">
+                    <h4 style="color:#008080;">Claude Handles</h4>
+                    <ul>
+                        <li>API enrollment of 1,700 contacts into drip</li>
+                        <li>Drip campaign analytics and optimization</li>
+                        <li>GHL workflow builds and automation</li>
+                        <li>P&L tracking and financial reporting</li>
+                        <li>VA onboarding automation in GHL</li>
+                        <li>Phase 2 planning and modeling</li>
+                    </ul>
+                </div>
+                <div class="ownership-card">
+                    <h4 style="color:#D4A843;">Cam Must Do</h4>
+                    <ul>
+                        <li>Follow up with Julie / Artmersive (relationship)</li>
+                        <li>Execute the Mixer (presence, speaking, networking)</li>
+                        <li>L3 retainer sales conversations (trust, expertise)</li>
+                        <li>VA client acquisition (network, referrals)</li>
+                        <li>Live stream hosting (content, authority)</li>
+                        <li>Elevare community engagement (personal touch)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Forward Learning Group</h3>
+                <p><strong>Strategy Partner</strong></p>
+                <p><a href="mailto:cam@forward-learn.com">cam@forward-learn.com</a></p>
+                <p>Your complete social media strategy, content production, and growth execution partner.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Coach Cam — Forward Learning Group</h3>
+                <div class="team-member"><div class="member-name">Cameron Macias</div><div class="member-title">CEO & Founder — ICF Coach, PMP, Green Belt</div></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADD CONTENT MODAL -->
+    <div class="modal-overlay" id="addContentModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeAddContentModal()">&times;</button>
+            <h3>Add New Content</h3>
+            <div class="modal-field">
+                <label>Date (e.g., Apr 19)</label>
+                <input type="text" id="newContentDate" placeholder="Apr 19">
+            </div>
+            <div class="modal-field">
+                <label>Content Title</label>
+                <input type="text" id="newContentTitle" placeholder="Title of the content piece">
+            </div>
+            <div class="modal-field">
+                <label>Platforms (comma-separated: IG, TT, FB, LI, YT)</label>
+                <input type="text" id="newContentPlatforms" placeholder="IG, TT, FB">
+            </div>
+            <div class="modal-field">
+                <label>Content Pillar</label>
+                <select id="newContentPillar">
+                    <option value="Leadership Frameworks">Leadership Frameworks</option>
+                    <option value="Military to Corporate">Military to Corporate</option>
+                    <option value="Burnout Recovery">Burnout Recovery</option>
+                    <option value="AI + Business">AI + Business</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label>Status</label>
+                <select id="newContentStatus">
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="In Production">In Production</option>
+                    <option value="Shot">Shot / Filmed</option>
+                    <option value="Ready">Ready to Post</option>
+                    <option value="Posted">Posted</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label>Notes</label>
+                <textarea id="newContentNotes" placeholder="Production notes..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeAddContentModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addNewContent()">Add Content</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMELINE EVENT MODAL -->
+    <div class="modal-overlay" id="timelineModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeTimelineModal()">&times;</button>
+            <h3 id="timelineModalTitle">Add Timeline Event</h3>
+            <div class="modal-field">
+                <label>Event Name</label>
+                <input type="text" id="tlLabel" placeholder="e.g. 5K Followers Milestone">
+            </div>
+            <div class="modal-field">
+                <label>Date</label>
+                <input type="date" id="tlDate">
+            </div>
+            <div class="modal-field">
+                <label>Event Type</label>
+                <select id="tlType">
+                    <option value="major">Major Milestone (gold dot)</option>
+                    <option value="regular">Regular Event (teal dot)</option>
+                    <option value="checkin">Check-in (small blue dot)</option>
+                </select>
+            </div>
+            <div class="modal-field">
+                <label>Description / Tooltip</label>
+                <input type="text" id="tlTooltip" placeholder="e.g. Target: 5,000 total followers">
+            </div>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeTimelineModal()">Cancel</button>
+                <button class="btn btn-danger" id="tlDeleteBtn" onclick="deleteTimelineEvent()" style="display:none;">Delete</button>
+                <button class="btn btn-primary" id="tlSaveBtn" onclick="saveTimelineEvent()">Add Event</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ==================== CONFIGURATION ====================
+const BRAND_COLORS = {
+    primary: '#6c5ce7', secondary: '#a29bfe', dark: '#4a3db5',
+    cyan: '#74b9ff', gold: '#fdcb6e', background: '#0A0A0A',
+    card: '#111111', border: '#1A1A1A', text: '#FFFFFF', textSecondary: '#A0A0A0'
+};
+
+const STORAGE_KEY = 'coach_cam_dashboard_v1';
+
+// ==================== FIREBASE CONFIG ====================
+const firebaseConfig = {
+    apiKey: "AIzaSyAN8AuyjU-amcaa3LiB3epJyUUGgbzMzpI",
+    authDomain: "artmersive-dashboard.firebaseapp.com",
+    databaseURL: "https://artmersive-dashboard-default-rtdb.firebaseio.com",
+    projectId: "artmersive-dashboard",
+    storageBucket: "artmersive-dashboard.firebasestorage.app",
+    messagingSenderId: "976179317149",
+    appId: "1:976179317149:web:1dcb51b0e126f0c3c28774"
+};
+
+let firebaseReady = false;
+let dbRef = null;
+
+function initFirebase() {
+    // Firebase disabled for Coach Cam — using localStorage only
+    firebaseReady = false;
+    return;
+    try {
+        firebase.initializeApp(firebaseConfig);
+        dbRef = firebase.database().ref('dashboardState');
+        firebaseReady = true;
+        // Listen for real-time changes from other devices
+        dbRef.on('value', function(snapshot) {
+            const cloudData = snapshot.val();
+            if (cloudData && cloudData._lastSaved) {
+                const localStr = localStorage.getItem(STORAGE_KEY);
+                const localData = localStr ? JSON.parse(localStr) : null;
+                const localTime = localData && localData._lastSaved ? localData._lastSaved : 0;
+                // Only update if cloud is newer than local
+                if (cloudData._lastSaved > localTime) {
+                    state = cloudData;
+                    delete state._lastSaved;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                    refreshAllUI();
+                }
+            }
+        });
+        console.log('Firebase connected successfully');
+    } catch (e) {
+        console.warn('Firebase init failed, using localStorage only:', e);
+        firebaseReady = false;
+    }
+}
+
+function saveToFirebase() {
+    if (!firebaseReady || !dbRef) return;
+    try {
+        const dataToSave = JSON.parse(JSON.stringify(state));
+        dataToSave._lastSaved = Date.now();
+        dbRef.set(dataToSave);
+    } catch (e) {
+        console.warn('Firebase save failed:', e);
+    }
+}
+
+function loadFromFirebase(callback) {
+    if (!firebaseReady || !dbRef) { callback(null); return; }
+    dbRef.once('value').then(function(snapshot) {
+        callback(snapshot.val());
+    }).catch(function(e) {
+        console.warn('Firebase load failed:', e);
+        callback(null);
+    });
+}
+
+function refreshAllUI() {
+    setCurrentDate();
+    initTimeline();
+    initKPIs();
+    initCharts();
+    renderCalendar();
+    initDocuments();
+    initChecklist();
+    initRevenue();
+    renderPlatformStats();
+    renderSnapshots();
+    renderPostLog();
+    renderDriveLinks();
+    renderIdeas();
+    renderActionPlan();
+    renderRevenueBridge();
+    renderScorecard();
+}
+
+const TODAY = new Date();
+const PROJECT_START = new Date('2026-02-15');
+const PROJECT_END = new Date('2027-02-15');
+
+const DEFAULT_TIMELINE_EVENTS = [
+    { id: 1, date: '2026-02-15', label: 'Strategy Kickoff', type: 'major', tooltip: 'Project begins — brand consolidation & content machine' },
+    { id: 2, date: '2026-03-15', label: 'Daily Content Live — 1 Short/Day', type: 'major', tooltip: 'Unified handle locked, 1 short-form video per day' },
+    { id: 3, date: '2026-04-15', label: '5K Followers', type: 'major', tooltip: 'Target: 5,000 combined followers across platforms' },
+    { id: 4, date: '2026-05-15', label: 'Signature Series Launch', type: 'major', tooltip: 'Viral format identified, 2 videos/day, collaborations started' },
+    { id: 5, date: '2026-06-15', label: '25K Followers', type: 'major', tooltip: 'Target: 25,000 followers, podcast appearances started' },
+    { id: 6, date: '2026-07-15', label: 'Jul Check-in', type: 'checkin', tooltip: 'Monthly performance review' },
+    { id: 7, date: '2026-09-15', label: '100K Followers', type: 'major', tooltip: 'Target: 100,000 followers, paid amplification live' },
+    { id: 8, date: '2026-10-15', label: 'Community Launch', type: 'major', tooltip: 'Free community launched, weekly live streams' },
+    { id: 9, date: '2026-12-01', label: '500K Followers', type: 'major', tooltip: 'Target: 500,000 followers, brand deals active' },
+    { id: 10, date: '2027-02-15', label: '1M Followers — Year One Review', type: 'major', tooltip: 'Aggressive target: 1,000,000 followers' },
+    { id: 11, date: '2026-03-02', label: 'Phase 1 Start', type: 'major', tooltip: 'Enroll 1,700 contacts, follow up Artmersive, begin live streams' },
+    { id: 12, date: '2026-03-16', label: 'Elevare Mixer', type: 'major', tooltip: 'Elevare Mixer 2026 — 2-day event at Solano Innovation Center' },
+    { id: 13, date: '2026-04-01', label: 'VA Growth Sprint', type: 'regular', tooltip: 'Begin VA placement push — target 3 in April' },
+    { id: 14, date: '2026-04-22', label: 'L3 Retainer Close', type: 'regular', tooltip: 'Target: close 1 L3 retainer at $2,500/mo' },
+    { id: 15, date: '2026-05-22', label: 'Phase 1 Check', type: 'checkin', tooltip: 'P&L review vs $31K target, drip results' },
+    { id: 16, date: '2026-06-30', label: '$31K/mo Target', type: 'major', tooltip: 'Phase 1 target: $31,000/mo revenue, all streams stable' }
+];
+
+const phases = [
+    { name: 'Mar: Launch', start: new Date('2026-03-01'), end: new Date('2026-03-31'), description: 'Drip campaign, Mixer, Artmersive close' },
+    { name: 'Apr: VA + L3', start: new Date('2026-04-01'), end: new Date('2026-04-30'), description: '3 VA placements, L3 retainer prospecting' },
+    { name: 'May: Scale', start: new Date('2026-05-01'), end: new Date('2026-05-31'), description: '2 more VA, L3 delivering, Elevare at 50+' },
+    { name: 'Jun: Stabilize', start: new Date('2026-06-01'), end: new Date('2026-06-30'), description: '$31K target, Phase 2 prep' }
+];
+
+const DEFAULT_CONTENT = [
+    { id: 1, date: 'Mar 1', title: 'The Leadership Lesson the Military Teaches That Corporate Never Will', platforms: ['IG','TT','LI'], pillar: 'Leadership Frameworks', status: 'Ready', notes: '', postUrl: '' },
+    { id: 2, date: 'Mar 3', title: 'From Top Recruiter to CEO — My Military Transition in 60 Seconds', platforms: ['IG','TT'], pillar: 'Military to Corporate', status: 'Ready', notes: '', postUrl: '' },
+    { id: 3, date: 'Mar 5', title: 'Burnout Isn\'t a Badge of Honor — Here\'s What to Do Instead', platforms: ['IG','TT','LI'], pillar: 'Burnout Recovery', status: 'Ready', notes: '', postUrl: '' },
+    { id: 4, date: 'Mar 7', title: 'I Used ChatGPT to Build a Business Process in 30 Minutes', platforms: ['IG','TT','LI'], pillar: 'AI + Business', status: 'Ready', notes: '', postUrl: '' },
+    { id: 5, date: 'Mar 9', title: 'The 3 Questions Every Leader Should Ask Before Any Meeting', platforms: ['IG','TT','LI'], pillar: 'Leadership Frameworks', status: 'In Production', notes: '', postUrl: '' },
+    { id: 6, date: 'Mar 11', title: 'What Nobody Tells You About Leaving the Military', platforms: ['IG','TT'], pillar: 'Military to Corporate', status: 'In Production', notes: '', postUrl: '' },
+    { id: 7, date: 'Mar 13', title: 'The Resilience Framework I Taught Military Leaders (Works for Anyone)', platforms: ['IG','TT','LI'], pillar: 'Burnout Recovery', status: 'Scheduled', notes: '', postUrl: '' },
+    { id: 8, date: 'Mar 15', title: 'AI Hack: Automate Your Weekly Report in 5 Minutes', platforms: ['IG','TT','LI'], pillar: 'AI + Business', status: 'Scheduled', notes: '', postUrl: '' },
+    { id: 9, date: 'Mar 17', title: 'Stop Managing, Start Leading — The Shift That Changes Everything', platforms: ['IG','TT','LI'], pillar: 'Leadership Frameworks', status: 'Scheduled', notes: '', postUrl: '' },
+    { id: 10, date: 'Mar 19', title: '17 Years of Service, 3 Lessons That Apply to Every Business', platforms: ['IG','TT','LI'], pillar: 'Military to Corporate', status: 'Scheduled', notes: '', postUrl: '' },
+    { id: 11, date: 'Mar 21', title: 'Your Team Doesn\'t Need Motivation — They Need Clarity', platforms: ['IG','TT','LI'], pillar: 'Leadership Frameworks', status: 'Scheduled', notes: '', postUrl: '' },
+    { id: 12, date: 'Mar 23', title: 'How AI is Changing Coaching — And Why That\'s a Good Thing', platforms: ['IG','TT','LI','YT'], pillar: 'AI + Business', status: 'Scheduled', notes: '', postUrl: '' }
+];
+
+const DEFAULT_DELIVERABLES = [
+    { name: 'Growth Strategy Document', completed: true },
+    { name: 'Brand Identity & Style Guide', completed: true },
+    { name: 'Content Strategy Playbook', completed: true },
+    { name: 'Platform Optimization Guide', completed: true },
+    { name: 'Visual Content Templates', completed: false },
+    { name: '12 Content Calendar Entries', completed: true },
+    { name: 'Handle Consolidation (@coachcammacias)', completed: false },
+    { name: 'Instagram Bio & Highlights Redesign', completed: false },
+    { name: 'TikTok Profile Optimization', completed: false },
+    { name: 'YouTube Channel Relaunch', completed: false },
+    { name: 'LinkedIn Content Strategy', completed: false },
+    { name: 'Content Bank (30+ pieces)', completed: false },
+    { name: 'Email List & Lead Magnet Setup', completed: false },
+    { name: 'Speaking Reel Production', completed: false }
+];
+
+const DEFAULT_PLATFORMS = {
+    IG: { name: 'Instagram', color: '#E1306C', followers: 1294 },
+    TT: { name: 'TikTok', color: '#00F2EA', followers: 239 },
+    LI: { name: 'LinkedIn', color: '#0A66C2', followers: 7007 },
+    YT: { name: 'YouTube', color: '#FF0000', followers: 0 }
+};
+
+const DEFAULT_DRIVE_LINKS = [
+    { id: 1, title: 'Coach Cam — Project Folder', url: '#', icon: '📁', desc: 'Shared Drive — all project files, assets & deliverables' }
+];
+
+// Documents are now hardcoded in the Strategy Hub HTML with direct links
+
+const revenueItems = [
+    { label: 'L3 Media (Retainers + Studio)', calc: '$7,500 now → $10,000 target', amount: 10000, current: 7500 },
+    { label: 'VA Services (12→17 placements)', calc: '$5,810 now → $8,210 target', amount: 8210, current: 5810 },
+    { label: 'Consulting (Artmersive)', calc: '$0 now → $3,000 target', amount: 3000, current: 0 },
+    { label: 'Elevare Global', calc: '$350 now → $3,350 target', amount: 3350, current: 350 },
+    { label: '4th Second', calc: '$6,000 (maintain)', amount: 6000, current: 6000 }
+];
+
+const DEFAULT_REVENUE_BRIDGE = [
+    { stream: 'L3 Media', current: 7500, target: 10000, how: '1 new retainer client' },
+    { stream: 'VA Services', current: 5810, target: 8210, how: '5 new placements' },
+    { stream: 'Consulting', current: 0, target: 3000, how: 'Close Artmersive' },
+    { stream: 'Elevare', current: 350, target: 3350, how: 'Drip campaign + Mixer conversions' },
+    { stream: '4th Second', current: 6000, target: 6000, how: 'Maintain' }
+];
+
+const DEFAULT_SCORECARD = {
+    metrics: [
+        { label: 'Total Revenue', target: '$31,000', values: { Mar: '', Apr: '', May: '', Jun: '' } },
+        { label: 'New VA Placements', target: '5', values: { Mar: '', Apr: '', May: '', Jun: '' } },
+        { label: 'L3 Retainer Clients Added', target: '1', values: { Mar: '', Apr: '', May: '', Jun: '' } },
+        { label: 'Elevare Paying Members', target: '60+', values: { Mar: '', Apr: '', May: '', Jun: '' } },
+        { label: 'Consulting Revenue', target: '$3,000', values: { Mar: '', Apr: '', May: '', Jun: '' } },
+        { label: 'Live Stream Episodes', target: '32', values: { Mar: '', Apr: '', May: '', Jun: '' } },
+        { label: 'Net Profit', target: '$14,000+', values: { Mar: '', Apr: '', May: '', Jun: '' } }
+    ]
+};
+
+const DEFAULT_ACTION_ITEMS = [
+    // MARCH — Week 1 (Mar 2-8): Launch the Engine
+    { id:1, title:'Enroll 1,700 contacts into Elevare drip via API', month:'March', week:1, weekLabel:'Week 1 (Mar 2-8): Launch the Engine', owner:'Claude', dependency:'Workflow must be Published', revenueImpact:'$2-3K Elevare conversions over 60-90 days', status:'pending', completedDate:null, notes:'' },
+    { id:2, title:'Publish Elevare drip workflow (currently Draft)', month:'March', week:1, weekLabel:'Week 1 (Mar 2-8): Launch the Engine', owner:'Cam', dependency:'Review 6 emails in docs', revenueImpact:'Gate for #1', status:'pending', completedDate:null, notes:'' },
+    { id:3, title:'Follow up with Julie / Artmersive', month:'March', week:1, weekLabel:'Week 1 (Mar 2-8): Launch the Engine', owner:'Cam', dependency:'Proposal already sent', revenueImpact:'$3K/mo if closed', status:'pending', completedDate:null, notes:'' },
+    { id:4, title:'AI live stream — Week 1 episodes', month:'March', week:1, weekLabel:'Week 1 (Mar 2-8): Launch the Engine', owner:'Cam + Brian', dependency:'', revenueImpact:'Authority building', status:'pending', completedDate:null, notes:'' },
+    // MARCH — Week 2 (Mar 9-15): Mixer Prep + VA Pipeline
+    { id:5, title:'Finalize Mixer logistics (Day 1 & 2 content, speakers, materials)', month:'March', week:2, weekLabel:'Week 2 (Mar 9-15): Mixer Prep + VA Pipeline', owner:'Cam + Chas', dependency:'Solano Innovation Center booked', revenueImpact:'Converts to Elevare members', status:'pending', completedDate:null, notes:'' },
+    { id:6, title:'Create Mixer → Elevare conversion offer (event-only pricing)', month:'March', week:2, weekLabel:'Week 2 (Mar 9-15): Mixer Prep + VA Pipeline', owner:'Cam', dependency:'', revenueImpact:'Drives sign-ups at event', status:'pending', completedDate:null, notes:'' },
+    { id:7, title:'Post 2 VA openings (target $700 tier clients)', month:'March', week:2, weekLabel:'Week 2 (Mar 9-15): Mixer Prep + VA Pipeline', owner:'Cam / Jazzlyn', dependency:'VA recruitment pipeline active', revenueImpact:'$220/placement profit', status:'pending', completedDate:null, notes:'' },
+    { id:8, title:'AI live stream — Week 2 episodes', month:'March', week:2, weekLabel:'Week 2 (Mar 9-15): Mixer Prep + VA Pipeline', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // MARCH — Week 3 (Mar 16-22): Mixer Week
+    { id:9, title:'Execute Elevare Mixer 2026 (2 days)', month:'March', week:3, weekLabel:'Week 3 (Mar 16-22): Mixer Week', owner:'Cam + Chas + Glenn', dependency:'All prep complete', revenueImpact:'Direct Elevare sign-ups', status:'pending', completedDate:null, notes:'' },
+    { id:10, title:'Collect attendee info into GHL (tag "mixer-attendee")', month:'March', week:3, weekLabel:'Week 3 (Mar 16-22): Mixer Week', owner:'Claude / VA', dependency:'GHL forms or manual entry', revenueImpact:'Enables post-Mixer follow-up', status:'pending', completedDate:null, notes:'' },
+    { id:11, title:'AI live stream — Week 3 episodes', month:'March', week:3, weekLabel:'Week 3 (Mar 16-22): Mixer Week', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // MARCH — Week 4 (Mar 23-31): Post-Mixer Conversion
+    { id:12, title:'Post-Mixer follow-up sequence (email + personal outreach)', month:'March', week:4, weekLabel:'Week 4 (Mar 23-31): Post-Mixer Conversion', owner:'Cam', dependency:'Attendee list in GHL', revenueImpact:'Convert 15-25 attendees to Elevare', status:'pending', completedDate:null, notes:'' },
+    { id:13, title:'Artmersive decision checkpoint — close or pivot', month:'March', week:4, weekLabel:'Week 4 (Mar 23-31): Post-Mixer Conversion', owner:'Cam', dependency:"Julie's response", revenueImpact:'$3K/mo', status:'pending', completedDate:null, notes:'' },
+    { id:14, title:'Review drip campaign performance (opens, clicks, conversions)', month:'March', week:4, weekLabel:'Week 4 (Mar 23-31): Post-Mixer Conversion', owner:'Claude', dependency:'4 weeks of data', revenueImpact:'Optimize emails if needed', status:'pending', completedDate:null, notes:'' },
+    { id:15, title:'AI live stream — Week 4 episodes', month:'March', week:4, weekLabel:'Week 4 (Mar 23-31): Post-Mixer Conversion', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // APRIL — Week 1 (Apr 1-7): VA Growth Sprint
+    { id:16, title:'Onboard VA placement #1 (from March pipeline)', month:'April', week:1, weekLabel:'Week 1 (Apr 1-7): VA Growth Sprint', owner:'Jazzlyn / Warren', dependency:'Client signed, VA matched', revenueImpact:'+$484/mo avg', status:'pending', completedDate:null, notes:'' },
+    { id:17, title:'Onboard VA placement #2', month:'April', week:1, weekLabel:'Week 1 (Apr 1-7): VA Growth Sprint', owner:'Jazzlyn / Warren', dependency:'Client signed, VA matched', revenueImpact:'+$484/mo', status:'pending', completedDate:null, notes:'' },
+    { id:18, title:'L3 retainer prospecting — identify 5 targets', month:'April', week:1, weekLabel:'Week 1 (Apr 1-7): VA Growth Sprint', owner:'Cam', dependency:'Existing network, referrals', revenueImpact:'Pipeline for $2,500 retainer', status:'pending', completedDate:null, notes:'' },
+    { id:19, title:'AI live stream — Week 5 episodes', month:'April', week:1, weekLabel:'Week 1 (Apr 1-7): VA Growth Sprint', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // APRIL — Week 2 (Apr 8-14): L3 + Consulting Pipeline
+    { id:20, title:'Send L3 proposals to top 2 prospects', month:'April', week:2, weekLabel:'Week 2 (Apr 8-14): L3 + Consulting Pipeline', owner:'Cam', dependency:'Prospect list from #18', revenueImpact:'$2,500/mo per close', status:'pending', completedDate:null, notes:'' },
+    { id:21, title:'If Artmersive closed: deliver Month 1 work', month:'April', week:2, weekLabel:'Week 2 (Apr 8-14): L3 + Consulting Pipeline', owner:'Cam + VA', dependency:'Contract signed', revenueImpact:'Retain $3K/mo', status:'pending', completedDate:null, notes:'' },
+    { id:22, title:'Elevare drip — mid-campaign check (6 weeks in)', month:'April', week:2, weekLabel:'Week 2 (Apr 8-14): L3 + Consulting Pipeline', owner:'Claude', dependency:'Drip data', revenueImpact:'Adjust if conversion < 3%', status:'pending', completedDate:null, notes:'' },
+    { id:23, title:'AI live stream — Week 6 episodes', month:'April', week:2, weekLabel:'Week 2 (Apr 8-14): L3 + Consulting Pipeline', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // APRIL — Week 3 (Apr 15-21): Scale VA Recruiting
+    { id:24, title:'Onboard VA placement #3', month:'April', week:3, weekLabel:'Week 3 (Apr 15-21): Scale VA Recruiting', owner:'Jazzlyn / Warren', dependency:'', revenueImpact:'+$484/mo', status:'pending', completedDate:null, notes:'' },
+    { id:25, title:'Develop L3 case study (video + results) from current client', month:'April', week:3, weekLabel:'Week 3 (Apr 15-21): Scale VA Recruiting', owner:'Shaun / Czedrick', dependency:'Client permission', revenueImpact:'Sales tool for retainer pitches', status:'pending', completedDate:null, notes:'' },
+    { id:26, title:'AI live stream — Week 7 episodes', month:'April', week:3, weekLabel:'Week 3 (Apr 15-21): Scale VA Recruiting', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // APRIL — Week 4 (Apr 22-30): Close L3 Retainer
+    { id:27, title:'Close 1 L3 retainer client (target: $2,500/mo)', month:'April', week:4, weekLabel:'Week 4 (Apr 22-30): Close L3 Retainer', owner:'Cam', dependency:'Proposals from #20', revenueImpact:'+$2,500/mo', status:'pending', completedDate:null, notes:'' },
+    { id:28, title:'Post 2 more VA openings (target $700 tier)', month:'April', week:4, weekLabel:'Week 4 (Apr 22-30): Close L3 Retainer', owner:'Cam / Jazzlyn', dependency:'', revenueImpact:'Pipeline for May closes', status:'pending', completedDate:null, notes:'' },
+    { id:29, title:'Elevare content plan for May (retention strategy)', month:'April', week:4, weekLabel:'Week 4 (Apr 22-30): Close L3 Retainer', owner:'Cam + Glenn', dependency:'', revenueImpact:'Reduce churn', status:'pending', completedDate:null, notes:'' },
+    { id:30, title:'AI live stream — Week 8 episodes', month:'April', week:4, weekLabel:'Week 4 (Apr 22-30): Close L3 Retainer', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // MAY — Week 1 (May 1-7): VA + Elevare Push
+    { id:31, title:'Onboard VA placement #4', month:'May', week:1, weekLabel:'Week 1 (May 1-7): VA + Elevare Push', owner:'Jazzlyn / Warren', dependency:'', revenueImpact:'+$484/mo', status:'pending', completedDate:null, notes:'' },
+    { id:32, title:'Elevare Premium upsell campaign to Standard members', month:'May', week:1, weekLabel:'Week 1 (May 1-7): VA + Elevare Push', owner:'Cam', dependency:'30+ Standard members', revenueImpact:'+$58/conversion ($39→$97)', status:'pending', completedDate:null, notes:'' },
+    { id:33, title:'AI live stream — Week 9 episodes', month:'May', week:1, weekLabel:'Week 1 (May 1-7): VA + Elevare Push', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // MAY — Week 2 (May 8-14): L3 Delivery + Pipeline
+    { id:34, title:'L3 new retainer — Month 1 delivery (if closed)', month:'May', week:2, weekLabel:'Week 2 (May 8-14): L3 Delivery + Pipeline', owner:'L3 team', dependency:'Retainer active', revenueImpact:'Retention', status:'pending', completedDate:null, notes:'' },
+    { id:35, title:'Begin L3 studio booking optimization (funnel + repeat outreach)', month:'May', week:2, weekLabel:'Week 2 (May 8-14): L3 Delivery + Pipeline', owner:'Cam / VA', dependency:'Booking page live', revenueImpact:'+$500-1K/mo bookings', status:'pending', completedDate:null, notes:'' },
+    { id:36, title:'AI live stream — Week 10 episodes', month:'May', week:2, weekLabel:'Week 2 (May 8-14): L3 Delivery + Pipeline', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // MAY — Week 3 (May 15-21): VA #5 + Systems
+    { id:37, title:'Onboard VA placement #5', month:'May', week:3, weekLabel:'Week 3 (May 15-21): VA #5 + Systems', owner:'Jazzlyn / Warren', dependency:'', revenueImpact:'+$484/mo', status:'pending', completedDate:null, notes:'' },
+    { id:38, title:'Automate VA onboarding checklist in GHL', month:'May', week:3, weekLabel:'Week 3 (May 15-21): VA #5 + Systems', owner:'Claude', dependency:'SOP finalized', revenueImpact:'Reduces onboarding time', status:'pending', completedDate:null, notes:'' },
+    { id:39, title:'AI live stream — Week 11 episodes', month:'May', week:3, weekLabel:'Week 3 (May 15-21): VA #5 + Systems', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // MAY — Week 4 (May 22-31): Phase 1 Check
+    { id:40, title:'Full P&L review — where are we vs. $31K target?', month:'May', week:4, weekLabel:'Week 4 (May 22-31): Phase 1 Check', owner:'Cam + Claude', dependency:'May financials', revenueImpact:'Course correct', status:'pending', completedDate:null, notes:'' },
+    { id:41, title:'Drip campaign final results (28-day sequence complete)', month:'May', week:4, weekLabel:'Week 4 (May 22-31): Phase 1 Check', owner:'Claude', dependency:'Campaign data', revenueImpact:'Total Elevare conversion count', status:'pending', completedDate:null, notes:'' },
+    { id:42, title:'Identify Phase 2 consulting prospects from client base', month:'May', week:4, weekLabel:'Week 4 (May 22-31): Phase 1 Check', owner:'Cam', dependency:'Client relationships', revenueImpact:'Pipeline for Jul-Dec push', status:'pending', completedDate:null, notes:'' },
+    { id:43, title:'AI live stream — Week 12 episodes', month:'May', week:4, weekLabel:'Week 4 (May 22-31): Phase 1 Check', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // JUNE — Week 1-2 (Jun 1-14): Stabilize + Optimize
+    { id:44, title:'Confirm all 5 VA placements billing correctly', month:'June', week:1, weekLabel:'Weeks 1-2 (Jun 1-14): Stabilize + Optimize', owner:'Jazzlyn / Warren', dependency:'', revenueImpact:'Verify $2,400 added', status:'pending', completedDate:null, notes:'' },
+    { id:45, title:'L3 retainer — Month 2 delivery', month:'June', week:1, weekLabel:'Weeks 1-2 (Jun 1-14): Stabilize + Optimize', owner:'L3 team', dependency:'', revenueImpact:'Verify $2,500 retained', status:'pending', completedDate:null, notes:'' },
+    { id:46, title:'Elevare engagement audit — what works, what doesn\'t', month:'June', week:1, weekLabel:'Weeks 1-2 (Jun 1-14): Stabilize + Optimize', owner:'Cam + Glenn', dependency:'Member feedback', revenueImpact:'Reduce churn before Phase 2', status:'pending', completedDate:null, notes:'' },
+    { id:47, title:'AI live stream — Weeks 13-14 episodes', month:'June', week:1, weekLabel:'Weeks 1-2 (Jun 1-14): Stabilize + Optimize', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // JUNE — Week 3-4 (Jun 15-30): Phase 1 Close + Phase 2 Prep
+    { id:48, title:'June P&L — final Phase 1 scorecard', month:'June', week:3, weekLabel:'Weeks 3-4 (Jun 15-30): Phase 1 Close + Phase 2 Prep', owner:'Cam + Claude', dependency:'June financials', revenueImpact:'Validate $31K target', status:'pending', completedDate:null, notes:'' },
+    { id:49, title:'Phase 2 plan finalized (consulting client acquisition strategy)', month:'June', week:3, weekLabel:'Weeks 3-4 (Jun 15-30): Phase 1 Close + Phase 2 Prep', owner:'Cam + Claude', dependency:'Phase 1 learnings', revenueImpact:'Prep for $50K push', status:'pending', completedDate:null, notes:'' },
+    { id:50, title:'Begin course/product outline (leveraging 24+ live stream episodes)', month:'June', week:3, weekLabel:'Weeks 3-4 (Jun 15-30): Phase 1 Close + Phase 2 Prep', owner:'Cam', dependency:'Content library from streams', revenueImpact:'Foundation for Phase 2 product', status:'pending', completedDate:null, notes:'' },
+    { id:51, title:'AI live stream — Weeks 15-16 episodes', month:'June', week:3, weekLabel:'Weeks 3-4 (Jun 15-30): Phase 1 Close + Phase 2 Prep', owner:'Cam + Brian', dependency:'', revenueImpact:'', status:'pending', completedDate:null, notes:'' },
+    // BONUS — Growth Strategy Enhancements
+    { id:52, title:'Consolidate social handles to @coachcammacias (fix broken IG link)', month:'March', week:1, weekLabel:'Week 1 (Mar 2-8): Launch the Engine', owner:'Cam', dependency:'', revenueImpact:'Brand clarity across all platforms', status:'pending', completedDate:null, notes:'' },
+    { id:53, title:'Set up content repurposing pipeline: 1 podcast → 15-20 pieces', month:'March', week:2, weekLabel:'Week 2 (Mar 9-15): Mixer Prep + VA Pipeline', owner:'Cam + Claude', dependency:'', revenueImpact:'40-80 short-form videos/month from 8 streams', status:'pending', completedDate:null, notes:'' },
+    { id:54, title:'Build lead magnet + email capture funnel (target 10K subscribers)', month:'April', week:1, weekLabel:'Week 1 (Apr 1-7): VA Growth Sprint', owner:'Cam + Claude', dependency:'', revenueImpact:'Owned audience for coaching upsells', status:'pending', completedDate:null, notes:'' },
+    { id:55, title:'Begin 2 shorts/day posting cadence (IG + TikTok)', month:'March', week:2, weekLabel:'Week 2 (Mar 9-15): Mixer Prep + VA Pipeline', owner:'Cam', dependency:'Content repurposing pipeline active', revenueImpact:'73% of growth comes from short-form', status:'pending', completedDate:null, notes:'' }
+];
+
+// ==================== STATE MANAGEMENT ====================
+let state = {};
+let currentEditIndex = -1;
+let activeFilter = 'All';
+let growthChart = null;
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            state = JSON.parse(saved);
+            // Migrate: add missing fields
+            if (!state.postLog) state.postLog = [];
+            if (!state.snapshots) state.snapshots = [];
+            if (!state.platforms) state.platforms = JSON.parse(JSON.stringify(DEFAULT_PLATFORMS));
+            if (!state.deliverables) state.deliverables = JSON.parse(JSON.stringify(DEFAULT_DELIVERABLES));
+            if (!state.driveLinks) state.driveLinks = JSON.parse(JSON.stringify(DEFAULT_DRIVE_LINKS));
+            if (!state.ideas) state.ideas = [];
+            if (!state.nextIdeaId) state.nextIdeaId = 1;
+            if (!state.nextContentId) state.nextContentId = 19;
+            if (!state.timelineEvents) state.timelineEvents = JSON.parse(JSON.stringify(DEFAULT_TIMELINE_EVENTS));
+            if (!state.nextTimelineId) state.nextTimelineId = 17;
+            if (!state.actionItems) state.actionItems = JSON.parse(JSON.stringify(DEFAULT_ACTION_ITEMS));
+            if (!state.revenueBridge) state.revenueBridge = JSON.parse(JSON.stringify(DEFAULT_REVENUE_BRIDGE));
+            if (!state.scorecard) state.scorecard = JSON.parse(JSON.stringify(DEFAULT_SCORECARD));
+            state.content.forEach((c, i) => {
+                if (!c.id) c.id = i + 1;
+                if (c.notes === undefined) c.notes = '';
+                if (c.postUrl === undefined) c.postUrl = '';
+            });
+        } else {
+            resetToDefaults();
+        }
+    } catch (e) {
+        resetToDefaults();
+    }
+}
+
+function resetToDefaults() {
+    state = {
+        content: JSON.parse(JSON.stringify(DEFAULT_CONTENT)),
+        deliverables: JSON.parse(JSON.stringify(DEFAULT_DELIVERABLES)),
+        platforms: JSON.parse(JSON.stringify(DEFAULT_PLATFORMS)),
+        driveLinks: JSON.parse(JSON.stringify(DEFAULT_DRIVE_LINKS)),
+        timelineEvents: JSON.parse(JSON.stringify(DEFAULT_TIMELINE_EVENTS)),
+        ideas: [],
+        snapshots: [],
+        postLog: [],
+        nextContentId: 19,
+        nextIdeaId: 1,
+        nextTimelineId: 17,
+        actionItems: JSON.parse(JSON.stringify(DEFAULT_ACTION_ITEMS)),
+        revenueBridge: JSON.parse(JSON.stringify(DEFAULT_REVENUE_BRIDGE)),
+        scorecard: JSON.parse(JSON.stringify(DEFAULT_SCORECARD))
+    };
+    saveState();
+}
+
+function saveState() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        saveToFirebase();
+        showSaveIndicator();
+    } catch (e) {
+        console.warn('Could not save state:', e);
+    }
+}
+
+function showSaveIndicator() {
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('visible');
+    setTimeout(() => el.classList.remove('visible'), 2000);
+}
+
+// ==================== INIT ====================
+function init() {
+    // Load localStorage first for instant render
+    loadState();
+    setCurrentDate();
+    initTimeline();
+    initKPIs();
+    initCharts();
+    renderCalendar();
+    initDocuments();
+    initChecklist();
+    initRevenue();
+    renderPlatformStats();
+    renderSnapshots();
+    renderPostLog();
+    renderDriveLinks();
+    renderIdeas();
+    renderActionPlan();
+    renderRevenueBridge();
+    renderScorecard();
+
+    // Set default post date to today
+    const pd = document.getElementById('postDate');
+    if (pd) pd.value = TODAY.toISOString().split('T')[0];
+
+    // Initialize Firebase (will auto-sync via real-time listener)
+    initFirebase();
+
+    // Also do a one-time check: if cloud state is newer, refresh UI
+    setTimeout(function() {
+        loadFromFirebase(function(cloudData) {
+            if (cloudData && cloudData._lastSaved) {
+                const localStr = localStorage.getItem(STORAGE_KEY);
+                const localData = localStr ? JSON.parse(localStr) : null;
+                const localTime = localData && localData._lastSaved ? localData._lastSaved : 0;
+                if (cloudData._lastSaved > localTime) {
+                    state = cloudData;
+                    delete state._lastSaved;
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                    refreshAllUI();
+                }
+            }
+        });
+    }, 1000);
+}
+
+function setCurrentDate() {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDate').textContent = TODAY.toLocaleDateString('en-US', options);
+}
+
+// ==================== TIMELINE ====================
+let currentEditTimelineId = null;
+
+function initTimeline() {
+    const track = document.getElementById('timelineTrack');
+    const progress = document.getElementById('timelineProgress');
+    const phasesEl = document.getElementById('timelinePhases');
+
+    // Clear existing items (for re-renders)
+    track.querySelectorAll('.timeline-item').forEach(el => el.remove());
+    phasesEl.innerHTML = '';
+
+    const totalDays = PROJECT_END - PROJECT_START;
+    const daysElapsed = TODAY - PROJECT_START;
+    const pct = Math.max(0, Math.min(100, (daysElapsed / totalDays) * 100));
+    progress.style.width = pct + '%';
+
+    // Use state events (persisted) — parse date strings to Date objects for sorting
+    const events = (state.timelineEvents || []).map(e => ({
+        ...e,
+        _date: new Date(e.date)
+    }));
+
+    const sortedEvents = events.sort((a, b) => a._date - b._date);
+    const totalD = (PROJECT_END - PROJECT_START) / (1000 * 60 * 60 * 24);
+    const MIN_SPACING = 5.5;
+
+    const positions = sortedEvents.map(event => {
+        const dFromStart = (event._date - PROJECT_START) / (1000 * 60 * 60 * 24);
+        return Math.max(3, Math.min(97, (dFromStart / totalD) * 100));
+    });
+
+    for (let i = 1; i < positions.length; i++) {
+        if (positions[i] - positions[i - 1] < MIN_SPACING) {
+            positions[i] = positions[i - 1] + MIN_SPACING;
+        }
+    }
+
+    sortedEvents.forEach((event, idx) => {
+        const leftPct = Math.min(97, positions[idx]);
+        const isAbove = idx % 2 === 0;
+        const typeClass = event.type || 'regular';
+
+        const item = document.createElement('div');
+        item.className = `timeline-item ${isAbove ? 'above' : 'below'}`;
+        item.style.left = leftPct + '%';
+
+        const labelHtml = `<div class="timeline-item-label ${typeClass}">${event.label.replace(/\n/g, '<br>')}</div>`;
+        const stemHtml = `<div class="timeline-item-stem ${typeClass}"></div>`;
+        const markerHtml = `<div class="timeline-item-marker ${typeClass} editable" onclick="openTimelineModal(${event.id})" title="Click to edit"></div>`;
+        const tooltipHtml = `<div class="timeline-tooltip">${event.tooltip || ''}<br><small style="color:#A0A0A0;">${event._date.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})} · click dot to edit</small></div>`;
+
+        item.innerHTML = markerHtml + stemHtml + labelHtml + tooltipHtml;
+        track.appendChild(item);
+    });
+
+    phases.forEach(phase => {
+        const isActive = TODAY >= phase.start && TODAY <= phase.end;
+        const card = document.createElement('div');
+        card.className = `phase-card ${isActive ? 'active' : ''}`;
+        card.innerHTML = `<h4>${phase.name}</h4><p>${phase.description}</p>`;
+        phasesEl.appendChild(card);
+    });
+}
+
+// ==================== TIMELINE MODAL FUNCTIONS ====================
+function openTimelineModal(eventId) {
+    const modal = document.getElementById('timelineModal');
+    const titleEl = document.getElementById('timelineModalTitle');
+    const saveBtn = document.getElementById('tlSaveBtn');
+    const deleteBtn = document.getElementById('tlDeleteBtn');
+
+    if (eventId) {
+        // EDIT mode
+        const event = state.timelineEvents.find(e => e.id === eventId);
+        if (!event) return;
+        currentEditTimelineId = eventId;
+        titleEl.textContent = 'Edit Timeline Event';
+        saveBtn.textContent = 'Save Changes';
+        deleteBtn.style.display = 'inline-flex';
+        document.getElementById('tlLabel').value = event.label;
+        document.getElementById('tlDate').value = event.date;
+        document.getElementById('tlType').value = event.type || 'regular';
+        document.getElementById('tlTooltip').value = event.tooltip || '';
+    } else {
+        // ADD mode
+        currentEditTimelineId = null;
+        titleEl.textContent = 'Add Timeline Event';
+        saveBtn.textContent = 'Add Event';
+        deleteBtn.style.display = 'none';
+        document.getElementById('tlLabel').value = '';
+        document.getElementById('tlDate').value = '';
+        document.getElementById('tlType').value = 'regular';
+        document.getElementById('tlTooltip').value = '';
+    }
+
+    modal.classList.add('open');
+}
+
+function closeTimelineModal() {
+    document.getElementById('timelineModal').classList.remove('open');
+    currentEditTimelineId = null;
+}
+
+function saveTimelineEvent() {
+    const label = document.getElementById('tlLabel').value.trim();
+    const date = document.getElementById('tlDate').value;
+    const type = document.getElementById('tlType').value;
+    const tooltip = document.getElementById('tlTooltip').value.trim();
+
+    if (!label) { alert('Please enter an event name.'); return; }
+    if (!date) { alert('Please select a date.'); return; }
+
+    if (currentEditTimelineId) {
+        // Update existing
+        const event = state.timelineEvents.find(e => e.id === currentEditTimelineId);
+        if (event) {
+            event.label = label;
+            event.date = date;
+            event.type = type;
+            event.tooltip = tooltip;
+        }
+    } else {
+        // Add new
+        state.timelineEvents.push({
+            id: state.nextTimelineId++,
+            date: date,
+            label: label,
+            type: type,
+            tooltip: tooltip
+        });
+    }
+
+    saveState();
+    initTimeline();
+    closeTimelineModal();
+}
+
+function deleteTimelineEvent() {
+    if (!currentEditTimelineId) return;
+    if (!confirm('Delete this timeline event?')) return;
+
+    state.timelineEvents = state.timelineEvents.filter(e => e.id !== currentEditTimelineId);
+    saveState();
+    initTimeline();
+    closeTimelineModal();
+}
+
+// ==================== KPIs ====================
+function initKPIs() {
+    const kpiRow = document.getElementById('kpiRow');
+    const totalFollowers = Object.values(state.platforms).reduce((s, p) => s + (p.followers || 0), 0);
+    const postedCount = state.content.filter(c => c.status === 'Posted').length;
+    const totalContent = state.content.length;
+
+    const kpis = [
+        {
+            label: 'Total Followers',
+            value: totalFollowers.toLocaleString(),
+            target: '5,000+', meta: 'by Month 6',
+            progress: Math.min(100, (totalFollowers / 5000) * 100),
+            breakdown: [
+                { label: 'Instagram', value: (state.platforms.IG?.followers || 0).toLocaleString() },
+                { label: 'TikTok', value: (state.platforms.TT?.followers || 0).toLocaleString() },
+                { label: 'YouTube', value: (state.platforms.YT?.followers || 0).toLocaleString() },
+                { label: 'Facebook', value: (state.platforms.FB?.followers || 0).toLocaleString() },
+                { label: 'LinkedIn', value: (state.platforms.LI?.followers || 0).toLocaleString() }
+            ]
+        },
+        {
+            label: 'Content Pipeline',
+            value: totalContent.toString(),
+            target: '100-150 total', meta: `${postedCount} posted`,
+            progress: Math.min(100, (totalContent / 100) * 100),
+            breakdown: [
+                { label: 'Posted', value: state.content.filter(c => c.status === 'Posted').length.toString() },
+                { label: 'Ready', value: state.content.filter(c => c.status === 'Ready').length.toString() },
+                { label: 'Shot', value: state.content.filter(c => c.status === 'Shot').length.toString() },
+                { label: 'In Production', value: state.content.filter(c => c.status === 'In Production').length.toString() },
+                { label: 'Scheduled', value: state.content.filter(c => c.status === 'Scheduled').length.toString() }
+            ]
+        },
+        {
+            label: 'Posts Published',
+            value: state.postLog.length.toString(),
+            target: '12-16', meta: 'per month',
+            progress: Math.min(100, (state.postLog.length / 16) * 100),
+            breakdown: [
+                { label: 'Instagram', value: state.postLog.filter(p => p.platform === 'IG').length.toString() },
+                { label: 'TikTok', value: state.postLog.filter(p => p.platform === 'TT').length.toString() },
+                { label: 'YouTube', value: state.postLog.filter(p => p.platform === 'YT').length.toString() },
+                { label: 'Facebook', value: state.postLog.filter(p => p.platform === 'FB').length.toString() },
+                { label: 'LinkedIn', value: state.postLog.filter(p => p.platform === 'LI').length.toString() }
+            ]
+        },
+        {
+            label: 'Phase 1 Revenue',
+            value: '$' + revenueItems.reduce(function(s,r){ return s + r.current; }, 0).toLocaleString() + '/mo',
+            target: '$' + revenueItems.reduce(function(s,r){ return s + r.amount; }, 0).toLocaleString() + '/mo', meta: 'by June 2026',
+            progress: Math.min(100, (revenueItems.reduce(function(s,r){ return s + r.current; }, 0) / revenueItems.reduce(function(s,r){ return s + r.amount; }, 0)) * 100),
+            breakdown: revenueItems.map(function(r) {
+                return { label: r.label.split('(')[0].trim(), value: '$' + r.current.toLocaleString() + ' → $' + r.amount.toLocaleString() };
+            })
+        }
+    ];
+
+    kpiRow.innerHTML = '';
+    kpis.forEach(kpi => {
+        const card = document.createElement('div');
+        card.className = 'kpi-card';
+        card.onclick = function () { this.querySelector('.kpi-breakdown').classList.toggle('visible'); };
+        let progressHtml = kpi.progress !== null ? `<div class="progress-bar"><div class="progress-fill" style="width:${kpi.progress}%;"></div></div>` : '';
+        let breakdownHtml = kpi.breakdown ? `<div class="kpi-breakdown">${kpi.breakdown.map(b => `<div class="breakdown-item"><span class="breakdown-label">${b.label}</span><span class="breakdown-value">${b.value}</span></div>`).join('')}</div>` : '';
+        card.innerHTML = `
+            <div class="kpi-label">${kpi.label}</div>
+            <div class="kpi-value">${kpi.value}</div>
+            <div class="kpi-meta">Target: ${kpi.target} ${kpi.meta}</div>
+            ${progressHtml}${breakdownHtml}
+        `;
+        kpiRow.appendChild(card);
+    });
+}
+
+// ==================== CHARTS ====================
+function initCharts() {
+    Chart.defaults.color = BRAND_COLORS.textSecondary;
+    Chart.defaults.borderColor = BRAND_COLORS.border;
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // Pillar Distribution
+    const pillarCtx = document.getElementById('pillarChart').getContext('2d');
+    const pillarCounts = {};
+    state.content.forEach(c => { pillarCounts[c.pillar] = (pillarCounts[c.pillar] || 0) + 1; });
+    const pillarLabels = Object.keys(pillarCounts);
+    const pillarData = Object.values(pillarCounts);
+    const pillarColors = pillarLabels.map(l =>
+        l === 'Leadership Frameworks' ? BRAND_COLORS.primary :
+        l === 'Military to Corporate' ? BRAND_COLORS.secondary :
+        l === 'Burnout Recovery' ? BRAND_COLORS.cyan :
+        l === 'AI + Business' ? BRAND_COLORS.gold : BRAND_COLORS.dark
+    );
+
+    new Chart(pillarCtx, {
+        type: 'doughnut',
+        data: {
+            labels: pillarLabels,
+            datasets: [{ data: pillarData, backgroundColor: pillarColors, borderColor: BRAND_COLORS.card, borderWidth: 3 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { padding: 20, font: { size: 13, weight: '500' } } } }
+        }
+    });
+
+    // Growth Chart — Projected vs Actual
+    const growthCtx = document.getElementById('growthChart').getContext('2d');
+    const projected = [0, 200, 600, 1200, 2500, 4000, 5000, 6500, 8000, 9000, 10000, 11000, 12000];
+    const months = ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+
+    // Build actual data from snapshots
+    const actual = new Array(13).fill(null);
+    const monthMap = { 'February': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5, 'July': 6, 'August': 7, 'September': 8, 'October': 9, 'November': 10, 'December': 11, 'January': 12 };
+    state.snapshots.forEach(snap => {
+        const d = new Date(snap.date);
+        const monthNum = d.getMonth();
+        const idx = monthNum - 1; // February=1 -> idx 0
+        if (idx >= 0 && idx < 13) {
+            actual[idx] = snap.total;
+        }
+    });
+
+    // Also include current totals as latest point
+    const totalNow = Object.values(state.platforms).reduce((s, p) => s + (p.followers || 0), 0);
+    const currentMonthIdx = TODAY.getMonth() - 1;
+    if (currentMonthIdx >= 0 && currentMonthIdx < 13 && totalNow > 0) {
+        actual[currentMonthIdx] = totalNow;
+    }
+
+    growthChart = new Chart(growthCtx, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Projected', data: projected,
+                    borderColor: BRAND_COLORS.primary, backgroundColor: 'rgba(139,92,246,0.1)',
+                    tension: 0.4, fill: true, pointRadius: 6, pointHoverRadius: 8,
+                    pointBackgroundColor: BRAND_COLORS.primary, pointBorderColor: BRAND_COLORS.card, pointBorderWidth: 2
+                },
+                {
+                    label: 'Actual', data: actual,
+                    borderColor: '#22C55E', backgroundColor: 'rgba(34,197,94,0.1)',
+                    tension: 0.4, fill: false, pointRadius: 7, pointHoverRadius: 9,
+                    pointBackgroundColor: '#22C55E', pointBorderColor: BRAND_COLORS.card, pointBorderWidth: 2,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: true, labels: { font: { size: 13, weight: '500' } } } },
+            scales: { y: { beginAtZero: true, max: 12000, ticks: { stepSize: 2000 } } }
+        }
+    });
+}
+
+// ==================== CONTENT CALENDAR ====================
+function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    const filtered = activeFilter === 'All' ? state.content : state.content.filter(c => c.status === activeFilter);
+
+    filtered.forEach((entry, idx) => {
+        const realIdx = state.content.indexOf(entry);
+        const card = document.createElement('div');
+        card.className = 'content-card';
+        card.onclick = () => openContentModal(realIdx);
+
+        const pillarClass = entry.pillar === 'Leadership Frameworks' ? 'pillar-military' :
+            entry.pillar === 'Military to Corporate' ? 'pillar-lifestyle' :
+            entry.pillar === 'Burnout Recovery' ? 'pillar-tours' :
+            entry.pillar === 'AI + Business' ? 'pillar-market' : 'pillar-trust';
+
+        const statusClass = entry.status === 'Ready' ? 'status-ready' :
+            entry.status === 'In Production' ? 'status-production' :
+            entry.status === 'Shot' ? 'status-shot' :
+            entry.status === 'Posted' ? 'status-posted' : 'status-scheduled';
+
+        let notesIndicator = entry.notes ? '<span style="color:#D4A843;font-size:0.75rem;margin-left:0.5rem;" title="Has notes">📝</span>' : '';
+
+        card.innerHTML = `
+            <div class="content-date">${entry.date}</div>
+            <div class="content-title">${entry.title}${notesIndicator}</div>
+            <div class="content-platforms">${entry.platforms.map(p => `<div class="platform-badge">${p}</div>`).join('')}</div>
+            <div><span class="content-pillar ${pillarClass}">${entry.pillar}</span></div>
+            <div class="content-status ${statusClass}">${entry.status}</div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Update status count in filter chips
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        const f = chip.dataset.filter;
+        if (f === 'All') {
+            chip.textContent = `All (${state.content.length})`;
+        } else {
+            const count = state.content.filter(c => c.status === f).length;
+            chip.textContent = `${f} (${count})`;
+        }
+    });
+}
+
+function filterCalendar(filter) {
+    activeFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.filter-chip[data-filter="${filter}"]`).classList.add('active');
+    renderCalendar();
+}
+
+function openContentModal(idx) {
+    currentEditIndex = idx;
+    const entry = state.content[idx];
+    document.getElementById('modalTitle').textContent = entry.title;
+    document.getElementById('modalDate').textContent = entry.date;
+
+    const pillarClass = entry.pillar === 'Leadership Frameworks' ? 'pillar-military' :
+        entry.pillar === 'Military to Corporate' ? 'pillar-lifestyle' :
+        entry.pillar === 'Burnout Recovery' ? 'pillar-tours' :
+        entry.pillar === 'AI + Business' ? 'pillar-market' : 'pillar-trust';
+    document.getElementById('modalPillar').innerHTML = `<span class="content-pillar ${pillarClass}">${entry.pillar}</span>`;
+
+    document.getElementById('modalPlatforms').innerHTML = entry.platforms.map(p => `<div class="platform-badge">${p}</div>`).join('');
+    document.getElementById('modalStatus').value = entry.status;
+    document.getElementById('modalNotes').value = entry.notes || '';
+    document.getElementById('modalPostUrl').value = entry.postUrl || '';
+    document.getElementById('contentModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('contentModal').classList.remove('open');
+    currentEditIndex = -1;
+}
+
+function saveContentChanges() {
+    if (currentEditIndex < 0) return;
+    state.content[currentEditIndex].status = document.getElementById('modalStatus').value;
+    state.content[currentEditIndex].notes = document.getElementById('modalNotes').value;
+    state.content[currentEditIndex].postUrl = document.getElementById('modalPostUrl').value;
+    saveState();
+    renderCalendar();
+    initKPIs();
+    closeModal();
+}
+
+function openAddContent() {
+    document.getElementById('addContentModal').classList.add('open');
+}
+
+function closeAddContentModal() {
+    document.getElementById('addContentModal').classList.remove('open');
+}
+
+function addNewContent() {
+    const date = document.getElementById('newContentDate').value.trim();
+    const title = document.getElementById('newContentTitle').value.trim();
+    const platforms = document.getElementById('newContentPlatforms').value.split(',').map(p => p.trim().toUpperCase()).filter(p => p);
+    const pillar = document.getElementById('newContentPillar').value;
+    const status = document.getElementById('newContentStatus').value;
+    const notes = document.getElementById('newContentNotes').value;
+
+    if (!date || !title) { alert('Please enter a date and title.'); return; }
+
+    state.content.push({
+        id: state.nextContentId++,
+        date, title, platforms, pillar, status, notes, postUrl: ''
+    });
+    saveState();
+    renderCalendar();
+    initKPIs();
+    closeAddContentModal();
+
+    // Reset form
+    document.getElementById('newContentDate').value = '';
+    document.getElementById('newContentTitle').value = '';
+    document.getElementById('newContentPlatforms').value = '';
+    document.getElementById('newContentNotes').value = '';
+}
+
+// ==================== SOCIAL MEDIA TRACKER ====================
+function renderPlatformStats() {
+    const container = document.getElementById('platformStats');
+    container.innerHTML = '';
+
+    Object.entries(state.platforms).forEach(([key, plat]) => {
+        const prevSnapshot = state.snapshots.length > 0 ? state.snapshots[state.snapshots.length - 1] : null;
+        const prevCount = prevSnapshot ? (prevSnapshot.platforms[key] || 0) : 0;
+        const change = plat.followers - prevCount;
+        const changeText = prevSnapshot
+            ? (change > 0 ? `+${change.toLocaleString()} since last snapshot` : change === 0 ? 'No change' : `${change.toLocaleString()} since last snapshot`)
+            : 'No previous snapshot';
+        const changeClass = change > 0 ? 'change-positive' : 'change-neutral';
+
+        const card = document.createElement('div');
+        card.className = 'platform-stat-card';
+        card.innerHTML = `
+            <div class="platform-name">
+                <div class="platform-icon" style="background:${plat.color};color:#fff;">${key}</div>
+                ${plat.name}
+            </div>
+            <div class="follower-count" style="color:${plat.color};">${plat.followers.toLocaleString()}</div>
+            <div class="follower-change ${changeClass}">${changeText}</div>
+            <div class="follower-input-row">
+                <input type="number" id="input-${key}" placeholder="Update" min="0">
+                <button onclick="updateFollowers('${key}')">Update</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function updateFollowers(platformKey) {
+    const input = document.getElementById('input-' + platformKey);
+    const val = parseInt(input.value);
+    if (isNaN(val) || val < 0) return;
+    state.platforms[platformKey].followers = val;
+    input.value = '';
+    saveState();
+    renderPlatformStats();
+    initKPIs();
+    updateGrowthChart();
+}
+
+function updateGrowthChart() {
+    if (!growthChart) return;
+    const totalNow = Object.values(state.platforms).reduce((s, p) => s + (p.followers || 0), 0);
+    const currentMonthIdx = TODAY.getMonth() - 1;
+    const actual = growthChart.data.datasets[1].data;
+    if (currentMonthIdx >= 0 && currentMonthIdx < 13 && totalNow > 0) {
+        actual[currentMonthIdx] = totalNow;
+    }
+    // Also update from snapshots
+    state.snapshots.forEach(snap => {
+        const d = new Date(snap.date);
+        const idx = d.getMonth() - 1;
+        if (idx >= 0 && idx < 13) actual[idx] = snap.total;
+    });
+    growthChart.update();
+}
+
+function takeSnapshot() {
+    const dateStr = TODAY.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    const platformData = {};
+    let total = 0;
+    Object.entries(state.platforms).forEach(([key, plat]) => {
+        platformData[key] = plat.followers;
+        total += plat.followers;
+    });
+    state.snapshots.push({ date: dateStr, platforms: platformData, total, postCount: state.postLog.length });
+    saveState();
+    renderSnapshots();
+    renderPlatformStats();
+    updateGrowthChart();
+}
+
+function renderSnapshots() {
+    const tbody = document.getElementById('snapshotTableBody');
+    tbody.innerHTML = '';
+    if (state.snapshots.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="color:#606060;text-align:center;padding:1rem;">No snapshots yet — click "Take Monthly Snapshot" to record current follower counts</td></tr>';
+        return;
+    }
+    state.snapshots.forEach((snap, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${snap.date}</td>
+            <td>${(snap.platforms.IG || 0).toLocaleString()}</td>
+            <td>${(snap.platforms.TT || 0).toLocaleString()}</td>
+            <td>${(snap.platforms.FB || 0).toLocaleString()}</td>
+            <td>${(snap.platforms.LI || 0).toLocaleString()}</td>
+            <td>${(snap.platforms.YT || 0).toLocaleString()}</td>
+            <td style="font-weight:600;color:#D4A843;">${snap.total.toLocaleString()}</td>
+            <td><button class="snapshot-delete" onclick="deleteSnapshot(${i})">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function deleteSnapshot(idx) {
+    state.snapshots.splice(idx, 1);
+    saveState();
+    renderSnapshots();
+    updateGrowthChart();
+}
+
+// ==================== POST LOG ====================
+function addPostEntry() {
+    const date = document.getElementById('postDate').value;
+    const platform = document.getElementById('postPlatform').value;
+    const title = document.getElementById('postTitle').value.trim();
+    const link = document.getElementById('postLink').value.trim();
+    if (!date || !title) { alert('Please enter a date and content title.'); return; }
+
+    state.postLog.unshift({ date, platform, title, link });
+    saveState();
+    renderPostLog();
+    initKPIs();
+
+    document.getElementById('postTitle').value = '';
+    document.getElementById('postLink').value = '';
+}
+
+function renderPostLog() {
+    const container = document.getElementById('postLogEntries');
+    container.innerHTML = '';
+    if (state.postLog.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#606060;padding:2rem;font-size:0.9rem;">No posts logged yet — use the form above to track published content</div>';
+        return;
+    }
+    const platformColors = { IG: '#E1306C', TT: '#00F2EA', FB: '#1877F2', LI: '#0A66C2', YT: '#FF0000' };
+    state.postLog.forEach((post, i) => {
+        const entry = document.createElement('div');
+        entry.className = 'post-entry';
+        const linkHtml = post.link ? `<a href="${post.link}" target="_blank" style="color:#008080;font-size:0.8rem;">View</a>` : '<span style="color:#606060;font-size:0.8rem;">—</span>';
+        entry.innerHTML = `
+            <div style="color:#A0A0A0;">${post.date}</div>
+            <div class="post-platform" style="background:${platformColors[post.platform] || '#008080'}22;color:${platformColors[post.platform] || '#008080'};border:1px solid ${platformColors[post.platform] || '#008080'};">${post.platform}</div>
+            <div style="color:#FFFFFF;">${post.title}</div>
+            ${linkHtml}
+            <button class="post-entry-delete" onclick="deletePost(${i})">✕</button>
+        `;
+        container.appendChild(entry);
+    });
+}
+
+function deletePost(idx) {
+    state.postLog.splice(idx, 1);
+    saveState();
+    renderPostLog();
+    initKPIs();
+}
+
+// ==================== DOCUMENTS ====================
+// Strategy documents are hardcoded in HTML with direct file links
+function initDocuments() {
+    // No-op: strategy cards are now static HTML with real links
+}
+
+// ==================== CHECKLIST ====================
+function initChecklist() {
+    const container = document.getElementById('checklistItems');
+    container.innerHTML = '';
+    state.deliverables.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = `checklist-item ${item.completed ? 'completed' : ''}`;
+        div.onclick = function () {
+            state.deliverables[index].completed = !state.deliverables[index].completed;
+            this.classList.toggle('completed');
+            this.querySelector('.checklist-checkbox').textContent = state.deliverables[index].completed ? '✓' : '';
+            updateChecklistProgress();
+            saveState();
+        };
+        div.innerHTML = `
+            <div class="checklist-checkbox">${item.completed ? '✓' : ''}</div>
+            <span class="checklist-label">${item.name}</span>
+        `;
+        container.appendChild(div);
+    });
+    updateChecklistProgress();
+}
+
+function updateChecklistProgress() {
+    const count = state.deliverables.filter(d => d.completed).length;
+    const total = state.deliverables.length;
+    document.getElementById('checklistProgress').textContent = `${count} of ${total}`;
+    document.getElementById('checklistProgressBar').style.width = ((count / total) * 100) + '%';
+}
+
+// ==================== REVENUE ====================
+function initRevenue() {
+    var container = document.getElementById('revenueItems');
+    container.innerHTML = '';
+    var totalTarget = revenueItems.reduce(function(s,r){ return s + r.amount; }, 0);
+    var totalCurrent = revenueItems.reduce(function(s,r){ return s + r.current; }, 0);
+    revenueItems.forEach(function(item) {
+        var div = document.createElement('div');
+        div.className = 'revenue-item';
+        var pct = ((item.current / item.amount) * 100).toFixed(0);
+        var pctOfTotal = ((item.amount / totalTarget) * 100).toFixed(1);
+        div.innerHTML = '<div class="revenue-label">' + item.label + '</div>' +
+            '<div class="revenue-amount">$' + item.current.toLocaleString() + ' / $' + item.amount.toLocaleString() + '</div>' +
+            '<div class="revenue-breakdown">' + item.calc + ' &bull; ' + pctOfTotal + '% of target</div>' +
+            '<div class="progress-bar" style="margin-top:0.5rem"><div class="progress-fill" style="width:' + Math.min(100, pct) + '%;background:' + (pct >= 100 ? '#00C853' : pct >= 50 ? '#00B3B3' : '#FF6B35') + '"></div></div>';
+        container.appendChild(div);
+    });
+
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const chartColors = [BRAND_COLORS.secondary, BRAND_COLORS.gold, BRAND_COLORS.primary, BRAND_COLORS.dark, BRAND_COLORS.cyan];
+    new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Revenue Breakdown'],
+            datasets: revenueItems.map((item, idx) => ({
+                label: item.label, data: [item.amount], backgroundColor: chartColors[idx]
+            }))
+        },
+        options: {
+            indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 12, font: { size: 11, weight: '500' }, usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 12 }
+                }
+            },
+            scales: {
+                x: { stacked: true, display: false },
+                y: { stacked: true, display: false }
+            }
+        }
+    });
+}
+
+// ==================== GOOGLE DRIVE ====================
+function renderDriveLinks() {
+    const grid = document.getElementById('driveGrid');
+    grid.innerHTML = '';
+    if (!state.driveLinks || state.driveLinks.length === 0) {
+        grid.innerHTML = '<div style="text-align:center;color:#606060;padding:2rem;font-size:0.9rem;">No Drive links added yet — click "+ Add Link" to get started</div>';
+        return;
+    }
+    state.driveLinks.forEach((link, i) => {
+        const card = document.createElement('div');
+        card.className = 'drive-link-card';
+        card.innerHTML = `
+            <a href="${link.url}" target="_blank" rel="noopener">
+                <span class="drive-icon">${link.icon}</span>
+                ${link.title}
+            </a>
+            <div class="drive-desc">${link.desc || ''}</div>
+            <button class="post-entry-delete" onclick="event.stopPropagation();deleteDriveLink(${i})" style="position:absolute;top:0.75rem;right:0.75rem;">✕</button>
+        `;
+        card.style.position = 'relative';
+        grid.appendChild(card);
+    });
+}
+
+function toggleDriveEdit() {
+    const row = document.getElementById('driveEditRow');
+    row.style.display = row.style.display === 'none' ? 'grid' : 'none';
+}
+
+function addDriveLink() {
+    const title = document.getElementById('driveLinkTitle').value.trim();
+    const url = document.getElementById('driveLinkUrl').value.trim();
+    const icon = document.getElementById('driveLinkType').value;
+    if (!title || !url) { alert('Please enter a title and URL.'); return; }
+
+    const nextId = state.driveLinks.length > 0 ? Math.max(...state.driveLinks.map(l => l.id || 0)) + 1 : 1;
+    state.driveLinks.push({ id: nextId, title, url, icon, desc: '' });
+    saveState();
+    renderDriveLinks();
+    document.getElementById('driveLinkTitle').value = '';
+    document.getElementById('driveLinkUrl').value = '';
+    document.getElementById('driveEditRow').style.display = 'none';
+}
+
+function deleteDriveLink(idx) {
+    state.driveLinks.splice(idx, 1);
+    saveState();
+    renderDriveLinks();
+}
+
+// ==================== CONTENT IDEAS ====================
+function switchIdeaTab(tab) {
+    document.querySelectorAll('.idea-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.idea-panel').forEach(p => p.classList.remove('active'));
+    if (tab === 'notepad') {
+        document.querySelectorAll('.idea-tab')[0].classList.add('active');
+        document.getElementById('notepadPanel').classList.add('active');
+    } else {
+        document.querySelectorAll('.idea-tab')[1].classList.add('active');
+        document.getElementById('generatorPanel').classList.add('active');
+    }
+}
+
+function renderIdeas() {
+    const container = document.getElementById('ideasList');
+    container.innerHTML = '';
+    if (!state.ideas || state.ideas.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#606060;padding:2rem;font-size:0.9rem;">No ideas yet — type your content ideas above and hit Add</div>';
+        return;
+    }
+    const pillarClassMap = {
+        'Leadership Frameworks': 'pillar-military', 'Military to Corporate': 'pillar-lifestyle',
+        'Burnout Recovery': 'pillar-tours', 'AI + Business': 'pillar-market'
+    };
+    state.ideas.forEach((idea, i) => {
+        const card = document.createElement('div');
+        card.className = 'idea-card';
+        card.innerHTML = `
+            <span class="idea-text">${idea.text}</span>
+            <span class="idea-pillar-tag content-pillar ${pillarClassMap[idea.pillar] || 'pillar-community'}">${idea.pillar}</span>
+            <div class="idea-actions">
+                <button onclick="moveIdeaToCalendar(${i})" title="Add to content calendar">→ Calendar</button>
+                <button class="delete-btn" onclick="deleteIdea(${i})" title="Remove idea">✕</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function addIdea() {
+    const text = document.getElementById('ideaText').value.trim();
+    const pillar = document.getElementById('ideaPillar').value;
+    if (!text) { alert('Please enter a content idea.'); return; }
+    if (!state.ideas) state.ideas = [];
+    if (!state.nextIdeaId) state.nextIdeaId = 1;
+    state.ideas.push({ id: state.nextIdeaId++, text, pillar });
+    saveState();
+    renderIdeas();
+    document.getElementById('ideaText').value = '';
+}
+
+function deleteIdea(idx) {
+    state.ideas.splice(idx, 1);
+    saveState();
+    renderIdeas();
+}
+
+function moveIdeaToCalendar(idx) {
+    const idea = state.ideas[idx];
+    state.content.push({
+        id: state.nextContentId++,
+        date: 'TBD',
+        title: idea.text,
+        platforms: ['IG'],
+        pillar: idea.pillar,
+        status: 'Scheduled',
+        notes: 'Added from Ideas Lab',
+        postUrl: ''
+    });
+    state.ideas.splice(idx, 1);
+    saveState();
+    renderIdeas();
+    renderCalendar();
+    initKPIs();
+}
+
+// Content Idea Templates
+const IDEA_TEMPLATES = {
+    'Leadership Frameworks': {
+        hype: [
+            'The leadership hack that 17 years of military service taught me',
+            'Stop managing people. Start LEADING them. Here\'s the difference.',
+            'This one framework changed how I run every meeting, team, and project',
+            'Most leaders fail at this ONE thing — and it\'s not what you think'
+        ],
+        educational: [
+            'The 3 questions every leader should ask before making any decision',
+            'How to give feedback people actually hear (not just tolerate)',
+            'Delegation isn\'t dumping — here\'s the framework that works',
+            'The after-action review: Your new secret weapon for project management'
+        ],
+        'behind-scenes': [
+            'My morning leadership routine — military discipline meets modern CEO life',
+            'How I prep for a coaching session: The real process',
+            'The whiteboard system I use to solve every business problem',
+            'Day in the life: From 5AM workout to evening strategy session'
+        ],
+        luxury: [
+            'Premium coaching for leaders who are done settling for average',
+            'The ROI of executive coaching — real numbers from real clients',
+            'Why Fortune 500 companies invest millions in leadership development',
+            'Building high-performance teams: The consulting approach'
+        ],
+        community: [
+            'What\'s the hardest leadership lesson you\'ve ever learned?',
+            'Tag a leader who inspires you — let\'s build each other up',
+            'Poll: What\'s your biggest leadership challenge right now?',
+            'Share your leadership win this week — big or small!'
+        ]
+    },
+    'Military to Corporate': {
+        hype: [
+            '20 years in the military. Now I build businesses. Here\'s how those skills transfer.',
+            'From top Air Force recruiter to CEO — the full story in 60 seconds',
+            'Military leaders are BUILT different. Let me show you why.',
+            'The skills you learned in service are worth more than any MBA'
+        ],
+        educational: [
+            'Mission briefs → Business meetings: How to run them the military way',
+            '5 military leadership principles every civilian team needs',
+            'Translating your military experience for civilian employers',
+            'The chain of command concept that makes businesses run smoother'
+        ],
+        'behind-scenes': [
+            'My transition story: The hardest part nobody talks about',
+            'How military culture shaped my coaching methodology',
+            'The moment I realized my military skills were my superpower',
+            'What I wish I knew before I left the service'
+        ],
+        luxury: [
+            'Executive coaching designed for veteran-led businesses',
+            'Why companies are hiring military-trained consultants at premium rates',
+            'The leadership edge military experience gives in the C-suite',
+            'Building a consulting empire on military discipline and civilian innovation'
+        ],
+        community: [
+            'Veterans: What military skill translated best to your career?',
+            'Tag a veteran who\'s crushing it in business!',
+            'What do you wish you knew before transitioning out of service?',
+            'Military family — what\'s your proudest post-service achievement?'
+        ]
+    },
+    'Burnout Recovery': {
+        hype: [
+            'Burnout isn\'t a badge of honor — it\'s a leadership failure. Here\'s the fix.',
+            'I went from grinding 80-hour weeks to building a life I love. Here\'s how.',
+            'The resilience framework I taught military leaders works for ANYONE',
+            'You don\'t need more hustle. You need better systems.'
+        ],
+        educational: [
+            'The 5 warning signs of burnout (most people miss #3)',
+            'Work-life balance is a myth — here\'s what to aim for instead',
+            'How to build a resilience practice that actually sticks',
+            'The recovery protocol I use when I feel myself approaching the edge'
+        ],
+        'behind-scenes': [
+            'Real talk: My own burnout story and what pulled me out',
+            'My non-negotiable daily habits — the system behind the results',
+            'Sunday reset routine: How I prepare for a high-performance week',
+            'The conversation with my wife that changed how I approach work'
+        ],
+        luxury: [
+            'Premium coaching for high-achievers who are tired of running on empty',
+            'The executive wellness approach: Peak performance without the burnout',
+            'Resilience training for high-stakes environments',
+            'Investing in recovery: Why top performers prioritize rest'
+        ],
+        community: [
+            'What\'s your non-negotiable self-care habit? Share below.',
+            'Burnout check: How are you REALLY doing this week?',
+            'Share one thing you did for yourself today — no guilt allowed',
+            'What book changed your perspective on work and rest?'
+        ]
+    },
+    'AI + Business': {
+        hype: [
+            'I used ChatGPT to build a business process in 30 minutes that used to take a week',
+            'AI isn\'t replacing leaders — it\'s making the good ones unstoppable',
+            'The AI tool that saved my business 10 hours this week',
+            'Stop fearing AI. Start using it. Here\'s your first step.'
+        ],
+        educational: [
+            'AI for business owners: 5 tools you should be using TODAY',
+            'How to write prompts that actually get useful AI output',
+            'Automating your weekly report with AI in 5 minutes — live demo',
+            'The AI stack I use to run my entire business more efficiently'
+        ],
+        'behind-scenes': [
+            'Live stream highlight: Solving a real business problem with AI in real time',
+            'My AI workflow: How I prep content, emails, and strategy with AI assistance',
+            'Testing the latest AI tool so you don\'t have to — honest review',
+            'Behind the AI for Business live stream — how we prep each episode'
+        ],
+        luxury: [
+            'AI consulting: How we help businesses implement AI at scale',
+            'The premium AI audit that reveals $50K+ in hidden efficiency gains',
+            'Enterprise AI strategy: From pilot to full implementation',
+            'Why forward-thinking CEOs are investing in AI coaches, not just AI tools'
+        ],
+        community: [
+            'What AI tool has made the biggest difference in your business?',
+            'Drop your biggest AI question — I\'ll answer it on our next live stream',
+            'AI skeptics welcome: What\'s holding you back from using AI?',
+            'Share your best AI prompt or workflow — let\'s learn from each other'
+        ]
+    }
+};
+function generateIdeas() {
+    const pillar = document.getElementById('genPillar').value;
+    const platform = document.getElementById('genPlatform').value;
+    const tone = document.getElementById('genTone').value;
+    const container = document.getElementById('generatedIdeas');
+
+    // Collect matching ideas
+    let ideas = [];
+    const pillarsToSearch = pillar === 'any' ? Object.keys(IDEA_TEMPLATES) : [pillar];
+    const tonesToSearch = tone === 'any' ? ['hype', 'educational', 'behind-scenes', 'luxury', 'community'] : [tone];
+
+    pillarsToSearch.forEach(p => {
+        tonesToSearch.forEach(t => {
+            if (IDEA_TEMPLATES[p] && IDEA_TEMPLATES[p][t]) {
+                IDEA_TEMPLATES[p][t].forEach(idea => {
+                    ideas.push({ text: idea, pillar: p, tone: t });
+                });
+            }
+        });
+    });
+
+    // Shuffle and pick 5
+    ideas = ideas.sort(() => Math.random() - 0.5).slice(0, 5);
+
+    if (ideas.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#606060;padding:2rem;">No ideas match that combination. Try broadening your filters.</div>';
+        return;
+    }
+
+    const platformLabel = platform !== 'any' ? ` for ${platform}` : '';
+    container.innerHTML = ideas.map((idea, i) => `
+        <div class="gen-idea-card">
+            <span class="idea-text">${idea.text}</span>
+            <button onclick="saveGeneratedIdea(${i})" data-pillar="${idea.pillar}" data-text="${idea.text.replace(/"/g, '&quot;')}">Save to Notepad</button>
+        </div>
+    `).join('');
+}
+
+function saveGeneratedIdea(idx) {
+    const card = document.querySelectorAll('.gen-idea-card')[idx];
+    const btn = card.querySelector('button');
+    const text = btn.dataset.text;
+    const pillar = btn.dataset.pillar;
+    if (!state.ideas) state.ideas = [];
+    if (!state.nextIdeaId) state.nextIdeaId = 1;
+    state.ideas.push({ id: state.nextIdeaId++, text, pillar });
+    saveState();
+    renderIdeas();
+    btn.textContent = 'Saved ✓';
+    btn.style.borderColor = '#D4A843';
+    btn.style.color = '#D4A843';
+    btn.disabled = true;
+}
+
+// ==================== ACTION PLAN ====================
+var currentActionMonth = 'March';
+
+function renderActionPlan() {
+    var items = state.actionItems || [];
+    var total = items.length;
+    var done = items.filter(function(a){ return a.status === 'done'; }).length;
+    var inProgress = items.filter(function(a){ return a.status === 'in_progress'; }).length;
+
+    // Overall progress
+    var progressBar = document.getElementById('actionPlanProgressBar');
+    var progressText = document.getElementById('actionPlanProgressText');
+    if (progressBar) {
+        progressBar.style.width = (total > 0 ? (done / total) * 100 : 0) + '%';
+    }
+    if (progressText) {
+        progressText.textContent = done + ' of ' + total + ' actions complete (' + inProgress + ' in progress)';
+    }
+
+    // Month tab badges
+    var months = ['March', 'April', 'May', 'June'];
+    months.forEach(function(m) {
+        var tab = document.querySelector('.month-tab[data-month="' + m + '"]');
+        if (tab) {
+            var badge = tab.querySelector('.tab-progress');
+            if (badge) {
+                var monthItems = items.filter(function(a){ return a.month === m; });
+                var monthDone = monthItems.filter(function(a){ return a.status === 'done'; }).length;
+                badge.textContent = monthDone + '/' + monthItems.length;
+            }
+        }
+    });
+
+    // Render current month panel
+    renderMonthPanel(currentActionMonth);
+}
+
+function switchMonth(month) {
+    currentActionMonth = month;
+    // Update active tab
+    var tabs = document.querySelectorAll('.month-tab');
+    tabs.forEach(function(t){ t.classList.remove('active'); });
+    var activeTab = document.querySelector('.month-tab[data-month="' + month + '"]');
+    if (activeTab) activeTab.classList.add('active');
+    // Show/hide panels
+    var panels = document.querySelectorAll('.month-panel');
+    panels.forEach(function(p){ p.style.display = 'none'; p.classList.remove('active'); });
+    var panel = document.getElementById('month-' + month);
+    if (panel) { panel.style.display = 'block'; panel.classList.add('active'); }
+    renderMonthPanel(month);
+}
+
+function renderMonthPanel(month) {
+    var panel = document.getElementById('month-' + month);
+    if (!panel) return;
+    var items = (state.actionItems || []).filter(function(a){ return a.month === month; });
+
+    // Group by week
+    var weeks = {};
+    items.forEach(function(a) {
+        if (!weeks[a.week]) weeks[a.week] = { label: a.weekLabel, items: [] };
+        weeks[a.week].items.push(a);
+    });
+
+    var html = '';
+    var weekNums = Object.keys(weeks).sort(function(a,b){ return parseInt(a) - parseInt(b); });
+    weekNums.forEach(function(wk) {
+        var group = weeks[wk];
+        html += '<div class="week-group">';
+        html += '<div class="week-header">' + group.label + '</div>';
+        group.items.forEach(function(action) {
+            var statusClass = action.status;
+            var statusIcon = action.status === 'done' ? '&#10003;' : action.status === 'in_progress' ? '&#9654;' : action.status === 'blocked' ? '&#9888;' : '&#9675;';
+            // Owner tag class
+            var ownerLower = (action.owner || '').toLowerCase();
+            var ownerClass = 'owner-tag';
+            if (ownerLower.indexOf('claude') >= 0 && ownerLower.indexOf('cam') >= 0) ownerClass += ' owner-both';
+            else if (ownerLower.indexOf('claude') >= 0) ownerClass += ' owner-claude';
+            else ownerClass += ' owner-cam';
+
+            html += '<div class="action-item ' + statusClass + '" onclick="cycleActionStatus(' + action.id + ')">';
+            html += '<div class="action-checkbox">' + statusIcon + '</div>';
+            html += '<div class="action-content">';
+            html += '<div class="action-title">#' + action.id + ' ' + action.title + '</div>';
+            html += '<div class="action-meta">';
+            html += '<span class="' + ownerClass + '">' + action.owner + '</span>';
+            if (action.dependency) html += '<span style="color:#555">Dep: ' + action.dependency + '</span>';
+            if (action.revenueImpact) html += '<span style="color:#D4A843">' + action.revenueImpact + '</span>';
+            html += '</div>';
+            html += '</div>';
+            html += '<select class="action-status-select" onclick="event.stopPropagation()" onchange="setActionStatus(' + action.id + ', this.value)">';
+            html += '<option value="pending"' + (action.status === 'pending' ? ' selected' : '') + '>Pending</option>';
+            html += '<option value="in_progress"' + (action.status === 'in_progress' ? ' selected' : '') + '>In Progress</option>';
+            html += '<option value="done"' + (action.status === 'done' ? ' selected' : '') + '>Done</option>';
+            html += '<option value="blocked"' + (action.status === 'blocked' ? ' selected' : '') + '>Blocked</option>';
+            html += '</select>';
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+
+    panel.innerHTML = html;
+}
+
+function cycleActionStatus(id) {
+    var item = (state.actionItems || []).find(function(a){ return a.id === id; });
+    if (!item) return;
+    var order = ['pending', 'in_progress', 'done'];
+    var idx = order.indexOf(item.status);
+    item.status = order[(idx + 1) % order.length];
+    if (item.status === 'done') item.completedDate = new Date().toISOString().split('T')[0];
+    saveState();
+    renderActionPlan();
+}
+
+function setActionStatus(id, status) {
+    var item = (state.actionItems || []).find(function(a){ return a.id === id; });
+    if (!item) return;
+    item.status = status;
+    if (status === 'done') item.completedDate = new Date().toISOString().split('T')[0];
+    saveState();
+    renderActionPlan();
+}
+
+// ==================== REVENUE BRIDGE ====================
+function renderRevenueBridge() {
+    var container = document.getElementById('revenueBridgeCards');
+    if (!container) return;
+    var bridge = state.revenueBridge || DEFAULT_REVENUE_BRIDGE;
+    var html = '';
+    var totalCurrent = 0;
+    var totalTarget = 0;
+
+    bridge.forEach(function(stream) {
+        var current = stream.current;
+        var target = stream.target;
+        totalCurrent += current;
+        totalTarget += target;
+        var pct = target > 0 ? Math.min(100, (current / target) * 100) : 100;
+        var color = pct >= 100 ? '#00C853' : pct >= 60 ? '#00B3B3' : pct >= 30 ? '#FF6B35' : '#FF3D00';
+        var delta = target - current;
+
+        html += '<div class="bridge-card">';
+        html += '<div class="bridge-stream">' + stream.stream + '</div>';
+        html += '<div class="bridge-numbers">$' + current.toLocaleString() + ' &rarr; $' + target.toLocaleString() + '</div>';
+        html += '<div class="bridge-bar"><div class="bridge-fill" style="width:' + pct + '%;background:' + color + '"></div></div>';
+        html += '<div class="bridge-how">' + (delta > 0 ? '+$' + delta.toLocaleString() + ' &mdash; ' : '') + stream.how + '</div>';
+        html += '</div>';
+    });
+
+    // Total card
+    var totalPct = totalTarget > 0 ? Math.min(100, (totalCurrent / totalTarget) * 100) : 0;
+    html += '<div class="bridge-card" style="border-color:#00B3B3">';
+    html += '<div class="bridge-stream" style="color:#00B3B3">TOTAL</div>';
+    html += '<div class="bridge-numbers" style="font-size:1.3rem">$' + totalCurrent.toLocaleString() + ' &rarr; $' + totalTarget.toLocaleString() + '</div>';
+    html += '<div class="bridge-bar"><div class="bridge-fill" style="width:' + totalPct + '%;background:#00B3B3"></div></div>';
+    html += '<div class="bridge-how">+$' + (totalTarget - totalCurrent).toLocaleString() + ' gap to close</div>';
+    html += '</div>';
+
+    container.innerHTML = html;
+}
+
+// ==================== SCORECARD ====================
+function renderScorecard() {
+    var body = document.getElementById('scorecardBody');
+    if (!body) return;
+    var data = state.scorecard || DEFAULT_SCORECARD;
+    var metrics = data.metrics || data;
+    var html = '';
+    metrics.forEach(function(metric, idx) {
+        var vals = metric.values || {};
+        html += '<tr>';
+        html += '<td class="metric-label">' + metric.label + '</td>';
+        var months = ['Mar', 'Apr', 'May', 'Jun'];
+        months.forEach(function(m) {
+            html += '<td style="text-align:center"><input class="scorecard-input" id="sc-' + idx + '-' + m + '" value="' + (vals[m] || '') + '" onchange="updateScorecard(' + idx + ',\'' + m + '\',this.value)" placeholder="—"></td>';
+        });
+        html += '<td style="text-align:center;color:#D4A843;font-weight:600">' + metric.target + '</td>';
+        html += '</tr>';
+    });
+    body.innerHTML = html;
+}
+
+function updateScorecard(idx, month, value) {
+    if (!state.scorecard) state.scorecard = JSON.parse(JSON.stringify(DEFAULT_SCORECARD));
+    var metrics = state.scorecard.metrics || state.scorecard;
+    if (metrics[idx]) {
+        if (!metrics[idx].values) metrics[idx].values = {};
+        metrics[idx].values[month] = value;
+    }
+    saveState();
+}
+
+// ==================== UTILS ====================
+function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Close modal on overlay click
+document.getElementById('contentModal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+});
+document.getElementById('addContentModal').addEventListener('click', function (e) {
+    if (e.target === this) closeAddContentModal();
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeModal();
+        closeAddContentModal();
+    }
+});
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

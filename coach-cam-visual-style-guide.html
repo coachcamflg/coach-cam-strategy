@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visual Style Guide & Story Framework — Coach Cam × RPN Blend</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e0e0e0; line-height: 1.7; }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid #1a1a1a;
+    padding: 12px 24px;
+    display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a {
+    color: #888; text-decoration: none; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; white-space: nowrap; padding: 6px 14px;
+    border-radius: 20px; border: 1px solid transparent; transition: all 0.2s;
+  }
+  .nav a:hover, .nav a.active { color: #fff; border-color: #333; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1000 40%, #0a0a0a 100%);
+    padding: 80px 40px 60px; text-align: center;
+    border-bottom: 3px solid #d4a017;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at center, rgba(212,160,23,0.08) 0%, transparent 50%);
+    animation: heroPulse 8s ease-in-out infinite;
+  }
+  @keyframes heroPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+  .hero .tag {
+    display: inline-block; background: linear-gradient(90deg, #d4a017, #f0c040);
+    color: #000; font-weight: 800; font-size: 12px; letter-spacing: 3px;
+    padding: 6px 20px; border-radius: 20px; margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .hero h1 {
+    font-size: 48px; font-weight: 900; color: #fff; margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, #d4a017, #f0c040);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 18px; color: #888; max-width: 700px; margin: 0 auto;
+    position: relative; z-index: 1;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px; color: #d4a017;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .section-title { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .section-sub { font-size: 15px; color: #888; margin-bottom: 32px; max-width: 700px; }
+
+  /* BLEND IDENTITY */
+  .blend-grid { display: grid; grid-template-columns: 1fr 80px 1fr; gap: 0; margin-bottom: 40px; align-items: stretch; }
+  .blend-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 32px;
+  }
+  .blend-card h3 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 16px; }
+  .blend-card ul { list-style: none; }
+  .blend-card li {
+    font-size: 14px; color: #aaa; padding: 6px 0; border-bottom: 1px solid #1a1a1a;
+  }
+  .blend-card li:last-child { border-bottom: none; }
+  .blend-card li strong { color: #fff; }
+  .blend-center {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; color: #d4a017; font-weight: 900;
+  }
+
+  /* COLOR SYSTEM */
+  .color-row {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;
+  }
+  .color-swatch {
+    border-radius: 12px; padding: 20px; text-align: center; min-height: 120px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    border: 1px solid #1a1a1a;
+  }
+  .color-swatch .name { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .color-swatch .hex { font-size: 11px; opacity: 0.7; }
+
+  /* THUMBNAIL GRID */
+  .thumb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+  .thumb-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 12px;
+    overflow: hidden;
+  }
+  .thumb-preview {
+    aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; padding: 24px; text-align: center;
+    position: relative;
+  }
+  .thumb-preview .big-text {
+    font-size: 22px; font-weight: 900; line-height: 1.1;
+    text-transform: uppercase; letter-spacing: -0.5px;
+  }
+  .thumb-preview .sub-text {
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 8px; opacity: 0.7;
+  }
+  .thumb-info { padding: 16px; }
+  .thumb-info h4 { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .thumb-info p { font-size: 11px; color: #888; }
+  .thumb-info .use-for {
+    font-size: 10px; font-weight: 700; color: #d4a017;
+    letter-spacing: 1px; text-transform: uppercase; margin-top: 8px;
+  }
+
+  /* TIER SYSTEM */
+  .tier-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 32px; margin-bottom: 16px; position: relative; overflow: hidden;
+  }
+  .tier-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+  }
+  .tier-card.t1::before { background: linear-gradient(180deg, #d4a017, #f0c040); }
+  .tier-card.t2::before { background: linear-gradient(180deg, #ff3333, #ff6644); }
+  .tier-card.t3::before { background: linear-gradient(180deg, #3399ff, #66bbff); }
+  .tier-header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
+  }
+  .tier-num {
+    font-size: 48px; font-weight: 900; line-height: 1;
+  }
+  .tier-card.t1 .tier-num { color: #d4a017; }
+  .tier-card.t2 .tier-num { color: #ff3333; }
+  .tier-card.t3 .tier-num { color: #3399ff; }
+  .tier-title { font-size: 22px; font-weight: 800; color: #fff; }
+  .tier-subtitle { font-size: 13px; color: #888; }
+  .tier-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tier-detail-box {
+    background: #0d0d0d; border-radius: 8px; padding: 16px;
+  }
+  .tier-detail-box h5 {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #666;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .tier-detail-box p { font-size: 13px; color: #ccc; }
+
+  /* STORY FRAMEWORK */
+  .story-flow {
+    display: flex; align-items: stretch; gap: 0; margin: 24px 0;
+    overflow-x: auto;
+  }
+  .story-step {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 12px;
+    padding: 20px; min-width: 180px; flex: 1; position: relative;
+  }
+  .story-step .step-num {
+    font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #d4a017;
+    margin-bottom: 8px;
+  }
+  .story-step h4 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .story-step p { font-size: 12px; color: #888; }
+  .story-arrow {
+    display: flex; align-items: center; font-size: 24px; color: #333; padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  /* STORY ARC CARDS */
+  .arc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .arc-card {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 28px; position: relative;
+  }
+  .arc-card::after {
+    content: attr(data-series); position: absolute; top: 16px; right: 16px;
+    font-size: 9px; font-weight: 700; letter-spacing: 2px; color: #d4a017;
+    text-transform: uppercase; background: rgba(212,160,23,0.1);
+    padding: 3px 10px; border-radius: 10px;
+  }
+  .arc-card .ep-count {
+    font-size: 36px; font-weight: 900; color: #d4a017; margin-bottom: 4px;
+  }
+  .arc-card h4 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .arc-card p { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .arc-card .episodes {
+    background: #0d0d0d; border-radius: 8px; padding: 12px;
+    font-size: 12px; color: #aaa;
+  }
+  .arc-card .episodes strong { color: #fff; display: block; margin-bottom: 6px; font-size: 10px; letter-spacing: 1px; }
+
+  /* TYPOGRAPHY SYSTEM */
+  .type-showcase {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 40px; margin-bottom: 20px;
+  }
+  .type-sample { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #1a1a1a; }
+  .type-sample:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .type-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #666;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .type-label span { color: #d4a017; }
+
+  /* DO/DONT */
+  .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .do-card, .dont-card {
+    border-radius: 16px; padding: 28px; border: 1px solid;
+  }
+  .do-card { background: rgba(51,204,102,0.05); border-color: rgba(51,204,102,0.2); }
+  .dont-card { background: rgba(255,51,51,0.05); border-color: rgba(255,51,51,0.2); }
+  .do-card h4 { color: #33cc66; font-size: 14px; font-weight: 800; letter-spacing: 2px; margin-bottom: 12px; }
+  .dont-card h4 { color: #ff3333; font-size: 14px; font-weight: 800; letter-spacing: 2px; margin-bottom: 12px; }
+  .do-card li, .dont-card li {
+    font-size: 13px; color: #aaa; padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05); list-style: none;
+  }
+  .do-card li::before { content: '✓ '; color: #33cc66; font-weight: 700; }
+  .dont-card li::before { content: '✗ '; color: #ff3333; font-weight: 700; }
+
+  /* PRODUCTION CHECKLIST */
+  .checklist {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 16px;
+    padding: 28px; margin-bottom: 20px;
+  }
+  .checklist h4 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #1a1a1a;
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 20px; height: 20px; border: 2px solid #333;
+    border-radius: 4px; flex-shrink: 0; margin-top: 2px;
+  }
+  .check-item p { font-size: 13px; color: #ccc; }
+  .check-item .time { font-size: 11px; color: #666; margin-top: 2px; }
+
+  /* FORMULA BLOCK */
+  .formula {
+    background: linear-gradient(135deg, #111, #0d0d0d);
+    border: 2px solid #d4a017; border-radius: 16px;
+    padding: 40px; text-align: center; margin: 32px 0;
+  }
+  .formula .equation {
+    font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px;
+  }
+  .formula .equation span { color: #d4a017; }
+  .formula p { font-size: 14px; color: #888; }
+
+  /* WEEKLY SPLIT */
+  .split-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  .split-table th {
+    text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    color: #666; text-transform: uppercase; padding: 12px 16px;
+    border-bottom: 1px solid #222; background: #0d0d0d;
+  }
+  .split-table td {
+    padding: 14px 16px; border-bottom: 1px solid #1a1a1a;
+    font-size: 13px; color: #ccc;
+  }
+  .split-table tr:hover { background: #111; }
+  .split-tag {
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 4px; letter-spacing: 0.5px;
+  }
+  .split-tag.story { background: rgba(212,160,23,0.2); color: #d4a017; }
+  .split-tag.edu { background: rgba(51,153,255,0.2); color: #5599ff; }
+  .split-tag.cinematic { background: rgba(153,51,255,0.2); color: #bb77ff; }
+  .split-tag.raw { background: rgba(255,51,51,0.2); color: #ff5555; }
+
+  /* CROSS-LINK FOOTER */
+  .doc-links {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin: 40px 0 20px; padding-top: 40px; border-top: 1px solid #1a1a1a;
+  }
+  .doc-link {
+    background: #111; border: 1px solid #1a1a1a; border-radius: 12px;
+    padding: 20px; text-align: center; text-decoration: none; transition: all 0.2s;
+  }
+  .doc-link:hover { border-color: #d4a017; transform: translateY(-2px); }
+  .doc-link .icon { font-size: 24px; margin-bottom: 8px; }
+  .doc-link h4 { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .doc-link p { font-size: 10px; color: #666; }
+
+  .footer-note {
+    text-align: center; padding: 40px; font-size: 12px; color: #444;
+  }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+    .blend-grid { grid-template-columns: 1fr; }
+    .blend-center { padding: 12px 0; font-size: 32px; }
+    .color-row { grid-template-columns: repeat(3, 1fr); }
+    .thumb-grid { grid-template-columns: 1fr 1fr; }
+    .tier-details { grid-template-columns: 1fr; }
+    .arc-grid { grid-template-columns: 1fr; }
+    .do-dont { grid-template-columns: 1fr; }
+    .story-flow { flex-direction: column; }
+    .story-arrow { transform: rotate(90deg); justify-content: center; padding: 6px 0; }
+    .doc-links { grid-template-columns: 1fr 1fr; }
+    .split-table { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#blend">The Blend</a>
+  <a href="#visual">Visual System</a>
+  <a href="#thumbnails">Thumbnails</a>
+  <a href="#typography">Typography</a>
+  <a href="#tiers">Content Tiers</a>
+  <a href="#story">Story Framework</a>
+  <a href="#arcs">Story Arcs</a>
+  <a href="#weekly">Weekly Split</a>
+  <a href="#production">Production</a>
+  <a href="#rules">Do / Don't</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="tag">VISUAL STYLE GUIDE + STORY FRAMEWORK</div>
+  <h1>The <span>Coach Cam</span> Blend</h1>
+  <p>RPN's cinematic production quality meets Coach Cam's authentic military-to-CEO story. Every post is an event. Every story is an invitation.</p>
+</section>
+
+<!-- SECTION 1: THE BLEND IDENTITY -->
+<section class="container" id="blend">
+  <div class="section-label">01 — THE BLEND IDENTITY</div>
+  <div class="section-title">Two Worlds, One Brand</div>
+  <div class="section-sub">You're not copying RPN. You're not staying where you are. You're building something new — cinematic production with raw, veteran authenticity.</div>
+
+  <div class="blend-grid">
+    <div class="blend-card">
+      <h3 style="color: #d4a017;">🎬 FROM RPN</h3>
+      <ul>
+        <li><strong>Dark, cinematic thumbnails</strong> — movie-poster energy on every post</li>
+        <li><strong>"Every post is an event"</strong> mentality — treat content like a product launch</li>
+        <li><strong>Bold, uppercase typography</strong> — text that stops the scroll from 10 feet away</li>
+        <li><strong>Mini-documentary format</strong> — Reels that feel like short films</li>
+        <li><strong>Framework reveals</strong> — proprietary methods given premium visual treatment</li>
+        <li><strong>Cinematic color grading</strong> — warm amber tones, deep blacks, controlled lighting</li>
+        <li><strong>Build-in-public energy</strong> — showing tools, process, and behind-the-scenes</li>
+      </ul>
+    </div>
+    <div class="blend-center">×</div>
+    <div class="blend-card">
+      <h3 style="color: #ff3333;">🎖️ FROM COACH CAM</h3>
+      <ul>
+        <li><strong>Military separation story</strong> — the courage to leave and build something new</li>
+        <li><strong>Family-first leadership</strong> — dad, husband, CEO — all at once</li>
+        <li><strong>80+ episodes of proof</strong> — nobody can fake that kind of consistency</li>
+        <li><strong>Veteran authority</strong> — discipline, structure, accountability</li>
+        <li><strong>Coaching authenticity</strong> — real advice from real experience</li>
+        <li><strong>Building FLG in public</strong> — the raw, honest journey of growing a company</li>
+        <li><strong>Community-first</strong> — Fairfield roots, local impact, global ambition</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="formula">
+    <div class="equation"><span>CINEMATIC PRODUCTION</span> + REAL STORY = <span>UNSTOPPABLE BRAND</span></div>
+    <p>RPN makes you stay for the visuals. Coach Cam makes you stay for the person.</p>
+  </div>
+</section>
+
+<!-- SECTION 2: VISUAL SYSTEM -->
+<section class="container" id="visual">
+  <div class="section-label">02 — VISUAL SYSTEM</div>
+  <div class="section-title">Color & Mood</div>
+  <div class="section-sub">A consistent visual language that says "premium" without saying "corporate." Dark, warm, and bold.</div>
+
+  <div style="margin-bottom: 12px; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #666; text-transform: uppercase;">Primary Palette</div>
+  <div class="color-row">
+    <div class="color-swatch" style="background: #0a0a0a; color: #fff;">
+      <div class="name">Deep Black</div>
+      <div class="hex">#0A0A0A</div>
+    </div>
+    <div class="color-swatch" style="background: #d4a017; color: #000;">
+      <div class="name">Coach Gold</div>
+      <div class="hex">#D4A017</div>
+    </div>
+    <div class="color-swatch" style="background: #f0c040; color: #000;">
+      <div class="name">Light Gold</div>
+      <div class="hex">#F0C040</div>
+    </div>
+    <div class="color-swatch" style="background: #ffffff; color: #000;">
+      <div class="name">Clean White</div>
+      <div class="hex">#FFFFFF</div>
+    </div>
+    <div class="color-swatch" style="background: #1a1a1a; color: #888;">
+      <div class="name">Card Dark</div>
+      <div class="hex">#1A1A1A</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 12px; margin-top: 24px; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #666; text-transform: uppercase;">Accent Palette — Use Sparingly</div>
+  <div class="color-row">
+    <div class="color-swatch" style="background: #ff3333; color: #fff;">
+      <div class="name">Military Red</div>
+      <div class="hex">#FF3333</div>
+    </div>
+    <div class="color-swatch" style="background: #3399ff; color: #fff;">
+      <div class="name">Tech Blue</div>
+      <div class="hex">#3399FF</div>
+    </div>
+    <div class="color-swatch" style="background: #33cc66; color: #000;">
+      <div class="name">Growth Green</div>
+      <div class="hex">#33CC66</div>
+    </div>
+    <div class="color-swatch" style="background: #9933ff; color: #fff;">
+      <div class="name">AI Purple</div>
+      <div class="hex">#9933FF</div>
+    </div>
+    <div class="color-swatch" style="background: #888888; color: #000;">
+      <div class="name">Muted Gray</div>
+      <div class="hex">#888888</div>
+    </div>
+  </div>
+
+  <div class="tier-card t1" style="margin-top: 32px;">
+    <div class="tier-header">
+      <div>
+        <div class="tier-title">The Lighting Rule</div>
+        <div class="tier-subtitle">How RPN makes everything look cinematic — and how you will too</div>
+      </div>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-box">
+        <h5>Video / Reels</h5>
+        <p>Shoot with side lighting or backlight for depth. Avoid flat, overhead fluorescent lighting. Even a single ring light placed to the side creates dramatic shadows. Grade warm — push amber/gold in post. Slightly desaturate everything except skin tones.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Graphics / Carousels</h5>
+        <p>Dark backgrounds (#0A0A0A or near-black). Text in white or gold. Never use bright or pastel backgrounds. Use subtle gradient overlays (dark-to-transparent) over photos. Add a slight vignette to corners of every image.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: THUMBNAIL TEMPLATES -->
+<section class="container" id="thumbnails">
+  <div class="section-label">03 — THUMBNAIL TEMPLATES</div>
+  <div class="section-title">Six Signature Styles</div>
+  <div class="section-sub">Every thumbnail should stop the scroll. Here are 6 proven formats to rotate through.</div>
+
+  <div class="thumb-grid">
+    <!-- Style 1: THE TITLE CARD -->
+    <div class="thumb-card">
+      <div class="thumb-preview" style="background: linear-gradient(135deg, #0a0a0a, #1a1000);">
+        <div class="big-text" style="color: #d4a017;">THE<br>SEPARATION</div>
+        <div class="sub-text" style="color: #888;">A Coach Cam Story</div>
+      </div>
+      <div class="thumb-info">
+        <h4>The Title Card</h4>
+        <p>Big, bold text centered on black. Gold or white type. No photo — pure typographic impact. RPN's signature move.</p>
+        <div class="use-for">Use for: signature stories, series launchers</div>
+      </div>
+    </div>
+
+    <!-- Style 2: THE PORTRAIT -->
+    <div class="thumb-card">
+      <div class="thumb-preview" style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a);">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #333, #222); margin-bottom: 12px; border: 2px solid #d4a017;"></div>
+        <div class="big-text" style="color: #fff; font-size: 16px;">I ALMOST<br>QUIT</div>
+        <div class="sub-text" style="color: #d4a017;">THE STORY NO ONE HEARD</div>
+      </div>
+      <div class="thumb-info">
+        <h4>The Portrait</h4>
+        <p>Your face (cinematic lighting) with bold text overlay. Dark gradient from bottom. Direct eye contact with camera.</p>
+        <div class="use-for">Use for: personal stories, vulnerability posts</div>
+      </div>
+    </div>
+
+    <!-- Style 3: THE FRAMEWORK -->
+    <div class="thumb-card">
+      <div class="thumb-preview" style="background: #0a0a0a;">
+        <div class="sub-text" style="color: #d4a017; margin-bottom: 8px;">THE METHOD</div>
+        <div style="display: flex; gap: 8px;">
+          <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 800; color: #d4a017;">C</div>
+          <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 800; color: #d4a017;">C</div>
+          <div style="background: #1a1a1a; border: 1px solid #333; border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 800; color: #d4a017;">C</div>
+        </div>
+        <div class="sub-text" style="color: #666; margin-top: 8px;">CLARITY · CONSISTENCY · COURAGE</div>
+      </div>
+      <div class="thumb-info">
+        <h4>The Framework</h4>
+        <p>Proprietary method displayed like a product announcement. Clean layout, minimal elements, premium spacing.</p>
+        <div class="use-for">Use for: method reveals, educational carousels</div>
+      </div>
+    </div>
+
+    <!-- Style 4: THE SPLIT -->
+    <div class="thumb-card">
+      <div class="thumb-preview" style="background: linear-gradient(90deg, #1a0a0a 50%, #0a1a0a 50%);">
+        <div style="display: flex; width: 100%; justify-content: space-around;">
+          <div style="text-align: center;">
+            <div style="font-size: 10px; font-weight: 700; color: #ff3333; letter-spacing: 1px;">BEFORE</div>
+            <div style="font-size: 24px; font-weight: 900; color: #ff3333;">❌</div>
+          </div>
+          <div style="width: 1px; background: #333;"></div>
+          <div style="text-align: center;">
+            <div style="font-size: 10px; font-weight: 700; color: #33cc66; letter-spacing: 1px;">AFTER</div>
+            <div style="font-size: 24px; font-weight: 900; color: #33cc66;">✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="thumb-info">
+        <h4>The Split</h4>
+        <p>Before/after or vs. comparison. Strong visual contrast. Works great for transformation stories and myth-busting.</p>
+        <div class="use-for">Use for: transformations, myth-busting, tool comparisons</div>
+      </div>
+    </div>
+
+    <!-- Style 5: THE NUMBER -->
+    <div class="thumb-card">
+      <div class="thumb-preview" style="background: #0a0a0a;">
+        <div style="font-size: 56px; font-weight: 900; color: #d4a017; line-height: 1;">80+</div>
+        <div class="sub-text" style="color: #fff;">EPISODES</div>
+        <div style="font-size: 10px; color: #666; margin-top: 4px;">AND COUNTING</div>
+      </div>
+      <div class="thumb-info">
+        <h4>The Number</h4>
+        <p>Massive stat front and center. Let the number do the talking. Works for milestones, data points, and proof.</p>
+        <div class="use-for">Use for: milestones, social proof, metrics</div>
+      </div>
+    </div>
+
+    <!-- Style 6: THE TEXTURE -->
+    <div class="thumb-card">
+      <div class="thumb-preview" style="background: linear-gradient(135deg, #1a1a0a, #0a0a0a); border: 1px solid #333;">
+        <div style="font-size: 11px; font-weight: 700; letter-spacing: 3px; color: #d4a017; margin-bottom: 6px;">BUILDING FLG</div>
+        <div class="big-text" style="color: #fff; font-size: 16px;">WEEK 03</div>
+        <div style="margin-top: 10px; display: flex; gap: 4px;">
+          <div style="width: 24px; height: 3px; background: #d4a017; border-radius: 2px;"></div>
+          <div style="width: 24px; height: 3px; background: #d4a017; border-radius: 2px;"></div>
+          <div style="width: 24px; height: 3px; background: #d4a017; border-radius: 2px;"></div>
+          <div style="width: 24px; height: 3px; background: #333; border-radius: 2px;"></div>
+          <div style="width: 24px; height: 3px; background: #333; border-radius: 2px;"></div>
+        </div>
+      </div>
+      <div class="thumb-info">
+        <h4>The Series Card</h4>
+        <p>Recurring series thumbnail with consistent branding. Episode/week number prominent. Progress bar optional.</p>
+        <div class="use-for">Use for: Build in Public, weekly series, recurring content</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: TYPOGRAPHY SYSTEM -->
+<section class="container" id="typography">
+  <div class="section-label">04 — TYPOGRAPHY RULES</div>
+  <div class="section-title">Text That Stops the Scroll</div>
+  <div class="section-sub">RPN's secret weapon is typography. Every thumbnail reads like a movie poster. Here's how to replicate it.</div>
+
+  <div class="type-showcase">
+    <div class="type-sample">
+      <div class="type-label">Primary Headlines — <span>Thumbnails & Title Cards</span></div>
+      <div style="font-size: 40px; font-weight: 900; color: #d4a017; text-transform: uppercase; letter-spacing: -1px; line-height: 1.1;">
+        THE VETERAN'S EDGE
+      </div>
+      <div style="margin-top: 8px; font-size: 12px; color: #666;">Inter Black (900) / ALL CAPS / Tight tracking (-1px) / Gold or White</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-label">Subtitle Lines — <span>Below Headlines</span></div>
+      <div style="font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 3px;">
+        A COACH CAM SHORT FILM
+      </div>
+      <div style="margin-top: 8px; font-size: 12px; color: #666;">Inter SemiBold (600) / ALL CAPS / Wide tracking (3px) / Gray or Gold</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-label">Carousel Body — <span>Inside Slides</span></div>
+      <div style="font-size: 16px; font-weight: 400; color: #ccc; line-height: 1.8; max-width: 500px;">
+        The day I left the military, everyone thought I was making a mistake. But leaving was the first real leadership decision I ever made for myself.
+      </div>
+      <div style="margin-top: 8px; font-size: 12px; color: #666;">Inter Regular (400) / Sentence case / Generous line-height (1.8) / Light gray</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-label">CTA Text — <span>Final Slides & Captions</span></div>
+      <div style="font-size: 13px; font-weight: 700; color: #d4a017; text-transform: uppercase; letter-spacing: 2px;">
+        FOLLOW @COACHCAM FOR THE FULL STORY →
+      </div>
+      <div style="margin-top: 8px; font-size: 12px; color: #666;">Inter Bold (700) / ALL CAPS / Arrow suffix / Gold</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: CONTENT TIERS -->
+<section class="container" id="tiers">
+  <div class="section-label">05 — CONTENT TIERS</div>
+  <div class="section-title">Three Levels of Production</div>
+  <div class="section-sub">Not every post needs to be a short film. Here's how to balance effort with output.</div>
+
+  <div class="tier-card t1">
+    <div class="tier-header">
+      <div class="tier-num">01</div>
+      <div>
+        <div class="tier-title">Cinematic Signature Pieces</div>
+        <div class="tier-subtitle">1-2x per week — your highest production content</div>
+      </div>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-box">
+        <h5>What It Is</h5>
+        <p>Mini-documentaries, cinematic Reels, high-production storytelling pieces. These are your RPN-inspired content — the posts people share and save. Title cards, cinematic lighting, dramatic editing, original music/sound design.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Production</h5>
+        <p>Planned in advance. Script or shot list. Best lighting setup. Color graded. Custom thumbnail. Canva or Higgsfield for effects. Opus Clips for distribution cuts. Full caption with story arc. 60-90 seconds.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Examples</h5>
+        <p>"THE SEPARATION — A Coach Cam Story" / "THE VETERAN'S EDGE" / "80+ EPISODES — The Origin" / "THE LEADERSHIP TEST" / Series premiere episodes</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Goal</h5>
+        <p>SHAREABILITY. These are the posts that go viral, get saved, and make people follow you. Optimized for Explore page and algorithmic distribution. Premium quality signals authority.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-card t2">
+    <div class="tier-header">
+      <div class="tier-num">02</div>
+      <div>
+        <div class="tier-title">Story-Wrapped Education</div>
+        <div class="tier-subtitle">2-3x per week — value content delivered through story</div>
+      </div>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-box">
+        <h5>What It Is</h5>
+        <p>Educational content wrapped in personal narrative. Instead of "5 tips for leadership," it's "What my drill sergeant taught me about delegation." The advice is the same — the delivery makes it unforgettable.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Production</h5>
+        <p>Good lighting but not cinematic-level. Phone-quality video with clean audio is fine. Solid thumbnail (use Framework or Number templates). Carousels designed in Canva with dark theme. 30-60 seconds for Reels.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Examples</h5>
+        <p>"The Tool That Changed My Coaching Business" / "Dad Mode: What My Kids Teach Me About Leadership" / "3 Lessons from 80+ Episodes" / Weekly AI tool reviews</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Goal</h5>
+        <p>TRUST & AUTHORITY. These posts demonstrate expertise while revealing who you are. They convert followers into fans. Optimized for saves and meaningful comments.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-card t3">
+    <div class="tier-header">
+      <div class="tier-num">03</div>
+      <div>
+        <div class="tier-title">Raw & Real Moments</div>
+        <div class="tier-subtitle">2-3x per week — unpolished, authentic, in-the-moment</div>
+      </div>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-box">
+        <h5>What It Is</h5>
+        <p>Phone-to-post content. Behind-the-scenes of building FLG, morning routines, quick takes on the drive, podcast setup clips, family moments (with permission). No editing required — the rawness IS the appeal.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Production</h5>
+        <p>Selfie mode or phone propped up. Natural lighting. Record → trim → post. Stories and Reels format. No custom thumbnails needed for Stories. Quick text overlay in-app. Under 30 seconds.</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Examples</h5>
+        <p>"Building FLG: Week 1" daily updates / "4:30 AM — the CEO wake-up" / Quick reaction to industry news / Post-podcast recording debrief / "Just dropped the kids off, here's what I'm thinking"</p>
+      </div>
+      <div class="tier-detail-box">
+        <h5>Goal</h5>
+        <p>CONNECTION & RELATABILITY. These posts make people feel like they know you personally. The contrast with your cinematic content makes BOTH formats more powerful. Optimized for DMs and Story engagement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: STORY FRAMEWORK -->
+<section class="container" id="story">
+  <div class="section-label">06 — STORY FRAMEWORK</div>
+  <div class="section-title">The Coach Cam Story Structure</div>
+  <div class="section-sub">Based on your advisor's feedback: people want to know YOUR story. Here's how to tell it every time.</div>
+
+  <div class="story-flow">
+    <div class="story-step">
+      <div class="step-num">STEP 01</div>
+      <h4>The Moment</h4>
+      <p>Open with a specific moment in time. Not "I used to struggle with..." but "November 14, 2019. I'm sitting in my truck in the parking lot..."</p>
+    </div>
+    <div class="story-arrow">→</div>
+    <div class="story-step">
+      <div class="step-num">STEP 02</div>
+      <h4>The Tension</h4>
+      <p>What was at stake? What could go wrong? "If this didn't work, I was going back to a life I'd already decided to leave."</p>
+    </div>
+    <div class="story-arrow">→</div>
+    <div class="story-step">
+      <div class="step-num">STEP 03</div>
+      <h4>The Insight</h4>
+      <p>The lesson or realization. This is where your coaching expertise comes in. "That's when I realized leadership isn't about rank — it's about..."</p>
+    </div>
+    <div class="story-arrow">→</div>
+    <div class="story-step">
+      <div class="step-num">STEP 04</div>
+      <h4>The Bridge</h4>
+      <p>Connect it to the viewer. "If you're sitting in YOUR truck right now, wondering if you should make the leap..."</p>
+    </div>
+    <div class="story-arrow">→</div>
+    <div class="story-step">
+      <div class="step-num">STEP 05</div>
+      <h4>The Invitation</h4>
+      <p>Not a hard sell. An invitation into the journey. "Follow along — I'm building this in real time."</p>
+    </div>
+  </div>
+
+  <div class="formula">
+    <div class="equation"><span>SPECIFIC MOMENT</span> + REAL TENSION + LESSON + <span>VIEWER BRIDGE</span></div>
+    <p>Every story follows this arc. The specificity is what makes it feel real. Vague stories don't connect.</p>
+  </div>
+</section>
+
+<!-- SECTION 7: STORY ARCS -->
+<section class="container" id="arcs">
+  <div class="section-label">07 — STORY ARCS</div>
+  <div class="section-title">Your Content Goldmine</div>
+  <div class="section-sub">These are the 6 major story arcs that make Coach Cam unique. Each one is an ongoing series, not a one-off post.</div>
+
+  <div class="arc-grid">
+    <div class="arc-card" data-series="ONGOING SERIES">
+      <div class="ep-count">∞</div>
+      <h4>The Separation</h4>
+      <p>Leaving the military. The decision, the fear, the moment you told your family, what you lost, what you gained. This is your origin story — and it's not a single post, it's a vault of content.</p>
+      <div class="episodes">
+        <strong>EPISODE IDEAS</strong>
+        The day I decided to leave / Telling my wife / What my commander said / The last salute / First Monday as a civilian / What I miss (and don't miss) / The identity crisis nobody talks about
+      </div>
+    </div>
+
+    <div class="arc-card" data-series="WEEKLY SERIES">
+      <div class="ep-count">52+</div>
+      <h4>Building FLG</h4>
+      <p>The week-by-week reality of building a coaching company. Revenue numbers, decisions, failures, wins. The build-in-public series that shows the real entrepreneurship journey.</p>
+      <div class="episodes">
+        <strong>EPISODE IDEAS</strong>
+        This week's revenue / The client who changed everything / Our first hire / The tech stack pivot / When I couldn't make payroll / The growth moment / Behind the podcast numbers
+      </div>
+    </div>
+
+    <div class="arc-card" data-series="RECURRING">
+      <div class="ep-count">DAD</div>
+      <h4>Father-Leader-CEO</h4>
+      <p>The overlap between fatherhood and leadership. How managing a family and a company use the same skills. Vulnerability that makes you relatable to every working parent.</p>
+      <div class="episodes">
+        <strong>EPISODE IDEAS</strong>
+        My daughter's first "why" question / Bedtime stories that taught me patience / The morning before my biggest presentation / Coaching my kid's team vs. coaching executives / Balance is a myth — here's what's real
+      </div>
+    </div>
+
+    <div class="arc-card" data-series="EVERGREEN">
+      <div class="ep-count">80+</div>
+      <h4>The Podcast Vault</h4>
+      <p>80+ episodes worth of untapped content. Each one can be repurposed into short clips, quote graphics, story-driven Reels, and carousel breakdowns. This is your unfair advantage.</p>
+      <div class="episodes">
+        <strong>EPISODE IDEAS</strong>
+        "The episode nobody listened to" / Best guest moments / My worst interview / The advice I gave that changed someone's life / Lessons from episode 1 vs. today / The L3 origin story
+      </div>
+    </div>
+
+    <div class="arc-card" data-series="AUTHORITY SERIES">
+      <div class="ep-count">VET</div>
+      <h4>The Veteran's Edge</h4>
+      <p>Why military leaders have unique advantages in business. Discipline, decision-making under pressure, team building, mission-first mindset. Position military service as a business superpower.</p>
+      <div class="episodes">
+        <strong>EPISODE IDEAS</strong>
+        5 military skills that transfer directly / The myth of the "disciplined" veteran / When military leadership fails in business / PT taught me about sales / After-action reviews for entrepreneurs
+      </div>
+    </div>
+
+    <div class="arc-card" data-series="TECH + TOOLS">
+      <div class="ep-count">AI</div>
+      <h4>The Future Builder</h4>
+      <p>AI tools, tech experiments, and the future of coaching/business. How a veteran-turned-CEO uses cutting-edge technology. Positioned as a builder, not just a consumer of tech.</p>
+      <div class="episodes">
+        <strong>EPISODE IDEAS</strong>
+        The AI tool that saved me 10 hours / Nano Banana demo / My full content production stack / ChatGPT vs. Gemini for coaches / NotebookLM deep dive / AI won't replace coaches — here's why
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8: WEEKLY CONTENT SPLIT -->
+<section class="container" id="weekly">
+  <div class="section-label">08 — WEEKLY CONTENT SPLIT</div>
+  <div class="section-title">The Blended Week</div>
+  <div class="section-sub">How to distribute the three content tiers across a week. This is your content rhythm.</div>
+
+  <table class="split-table">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Content Type</th>
+        <th>Tier</th>
+        <th>Story Arc</th>
+        <th>Format</th>
+        <th>Platforms</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Monday</strong></td>
+        <td>Week Opener — Story Hook</td>
+        <td><span class="split-tag story">STORY</span></td>
+        <td>Building FLG / Separation</td>
+        <td>Reel (60s)</td>
+        <td>IG, TT, YT Shorts</td>
+      </tr>
+      <tr>
+        <td><strong>Tuesday</strong></td>
+        <td>Educational Carousel</td>
+        <td><span class="split-tag edu">EDUCATION</span></td>
+        <td>Veteran's Edge / Future Builder</td>
+        <td>Carousel (8-10 slides)</td>
+        <td>IG, LinkedIn</td>
+      </tr>
+      <tr>
+        <td><strong>Wednesday</strong></td>
+        <td>Podcast Clip + Personal Reaction</td>
+        <td><span class="split-tag edu">EDUCATION</span></td>
+        <td>Podcast Vault</td>
+        <td>Reel (30-60s)</td>
+        <td>IG, TT, YT Shorts</td>
+      </tr>
+      <tr>
+        <td><strong>Thursday</strong></td>
+        <td>Cinematic Signature Piece</td>
+        <td><span class="split-tag cinematic">CINEMATIC</span></td>
+        <td>Any major arc</td>
+        <td>Reel (60-90s)</td>
+        <td>IG, TT, YT Shorts, FB</td>
+      </tr>
+      <tr>
+        <td><strong>Friday</strong></td>
+        <td>Framework / Method Drop</td>
+        <td><span class="split-tag edu">EDUCATION</span></td>
+        <td>Veteran's Edge / FLG Build</td>
+        <td>Carousel or Static</td>
+        <td>IG, LinkedIn</td>
+      </tr>
+      <tr>
+        <td><strong>Saturday</strong></td>
+        <td>Raw / BTS / Family Content</td>
+        <td><span class="split-tag raw">RAW</span></td>
+        <td>Father-Leader-CEO</td>
+        <td>Stories + Reel</td>
+        <td>IG Stories, TT</td>
+      </tr>
+      <tr>
+        <td><strong>Sunday</strong></td>
+        <td>Week Reflection + Preview</td>
+        <td><span class="split-tag raw">RAW</span></td>
+        <td>Building FLG</td>
+        <td>Carousel or Text Post</td>
+        <td>IG, LinkedIn</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="formula">
+    <div class="equation">1 CINEMATIC + 3 EDUCATIONAL + 2 RAW + <span>DAILY STORIES</span> = 7 POSTS/WEEK</div>
+    <p>Thursday is your anchor day. Build your week around it. That's the post you promote, pin, and share.</p>
+  </div>
+</section>
+
+<!-- SECTION 9: PRODUCTION CHECKLISTS -->
+<section class="container" id="production">
+  <div class="section-label">09 — PRODUCTION CHECKLISTS</div>
+  <div class="section-title">Pre-Flight Checklists</div>
+  <div class="section-sub">Run through these before hitting publish. Quality control is what separates amateur from premium.</div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div class="checklist">
+      <h4 style="color: #d4a017;">🎬 Cinematic Tier Checklist</h4>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Thumbnail follows one of the 6 template styles</p><div class="time">Dark background, bold type, no clutter</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Opening hook is a specific moment (not a generic statement)</p><div class="time">"November 14th..." not "Have you ever..."</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Color grading is warm (amber/gold tones)</p><div class="time">Push warmth, pull highlights down slightly</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Subtitles are styled (not default auto-captions)</p><div class="time">White with gold keyword highlights, black outline</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Audio is clean with intentional music/SFX</p><div class="time">Low ambient music, voice always dominant</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Caption follows the 5-step story structure</p><div class="time">Moment → Tension → Insight → Bridge → Invitation</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>CTA matches the content tier (save/share for cinematic)</p><div class="time">"Save this if you've been there." / "Share with someone who needs this."</div></div>
+      </div>
+    </div>
+
+    <div class="checklist">
+      <h4 style="color: #ff3333;">🎖️ Story Content Checklist</h4>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Story is SPECIFIC (date, place, or sensory detail)</p><div class="time">Specificity = believability = connection</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>There's real tension or vulnerability</p><div class="time">If it doesn't make you slightly uncomfortable, go deeper</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>The lesson connects to the viewer's life</p><div class="time">Bridge from "my story" to "your situation"</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>It's not just a flex — there's a lesson</p><div class="time">Wins are fine but WHAT YOU LEARNED is what people save</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>The ending invites, doesn't sell</p><div class="time">"Follow the journey" > "Sign up for my coaching"</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Family/military content has context + permission</p><div class="time">Don't assume audience knows your background</div></div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div><p>Title card or thumbnail creates mystery</p><div class="time">"THE SEPARATION" is better than "My Military Story"</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 10: DO / DON'T -->
+<section class="container" id="rules">
+  <div class="section-label">10 — THE RULES</div>
+  <div class="section-title">Do This / Not That</div>
+  <div class="section-sub">Quick reference for maintaining the Coach Cam blend. When in doubt, check here.</div>
+
+  <div class="do-dont">
+    <div class="do-card">
+      <h4>✓ DO THIS</h4>
+      <ul>
+        <li>Open every story with a specific moment in time</li>
+        <li>Use dark backgrounds on every thumbnail and carousel</li>
+        <li>Make Thursday your cinematic "event" day</li>
+        <li>Show the messy, in-progress parts of building FLG</li>
+        <li>Reference your military background naturally, not forcefully</li>
+        <li>Let family moments teach leadership lessons</li>
+        <li>Use gold/amber typography as your signature color</li>
+        <li>Create mystery with titles ("THE SEPARATION" not "My Story")</li>
+        <li>End with an invitation, not a pitch</li>
+        <li>Repurpose one podcast episode per week minimum</li>
+        <li>Post daily Stories even if they're 10-second check-ins</li>
+        <li>Use Higgsfield/Nano Banana for cinematic pieces only</li>
+      </ul>
+    </div>
+    <div class="dont-card">
+      <h4>✗ NOT THIS</h4>
+      <ul>
+        <li>Generic hooks like "5 things every entrepreneur needs"</li>
+        <li>Bright or pastel backgrounds on any visual content</li>
+        <li>Posting the same production quality every day (kills contrast)</li>
+        <li>Only showing wins — vulnerability builds trust faster</li>
+        <li>Leading with "As a veteran..." on every single post</li>
+        <li>Exploiting family moments without a real lesson attached</li>
+        <li>Inconsistent visual identity (random colors, fonts, vibes)</li>
+        <li>Clickbait that doesn't deliver on the promise</li>
+        <li>Hard selling coaching services in content captions</li>
+        <li>Letting 80+ episodes sit untouched — that's your goldmine</li>
+        <li>Going silent for days — consistency beats perfection</li>
+        <li>Over-editing raw content — rawness is the point of Tier 3</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CROSS-LINKS -->
+<section class="container">
+  <div class="section-label">RELATED DOCUMENTS</div>
+  <div class="doc-links">
+    <a class="doc-link" href="coach-cam-growth-strategy.html">
+      <div class="icon">📈</div>
+      <h4>Growth Strategy</h4>
+      <p>1K → 1M Roadmap</p>
+    </a>
+    <a class="doc-link" href="coach-cam-emergency-fixes.html">
+      <div class="icon">🚨</div>
+      <h4>Emergency Fixes</h4>
+      <p>Quick Wins This Week</p>
+    </a>
+    <a class="doc-link" href="coach-cam-content-strategy.html">
+      <div class="icon">📋</div>
+      <h4>Content Strategy</h4>
+      <p>Pillar Playbook</p>
+    </a>
+    <a class="doc-link" href="coach-cam-tool-stack-workflow.html">
+      <div class="icon">⚙️</div>
+      <h4>Tool Stack</h4>
+      <p>8-Tool Pipeline</p>
+    </a>
+  </div>
+
+  <div class="footer-note">
+    COACH CAM × RPN VISUAL STYLE GUIDE — Built for Forward Learning Group<br>
+    The blend: cinematic production meets authentic storytelling.<br>
+    Every post is an event. Every story is an invitation.<br><br>
+    <span style="color: #d4a017;">★</span> Document 5 of 5 <span style="color: #d4a017;">★</span>
+  </div>
+</section>
+
+</body>
+</html>

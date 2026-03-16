@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach Cam | 1K to 1M Growth Strategy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --card-hover: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e4e4ed;
+    --text-muted: #8888a0;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --green: #00cec9;
+    --red: #ff6b6b;
+    --orange: #fdcb6e;
+    --blue: #74b9ff;
+    --gradient: linear-gradient(135deg, #6c5ce7, #a29bfe, #74b9ff);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Hero Section */
+  .hero {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(108,92,231,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(116,185,255,0.1) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.05) rotate(2deg); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+  .hero .tag {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(108,92,231,0.15);
+    border: 1px solid rgba(108,92,231,0.3);
+    color: var(--accent-light);
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Container */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Section */
+  .section { padding: 80px 0; }
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent-light);
+    margin-bottom: 8px;
+  }
+  .section-heading {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 40px;
+    line-height: 1.2;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+  .card:hover { background: var(--card-hover); border-color: rgba(108,92,231,0.3); }
+
+  .card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; }
+  .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+  /* Scorecard */
+  .scorecard {
+    text-align: center;
+    padding: 28px 20px;
+  }
+  .scorecard .score {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .scorecard .score.red { color: var(--red); }
+  .scorecard .score.orange { color: var(--orange); }
+  .scorecard .score.green { color: var(--green); }
+  .scorecard .score.blue { color: var(--blue); }
+  .scorecard .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  /* Finding Item */
+  .finding {
+    display: flex;
+    gap: 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .finding:last-child { border-bottom: none; }
+  .finding .icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .finding .icon.critical { background: rgba(255,107,107,0.15); }
+  .finding .icon.warning { background: rgba(253,203,110,0.15); }
+  .finding .icon.opportunity { background: rgba(0,206,201,0.15); }
+  .finding h4 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+  .finding p { color: var(--text-muted); font-size: 0.9rem; }
+
+  /* Timeline */
+  .timeline-item {
+    position: relative;
+    padding-left: 40px;
+    padding-bottom: 40px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 32px;
+    width: 2px;
+    height: calc(100% - 32px);
+    background: var(--border);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+  }
+  .timeline-item .phase-tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    background: rgba(108,92,231,0.15);
+    color: var(--accent-light);
+    margin-bottom: 8px;
+  }
+  .timeline-item h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+  .timeline-item p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; }
+  .timeline-item ul { list-style: none; padding: 0; }
+  .timeline-item ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+  .timeline-item ul li::before {
+    content: '\2022';
+    position: absolute;
+    left: 0;
+    color: var(--accent-light);
+    font-weight: bold;
+  }
+
+  /* Pillar cards */
+  .pillar-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .pillar-card .pillar-number {
+    font-size: 4rem;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .badge.ig { background: rgba(225,48,108,0.15); color: #e1306c; }
+  .badge.tt { background: rgba(0,0,0,0.3); color: #fff; border: 1px solid #444; }
+  .badge.yt { background: rgba(255,0,0,0.12); color: #ff4444; }
+  .badge.li { background: rgba(0,119,181,0.15); color: #0077b5; }
+  .badge.all { background: rgba(108,92,231,0.15); color: var(--accent-light); }
+
+  /* CTA */
+  .cta-section {
+    text-align: center;
+    padding: 80px 24px;
+    background: linear-gradient(180deg, transparent, rgba(108,92,231,0.05));
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* Table */
+  .comparison-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+  }
+  .comparison-table th, .comparison-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .comparison-table th {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .comparison-table td { color: var(--text); }
+  .comparison-table .you { color: var(--accent-light); font-weight: 600; }
+  .comparison-table .target { color: var(--green); font-weight: 600; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { min-height: 50vh; padding: 60px 20px; }
+    .section { padding: 48px 0; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .card { padding: 24px; }
+  }
+
+  /* Content Calendar */
+  .cal-day {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .cal-day .day-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .cal-day .content-type {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .cal-day .platform {
+    font-size: 0.75rem;
+    color: var(--accent-light);
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(116,185,255,0.1));
+    border: 1px solid rgba(108,92,231,0.2);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 32px 0;
+  }
+  .highlight-box h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--accent-light);
+  }
+
+  /* Scroll to top */
+  .footer-note {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="tag">Social Media Growth Audit & Strategy</span>
+    <h1>1K &rarr; 1M Followers in 12 Months</h1>
+    <p>A comprehensive analysis and roadmap for Cameron Macias / Coach Cam &mdash; Forward Learning Group</p>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- ============================================ -->
+<!-- SECTION 1: THE AUDIT -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 1</p>
+  <h2 class="section-heading">Current State Audit</h2>
+
+  <div class="grid-4">
+    <div class="card scorecard">
+      <div class="score orange">C+</div>
+      <div class="label">Instagram</div>
+      <p style="margin-top:8px; font-size:0.8rem;">@iamcmacias<br><strong>Content quality: B+ | Volume/consistency: D</strong><br>1,313 followers &mdash; content performs well when posted</p>
+      <p style="margin-top:6px; font-size:0.75rem; color:var(--green); line-height:1.4;"><strong>Verified Mar 15, 2026:</strong> 16,499 views, 4,443 accounts reached, 668 interactions, 71.4% non-follower reach in 30 days. The content that IS posted performs well &mdash; the gap is posting frequency and follower conversion, not content quality.</p>
+    </div>
+    <div class="card scorecard">
+      <div class="score red">F</div>
+      <div class="label">TikTok</div>
+      <p style="margin-top:8px; font-size:0.8rem;">@iamcmacias<br><strong>239 followers / 5K likes</strong><br>Bio links to "officialrcgroup"</p>
+    </div>
+    <div class="card scorecard">
+      <div class="score red">F</div>
+      <div class="label">YouTube</div>
+      <p style="margin-top:8px; font-size:0.8rem;">Channel: Cameron Macias<br><strong>0&ndash;6 views per video</strong><br>Last upload: 3 years ago</p>
+      <p style="margin-top:6px; font-size:0.75rem; color:var(--orange); line-height:1.4;"><strong>&#9888;&#65039; CORRECTION (Mar 2026):</strong> This assessed Cameron's personal YouTube channel, which IS dormant. However, <strong>The L3 Perspective</strong> (@thel3perspective7) has <strong>1,884 subscribers</strong>, 536 views/28 days, and 64.7 hours watch time. 64.2% of viewers watch on TV. The L3 Perspective IS the YouTube asset &mdash; not the personal channel.</p>
+      <p style="margin-top:4px; font-size:0.75rem; color:var(--red); line-height:1.4;"><strong>CRITICAL:</strong> No YouTube Shorts posted since Dec 15, 2025 (3+ months). 519 clips identified across 79 episodes. This is the #1 quick win.</p>
+    </div>
+    <div class="card scorecard">
+      <div class="score green">B</div>
+      <div class="label">LinkedIn</div>
+      <p style="margin-top:8px; font-size:0.8rem;">Cameron (Cam) Macias<br><strong>7,007 followers / 500+ connections</strong><br>Best platform by far</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 32px;">
+    <h3 style="margin-bottom: 20px;">Critical Findings</h3>
+
+    <div class="finding">
+      <div class="icon critical">&#9888;</div>
+      <div>
+        <h4>CRITICAL: 6 Different Brand Names Across Platforms</h4>
+        <p>I counted <strong>at least 6 distinct brand identities</strong> across your platforms: (1) <strong>Forward Learning Group</strong> (website + LinkedIn), (2) <strong>Coach Cam</strong> (personal brand), (3) <strong>Elevare Global</strong> (Instagram bio), (4) <strong>L3 Perspective / L3 Media</strong> (podcast), (5) <strong>Official RC Group / @officialrcgroup</strong> (TikTok Linktree + YouTube CTAs), and (6) <strong>@iamcmacias</strong> (personal handle). On top of that, your website still links to <strong>@coach_cam_macias on Instagram, which is DEAD</strong> &mdash; "Profile isn't available." Anyone clicking your Instagram icon from your website hits a 404. This is an emergency-level branding problem.</p>
+        <div style="background:rgba(0,206,201,0.08); border:1px solid rgba(0,206,201,0.25); border-radius:8px; padding:12px; margin-top:12px;">
+          <p style="color:var(--green); font-size:0.85rem; font-weight:700; margin-bottom:6px;">VERIFIED DATA (Mar 2026) &mdash; 5 Active IG Accounts</p>
+          <p style="color:var(--text); font-size:0.85rem; line-height:1.6;">5 active IG accounts totaling <strong>2,393 followers</strong>. @joinelevareglobal (27 followers) has a <strong>213x views-per-follower ratio</strong> &mdash; highest algorithmic performance of any account. Do NOT kill this account.<br><br><strong>Recommended consolidation:</strong> Keep <strong>@iamcmacias</strong> (personal), <strong>@media.l3</strong> (production brand), <strong>@thel3perspective</strong> (podcast), <strong>@joinelevareglobal</strong> (community). Consider merging <strong>@flgoptimize</strong> (97 followers, lowest performance) into @iamcmacias or @media.l3.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon critical">&#9888;</div>
+      <div>
+        <h4>1,599 Posts &amp; Only 1,313 Instagram Followers = Volume Gap, Not Quality Gap</h4>
+        <p>You've posted <strong>1,599 times on Instagram</strong> but have only <strong>1,313 followers</strong>. That's a 0.8:1 follower-to-post ratio &mdash; healthy accounts have 10:1 or better. <strong style="color:var(--green);">UPDATE (Mar 2026):</strong> Verified analytics show the content that IS posted actually performs well &mdash; 16,499 views, 4,443 accounts reached, 668 interactions, and 71.4% non-follower reach in 30 days. The real problem is <strong>posting frequency and follower conversion</strong>, not content quality. The algorithm IS showing your content to new people (71.4% non-followers) &mdash; you need more volume and stronger CTAs to convert viewers into followers. On TikTok, it's even starker: <strong>239 followers</strong> despite being on the highest-organic-reach platform in the world.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon critical">&#9888;</div>
+      <div>
+        <h4>YouTube: 0&ndash;6 Views Per Video, Dead for 3 Years</h4>
+        <p>Your YouTube channel "Cameron Macias" has a handful of L3 Perspective livestreams from <strong>3 years ago</strong> with <strong>0, 3, and 6 views</strong> each. The thumbnails are dark and unoptimized, with a scrolling ticker banner across the bottom. The videos reference @official_rcgroup and @iamglenndavis. YouTube is the only platform where content compounds over YEARS through search &mdash; and you have essentially zero presence on it. This is your biggest missed opportunity.</p>
+        <div style="background:rgba(253,203,110,0.1); border:1px solid rgba(253,203,110,0.3); border-radius:8px; padding:12px; margin-top:12px;">
+          <p style="color:var(--orange); font-size:0.85rem; font-weight:700; margin-bottom:6px;">&#9888;&#65039; CORRECTION (Mar 2026)</p>
+          <p style="color:var(--text); font-size:0.85rem; line-height:1.5;">This assessment analyzed Cameron's personal YouTube channel, which IS dormant. However, <strong>The L3 Perspective channel (@thel3perspective7)</strong> has <strong>1,884 subscribers</strong>, 536 views/28 days, and 64.7 hours watch time. 64.2% of viewers watch on TV. The L3 Perspective IS the YouTube asset &mdash; not the personal channel. Strategy should build on this existing 1,884-subscriber base.</p>
+          <p style="color:var(--red); font-size:0.85rem; font-weight:700; margin-top:8px;">CRITICAL: No YouTube Shorts posted since December 15, 2025 (3+ months). 519 clips identified across 79 episodes. This is the #1 quick win.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon warning">&#9888;</div>
+      <div>
+        <h4>The L3 Perspective Podcast Is Under-Leveraged</h4>
+        <p>You co-host a weekly podcast with 2 seasons of content &mdash; that's a goldmine of short-form clips waiting to be created. Right now, you're creating content ONCE (audio) and publishing ONCE (podcast apps). You should be creating once and publishing 15&ndash;20 times across platforms.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon warning">&#9888;</div>
+      <div>
+        <h4>Niche Is Too Broad: "Life, Love, Leadership"</h4>
+        <p>Your podcast covers Life, Love, AND Leadership. Your website covers business coaching, workforce development, real estate, financial coaching, and VA services. The algorithm doesn't know what you're about. The most viral coaching creators own ONE niche deeply before expanding.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon warning">&#9888;</div>
+      <div>
+        <h4>Instagram Grid Has Zero Visual Identity</h4>
+        <p>I scrolled your Instagram grid and found: dark selfie videos shot at night, black-and-white artistic photos, a 75-day challenge number grid, scenic nature photos of tree-lined roads, cartoon avatar graphics, podcast guest features, and L3/Elevare branded posts. Each post looks like it's from a <strong>completely different account</strong>. There's no consistent color palette, no branded template style, no recognizable format. Top coaching creators use 2&ndash;3 repeating visual formats so their grid is instantly recognizable at a glance.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon warning">&#9888;</div>
+      <div>
+        <h4>No Content Repurposing System</h4>
+        <p>Your podcast episodes, LinkedIn posts, and blog articles are siloed. You're creating original content for each platform instead of building a content engine that turns one idea into 10+ pieces of content across all channels.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon opportunity">&#10003;</div>
+      <div>
+        <h4>Your Credentials Are Elite &mdash; But Hidden</h4>
+        <p>ICF Coach, 20 years experience, military background, Green Belt, PMP, DiSC Certified, Licensed Financial Fiduciary, Chamber of Commerce board member. This is exceptional proof of authority that your audience doesn't see. You have more credentials than 99% of coaching creators.</p>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="icon opportunity">&#10003;</div>
+      <div>
+        <h4>Your Story Is Compelling and Untold</h4>
+        <p>Military background &rarr; Top recruiter &rarr; Process improvement expert &rarr; ICF Coach &rarr; CEO. That transformation arc is content GOLD. Personal stories drive 2&ndash;3x more engagement than generic advice posts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 2: COMPETITIVE LANDSCAPE -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 2</p>
+  <h2 class="section-heading">Competitive Landscape</h2>
+
+  <p style="color: var(--text-muted); margin-bottom: 32px;">Where you sit relative to coaching creators in your niche. The good news: there's a massive gap between "unknown" and "known" &mdash; and you have the credentials to leap over most of the competition.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Creator</th>
+        <th>Platform Focus</th>
+        <th>Followers</th>
+        <th>Strategy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="you">Coach Cam (You)</td>
+        <td>All (scattered)</td>
+        <td>IG: 1,294 / TT: 239 / YT: ~0 / LI: 7,007</td>
+        <td>6 brand names, dead IG link on site, 3-yr-old YT</td>
+      </tr>
+      <tr>
+        <td>Steph Gorton</td>
+        <td>Instagram</td>
+        <td>36K</td>
+        <td>Niche: Coaches scaling to $50K/mo. Carousels + Reels.</td>
+      </tr>
+      <tr>
+        <td>Samantha Daily</td>
+        <td>IG + Podcast</td>
+        <td>38K</td>
+        <td>"Million Dollar Messaging" &mdash; one clear framework</td>
+      </tr>
+      <tr>
+        <td>Stacy Tuschl</td>
+        <td>IG + Podcast</td>
+        <td>182K</td>
+        <td>Burned out boss &rarr; $10M business. Story-driven.</td>
+      </tr>
+      <tr>
+        <td>Patrick Bet-David</td>
+        <td>YouTube + TikTok</td>
+        <td>5M+</td>
+        <td>Clips from long-form. Hot takes. High volume.</td>
+      </tr>
+      <tr>
+        <td>Matt Gray</td>
+        <td>Twitter/X + IG</td>
+        <td>1M+</td>
+        <td>Systems-based coaching. "Founder OS" brand.</td>
+      </tr>
+      <tr>
+        <td class="target">Gary Vaynerchuk</td>
+        <td>All platforms</td>
+        <td>50M+</td>
+        <td>Pillar content &rarr; 30+ clips per day. Team of 20.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="highlight-box">
+    <h3>Your Unfair Advantages (Yes, Plural)</h3>
+    <p style="color: var(--text-muted);">Most business coaching creators are self-proclaimed coaches with no formal credentials. You are ICF-credentialed, military-trained, financially licensed, and Six Sigma certified. Your website shows you've worked with the <strong>U.S. Air Force</strong>, <strong>Solano County</strong>, and multiple nonprofits. You serve on the <strong>Fairfield-Suisun Chamber of Commerce board</strong>. And your LinkedIn already has <strong>7,007 followers</strong> &mdash; proof that when your branding is focused (as it is on LinkedIn), people follow. The strategy is to bring that LinkedIn-level professionalism to every other platform.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 3: THE STRATEGY -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 3</p>
+  <h2 class="section-heading">The 1K &rarr; 1M Strategy</h2>
+
+  <p style="color: var(--text-muted); margin-bottom: 24px;">Here's the honest truth: going from 1K to 1M in 12 months is extremely aggressive. It requires treating content like a full-time job. Most coaching creators hit 100K&ndash;300K in a year with excellent execution. To reach 1M, you'll need viral moments, relentless consistency, and a content machine. Here's how to maximize your odds.</p>
+
+  <div style="background:rgba(116,185,255,0.1); border:1px solid rgba(116,185,255,0.3); border-radius:12px; padding:20px; margin-bottom:48px;">
+    <p style="color:var(--blue); font-size:0.9rem; font-weight:700; margin-bottom:8px;">DATA CHECK (Mar 2026)</p>
+    <p style="color:var(--text); font-size:0.88rem; line-height:1.6;">@iamcmacias gained <strong>+19 followers in 3 weeks</strong> (Feb 22 to Mar 15). At current trajectory, 1M is not achievable in 12 months. <strong>Realistic near-term target: 1,313 &rarr; 5,000 followers in 6 months</strong> with consistent posting + Terry Griffin partnership amplification. The Terry partnership adds 15,500 IG followers of reach to the FLG ecosystem.</p>
+  </div>
+
+  <!-- 5 Pillars -->
+  <div class="grid-2" style="margin-bottom: 48px;">
+    <div class="card pillar-card">
+      <div class="pillar-number">01</div>
+      <h3>Consolidate Your Brand Identity</h3>
+      <p>Pick ONE handle. Use it everywhere. Kill the others.<br><br>
+      <strong>Recommended handle:</strong> <code>@coachcammacias</code> (or @iamcmacias if you prefer)<br><br>
+      Unify across Instagram, TikTok, YouTube, LinkedIn, and X. Redirect all secondary accounts to your main. Your bio should be the same core message everywhere:</p>
+      <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 16px; margin-top: 12px; font-family: monospace; font-size: 0.85rem;">
+        Coach Cam | ICF-Certified Coach<br>
+        Helping leaders go from burned out to built up<br>
+        17+ years | Military &rarr; Fortune 500 &rarr; CEO<br>
+        &darr; Free Leadership Playbook
+      </div>
+    </div>
+    <div class="card pillar-card">
+      <div class="pillar-number">02</div>
+      <h3>Narrow Your Niche (For Now)</h3>
+      <p>Stop being about "Life, Love, and Leadership." Those are 3 niches, not one.<br><br>
+      <strong>Your wedge niche:</strong> <em>"Leadership transformation for burned-out professionals &mdash; using military discipline + coaching frameworks"</em><br><br>
+      This is specific enough to attract a dedicated audience, broad enough to scale, and leverages your unique story. Once you hit 100K, THEN expand into finance and life topics.</p>
+    </div>
+    <div class="card pillar-card">
+      <div class="pillar-number">03</div>
+      <h3>Build the Content Engine</h3>
+      <p>One podcast episode should produce 15&ndash;20 pieces of content:<br><br>
+      <strong>1 podcast ep</strong> &rarr; Full YouTube video &rarr; 5&ndash;8 short clips (TikTok/Reels/Shorts) &rarr; 2&ndash;3 carousel posts &rarr; 3&ndash;5 LinkedIn text posts &rarr; 1 newsletter &rarr; 2&ndash;3 quote graphics<br><br>
+      This is exactly what Gary Vee, Patrick Bet-David, and every creator with 1M+ followers does. You're already recording a podcast. You're just not extracting value from it.</p>
+    </div>
+    <div class="card pillar-card">
+      <div class="pillar-number">04</div>
+      <h3>Master Short-Form Video</h3>
+      <p>73% of new followers in 2025 came from short-form video. This is non-negotiable.<br><br>
+      <strong>The formula:</strong><br>
+      &bull; Hook in the first 1.5 seconds (pattern interrupt, bold claim, or question)<br>
+      &bull; One idea per video (no rambling)<br>
+      &bull; 30&ndash;90 second sweet spot<br>
+      &bull; Text captions always on<br>
+      &bull; Strong CTA ("Follow for more" or "Comment [word] for my free guide")<br><br>
+      Post 1&ndash;2 short-form videos DAILY across TikTok + Instagram Reels + YouTube Shorts.</p>
+    </div>
+    <div class="card pillar-card">
+      <div class="pillar-number">05</div>
+      <h3>Convert Followers to Owned Audience</h3>
+      <p>Followers are rented. Email subscribers are owned. Every piece of content should funnel people toward your ecosystem:<br><br>
+      <strong>Social post</strong> &rarr; Free resource (checklist, playbook, quiz) &rarr; <strong>Email list</strong> &rarr; Nurture sequence &rarr; <strong>Coaching/course offer</strong><br><br>
+      Build a lead magnet like "The Military Leadership Playbook: 7 Frameworks That Work in Any Boardroom" and promote it in every bio, every video, every post. Goal: 10,000 email subscribers by month 6.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 4: 12-MONTH ROADMAP -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 4</p>
+  <h2 class="section-heading">12-Month Roadmap</h2>
+
+  <div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <span class="phase-tag">Months 1&ndash;2 &bull; Foundation</span>
+    <h3>Lock In Your Brand &amp; Build the Machine</h3>
+    <p>Goal: 0 &rarr; 5,000 followers total across platforms</p>
+    <ul>
+      <li>Consolidate to ONE handle across all platforms. Deactivate or redirect all secondary accounts.</li>
+      <li>Rewrite all bios with your unified positioning statement and lead magnet link.</li>
+      <li>Set up your content engine: record podcast &rarr; clip into shorts &rarr; distribute everywhere.</li>
+      <li>Create your lead magnet (free guide/playbook) and landing page with email capture.</li>
+      <li>Post 1 short-form video per day (start with podcast clips and talking-head takes).</li>
+      <li>Post 3x/week on LinkedIn (text posts about leadership lessons from your military/coaching experience).</li>
+      <li>Upload 1 long-form YouTube video per week (full podcast episodes with branded thumbnails).</li>
+      <li>Research 20 viral videos in the coaching niche. Note their hooks, formats, and topics.</li>
+      <li>Invest in basic gear: ring light, lavalier mic, phone tripod, CapCut Pro for editing.</li>
+    </ul>
+  </div>
+
+  <div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <span class="phase-tag">Months 3&ndash;4 &bull; Volume &amp; Experimentation</span>
+    <h3>Find Your Viral Format</h3>
+    <p>Goal: 5,000 &rarr; 25,000 followers</p>
+    <ul>
+      <li>Increase to 2 short-form videos per day (experiment with formats: storytelling, hot takes, tutorials, duets, responses).</li>
+      <li>Identify your "outlier" video &mdash; the one that gets 5&ndash;10x your average views &mdash; and REMAKE it in different ways.</li>
+      <li>Start a signature series: "Leadership Lessons from the Military" or "What Your Boss Won't Tell You" &mdash; a recurring format that builds anticipation.</li>
+      <li>Begin collaborative content: DM 10 creators in adjacent niches per week for duets, stitches, or podcast swaps.</li>
+      <li>Launch your email newsletter: weekly leadership tip + behind-the-scenes. Goal: 1,000 subscribers by end of month 4.</li>
+      <li>Start commenting on 20&ndash;30 larger creators' posts daily (add genuine value, not spam).</li>
+      <li>YouTube: optimize titles and thumbnails using "curiosity gap" formulas. Every video title should make someone NEED to click.</li>
+    </ul>
+  </div>
+
+  <div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <span class="phase-tag">Months 5&ndash;7 &bull; Acceleration</span>
+    <h3>Double Down on What Works</h3>
+    <p>Goal: 25,000 &rarr; 100,000 followers</p>
+    <ul>
+      <li>Your outlier data should be clear by now. Double production on your top 2&ndash;3 formats. Cut formats that underperform.</li>
+      <li>Launch a "challenge" or "series" that encourages sharing (e.g., "7-Day Leadership Reset" with daily challenges followers can post about).</li>
+      <li>Begin appearing on other creators' podcasts. Pitch 5 per week with a compelling story angle (military &rarr; coaching transformation).</li>
+      <li>Hire a part-time video editor ($500&ndash;$1,500/mo) to clip podcast episodes and add captions/effects. This frees you to focus on creating, not editing.</li>
+      <li>Start Instagram carousels with "swipeable" leadership frameworks (these get saved and shared heavily).</li>
+      <li>LinkedIn: begin publishing 1 long-form article per week. Repurpose blog content with personal anecdotes.</li>
+      <li>YouTube Shorts: cross-post all TikTok/Reels content. YouTube Shorts is still under-saturated for coaching content.</li>
+      <li>Email list goal: 5,000 subscribers. Begin soft-promoting coaching offers.</li>
+    </ul>
+  </div>
+
+  <div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <span class="phase-tag">Months 8&ndash;10 &bull; Scale</span>
+    <h3>Go Big: Collaborations, Paid Amplification &amp; Community</h3>
+    <p>Goal: 100,000 &rarr; 500,000 followers</p>
+    <ul>
+      <li>At 100K, you unlock brand deals, platform features, and algorithmic boosts. This is where growth compounds.</li>
+      <li>Invest $1,000&ndash;3,000/month in paid amplification: boost your best-performing organic content (not cold ads).</li>
+      <li>Partner with 5&ndash;10 creators in the 50K&ndash;500K range for cross-promotions, joint lives, and co-created series.</li>
+      <li>Launch a free community (Discord, Skool, or Circle) to deepen engagement. Engaged communities drive shares, which drive growth.</li>
+      <li>Start doing weekly Instagram/TikTok Lives: Q&A sessions, coaching demonstrations, guest interviews.</li>
+      <li>YouTube: ramp up to 2&ndash;3 long-form uploads per week. Optimize for search (SEO keywords in titles, descriptions, chapters).</li>
+      <li>Pursue PR: pitch yourself to business podcasts, local news, and industry publications. Every media hit = credibility + followers.</li>
+      <li>Email list goal: 10,000+ subscribers. Launch a digital product (mini-course, workshop, or paid community).</li>
+    </ul>
+  </div>
+
+  <div class="timeline-item">
+    <div class="timeline-dot"></div>
+    <span class="phase-tag">Months 11&ndash;12 &bull; Breakout</span>
+    <h3>Viral Engineering &amp; Authority Positioning</h3>
+    <p>Goal: 500,000 &rarr; 1,000,000 followers</p>
+    <ul>
+      <li>At this stage, content quality and virality matter more than volume. Your "greatest hits" should be refined and re-released.</li>
+      <li>Create 1&ndash;2 "tentpole" content pieces designed to go mega-viral: a documentary-style video, a controversial hot take, or a massive collaboration with a top creator.</li>
+      <li>Negotiate platform partnerships (TikTok Creator Fund, YouTube Partner, Instagram bonuses).</li>
+      <li>Host a virtual summit or live event that generates press coverage and a flood of new followers.</li>
+      <li>Build a team: content strategist, video editor, community manager, VA. You should be 90% on-camera, 10% everything else.</li>
+      <li>Begin writing or promoting a book &mdash; this is the ultimate credibility multiplier for coaching creators.</li>
+      <li>Revenue should be diversified: coaching, courses, community, brand deals, speaking.</li>
+    </ul>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 5: WEEKLY CONTENT CALENDAR -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 5</p>
+  <h2 class="section-heading">Weekly Content Calendar Template</h2>
+  <p style="color: var(--text-muted); margin-bottom: 32px;">This is your minimum weekly output starting Month 2. Every piece maps back to the podcast as your "pillar" content source.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; overflow-x: auto;">
+    <div class="cal-day">
+      <div class="day-name">Mon</div>
+      <div class="content-type">Podcast Clip #1</div>
+      <div class="platform">TT / IG / YT</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">+ LinkedIn text post</div>
+    </div>
+    <div class="cal-day">
+      <div class="day-name">Tue</div>
+      <div class="content-type">Talking Head Take</div>
+      <div class="platform">TT / IG / YT</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">+ IG Carousel</div>
+    </div>
+    <div class="cal-day">
+      <div class="day-name">Wed</div>
+      <div class="content-type">Podcast Clip #2</div>
+      <div class="platform">TT / IG / YT</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">+ LinkedIn article</div>
+    </div>
+    <div class="cal-day">
+      <div class="day-name">Thu</div>
+      <div class="content-type">Story / Hot Take</div>
+      <div class="platform">TT / IG / YT</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">+ Email newsletter</div>
+    </div>
+    <div class="cal-day">
+      <div class="day-name">Fri</div>
+      <div class="content-type">Podcast Clip #3</div>
+      <div class="platform">TT / IG / YT</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">+ LinkedIn post</div>
+    </div>
+    <div class="cal-day">
+      <div class="day-name">Sat</div>
+      <div class="content-type">Full Podcast Ep</div>
+      <div class="platform">YouTube Long</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">+ Podcast apps</div>
+    </div>
+    <div class="cal-day">
+      <div class="day-name">Sun</div>
+      <div class="content-type">Batch + Plan</div>
+      <div class="platform">Content prep</div>
+      <div style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">Record next week</div>
+    </div>
+  </div>
+
+  <div class="highlight-box" style="margin-top: 32px;">
+    <h3>Weekly Output Summary</h3>
+    <p style="color: var(--text-muted);">
+      <strong>Short-form videos:</strong> 5&ndash;7 per week (TikTok + IG Reels + YT Shorts)<br>
+      <strong>Long-form YouTube:</strong> 1 per week (full podcast episode)<br>
+      <strong>LinkedIn posts:</strong> 3&ndash;5 per week<br>
+      <strong>IG Carousels:</strong> 1&ndash;2 per week<br>
+      <strong>Email newsletter:</strong> 1 per week<br>
+      <strong>Total pieces:</strong> ~15&ndash;20 per week from ONE podcast recording session
+    </p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 6: CONTENT PILLARS -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 6</p>
+  <h2 class="section-heading">Your 4 Content Pillars</h2>
+  <p style="color: var(--text-muted); margin-bottom: 32px;">Every piece of content should fall into one of these four categories. This keeps you focused and helps the algorithm categorize you.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>&#127942; Leadership Frameworks</h3>
+      <span class="badge all">All Platforms</span>
+      <p style="margin-top: 12px;">Tactical, actionable leadership advice drawn from your 17+ years of experience. DiSC insights, accountability systems, decision-making models, team-building strategies. This is your authority pillar &mdash; it's what makes you credible.</p>
+      <p style="margin-top: 8px; color: var(--accent-light); font-size: 0.85rem;"><strong>Example:</strong> "The 3 words that turned my worst team into my best team"</p>
+    </div>
+    <div class="card">
+      <h3>&#128170; Military &rarr; Corporate Transformation</h3>
+      <span class="badge tt">TikTok</span> <span class="badge ig">IG Reels</span> <span class="badge yt">YT Shorts</span>
+      <p style="margin-top: 12px;">Personal stories from your military career and how those lessons apply to business. This is your relatability + virality pillar. Military content performs exceptionally well on TikTok and tends to get shared widely.</p>
+      <p style="margin-top: 8px; color: var(--accent-light); font-size: 0.85rem;"><strong>Example:</strong> "What military recruiting taught me about selling anything"</p>
+    </div>
+    <div class="card">
+      <h3>&#128161; Burnout Recovery & Resilience</h3>
+      <span class="badge ig">Instagram</span> <span class="badge li">LinkedIn</span>
+      <p style="margin-top: 12px;">You're a Master Resiliency Certified Trainer. Use that. Content about recovering from burnout, building mental toughness, and sustaining high performance resonates deeply &mdash; especially on LinkedIn and Instagram where professionals are quietly struggling.</p>
+      <p style="margin-top: 8px; color: var(--accent-light); font-size: 0.85rem;"><strong>Example:</strong> "I was a top recruiter working 70-hour weeks. Here's what broke me &mdash; and what rebuilt me."</p>
+    </div>
+    <div class="card">
+      <h3>&#128640; AI + Business Optimization</h3>
+      <span class="badge li">LinkedIn</span> <span class="badge yt">YouTube</span>
+      <p style="margin-top: 12px;">Your blog already covers AI adoption. You have a B.S. in IT Management. Lean into AI as a tool for business optimization. Show leaders how to use AI to improve processes, save time, and scale &mdash; practical, not hype. This is your trending topic pillar.</p>
+      <p style="margin-top: 8px; color: var(--accent-light); font-size: 0.85rem;"><strong>Example:</strong> "I used AI to cut my team's meeting time by 60%. Here's the exact workflow."</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 7: IMMEDIATE ACTION ITEMS -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 7</p>
+  <h2 class="section-heading">Your First 30 Days: The Non-Negotiables</h2>
+
+  <div class="card">
+    <div style="display: grid; gap: 16px;">
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(255,107,107,0.3); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--red);">!</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--red);">FIX TODAY: Your website Instagram link is broken</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">forward-learn.com links to @coach_cam_macias on Instagram, which shows "Profile isn't available." Anyone clicking your IG icon from your website sees a dead page. Log into your Wix site and update the Instagram social icon to point to @iamcmacias immediately.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">1</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Choose ONE handle and claim it everywhere</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Pick between @iamcmacias or @coachcammacias. Use it on IG, TikTok, YouTube, LinkedIn, X, and Threads. Kill references to @officialrcgroup, @coach_cam_macias, and "Elevare Global." Your bio should say the same thing on every platform. Add your lead magnet link to every bio.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">2</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Create your lead magnet</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">A free PDF guide: "The Military Leadership Playbook: 7 Frameworks That Work in Any Boardroom." Use it as your link-in-bio offer. Set up email capture with ConvertKit, Beehiiv, or Mailchimp.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">3</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Clip your last 5 podcast episodes into shorts</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Use Opus Clip, Descript, or CapCut to pull the most compelling 30&ndash;90 second moments. Aim for 3&ndash;5 clips per episode. That's 15&ndash;25 short-form videos ready to post.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">4</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Post your first short-form video TODAY</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Don't wait for perfection. Record a 60-second talking head: "I spent 17 years learning how to lead. Here's the #1 lesson nobody talks about." Post it on TikTok, IG Reels, and YT Shorts simultaneously.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">5</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Commit to 30 days of daily posting</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">1 short-form video per day minimum. Mix podcast clips with original talking-head videos. Track which topics and hooks get the most views. After 30 days, you'll have data on what YOUR audience responds to.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">6</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Study 10 outlier videos in your niche</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Find coaching creators who typically get 1K&ndash;5K views but have one video at 100K+. Analyze: What was the hook? The topic? The format? Then make YOUR version. This is the fastest path to virality.</p>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;">
+        <div style="flex-shrink:0; width:28px; height:28px; border-radius:8px; background:rgba(108,92,231,0.2); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; color:var(--accent-light);">7</div>
+        <div>
+          <h4 style="font-size: 0.95rem; font-weight: 700;">Set up YouTube with branded thumbnails</h4>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Upload your last 4&ndash;5 full podcast episodes as long-form YouTube content. Use Canva to create eye-catching thumbnails with your face, bold text, and high contrast colors. YouTube is a search engine &mdash; your content will be found for years.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 8: TOOLS & INVESTMENT -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Part 8</p>
+  <h2 class="section-heading">Recommended Tools &amp; Monthly Investment</h2>
+
+  <div class="grid-3">
+    <div class="card">
+      <h3>Video Creation</h3>
+      <p><strong>CapCut Pro</strong> &mdash; $8/mo (editing + captions)<br>
+      <strong>Opus Clip</strong> &mdash; $19/mo (AI podcast clipping)<br>
+      <strong>Canva Pro</strong> &mdash; $13/mo (thumbnails + carousels)<br>
+      <strong>Descript</strong> &mdash; $24/mo (podcast editing + transcription)</p>
+    </div>
+    <div class="card">
+      <h3>Growth &amp; Analytics</h3>
+      <p><strong>Metricool</strong> or <strong>Later</strong> &mdash; $18/mo (scheduling + analytics)<br>
+      <strong>VidIQ</strong> &mdash; $8/mo (YouTube SEO + keyword research)<br>
+      <strong>SparkToro</strong> &mdash; Free tier (audience research)</p>
+    </div>
+    <div class="card">
+      <h3>Email &amp; Funnel</h3>
+      <p><strong>Beehiiv</strong> &mdash; Free to $42/mo (newsletter)<br>
+      <strong>Stan Store</strong> or <strong>Linktree</strong> &mdash; $5&ndash;$10/mo (link in bio + digital products)<br>
+      <strong>ConvertKit</strong> &mdash; $29/mo (email automation)</p>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <h3>Monthly Budget Estimate</h3>
+    <p style="color: var(--text-muted);">
+      <strong>Months 1&ndash;4 (DIY phase):</strong> $50&ndash;$100/mo in tools<br>
+      <strong>Months 5&ndash;7 (scaling):</strong> $500&ndash;$1,500/mo (add part-time editor)<br>
+      <strong>Months 8&ndash;12 (accelerating):</strong> $2,000&ndash;$5,000/mo (editor + paid amplification + VA)<br><br>
+      The ROI math: One coaching client at $3,000&ndash;$5,000 covers months of content production costs. At 100K followers with a 1% conversion rate, you're looking at 1,000 potential leads per month.
+    </p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 9: HOOK SWIPE FILE -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Bonus</p>
+  <h2 class="section-heading">Hook Swipe File: 20 Video Starters</h2>
+  <p style="color: var(--text-muted); margin-bottom: 32px;">Use these as opening lines for your short-form videos. The first 1.5 seconds determine whether someone watches or scrolls.</p>
+
+  <div class="grid-2">
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"The military taught me one leadership rule that most CEOs still get wrong."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"I coached a team from worst in the company to #1. Here's what I changed on Day 1."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"If your team keeps quitting, it's not a hiring problem. It's THIS."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"I've been certified in 7 different coaching frameworks. Only 1 actually works."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"Stop telling your team to 'work harder.' Do this instead."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"The burnout epidemic isn't about workload. It's about THIS one thing."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"I went from military recruiter to CEO in 5 years. Here's the exact playbook."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"The best leader I ever met had zero authority. Here's why that matters."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"Your morning routine is sabotaging your leadership. Let me explain."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"I used AI to audit my entire business in one weekend. Here's what it found."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"3 leadership lies I believed in the military that almost ruined my business."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"Your toxic employee isn't the problem. YOUR process is."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"The #1 reason small businesses fail isn't money. It's THIS."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"I've trained 500+ leaders. The ones who succeed all do this ONE thing."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"Accountability without THIS is just micromanagement."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"My wife was my first coaching client. Here's the honest truth about that."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"You don't need more meetings. You need better conversations."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"The DiSC assessment saved my marriage AND my business. Here's how."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"I asked AI to rate my leadership style. It was brutally honest."</p>
+    </div>
+    <div class="card" style="padding: 20px;">
+      <p style="font-weight: 600; font-size: 0.9rem;">"The worst advice I got as a new CEO? 'Fake it till you make it.'"</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ============================================ -->
+<!-- SECTION 10: THE HARD TRUTH -->
+<!-- ============================================ -->
+<section class="section">
+  <p class="section-title">Final Word</p>
+  <h2 class="section-heading">The Hard Truth, Coach to Coach</h2>
+
+  <div class="card" style="border: 1px solid rgba(108,92,231,0.3);">
+    <p style="font-size: 1.05rem; line-height: 1.8;">
+      Cam, you have <strong>everything you need</strong> to build a massive audience. Your credentials are elite. Your story is compelling. Your expertise is real. Most creators in this space are pretending &mdash; you have 20 years of receipts.
+      <br><br>
+      The gap between where you are and where you want to be isn't talent, knowledge, or authority. It's <strong>volume</strong> and <strong>consistency</strong>.
+      <br><br>
+      Right now, you're whispering into a void once a week. The algorithm needs you to show up DAILY. The audience needs to see your face and hear your voice repeatedly before they trust you. The compounding effect of daily content is staggering &mdash; but it takes 60&ndash;90 days of relentless posting before you see it kick in.
+      <br><br>
+      The uncomfortable question: <strong>Are you willing to post every single day for 90 days straight, even when nobody's watching?</strong>
+      <br><br>
+      If yes, you can absolutely build a 100K&ndash;500K audience this year. Reaching 1M in 12 months requires some viral luck on top of perfect execution &mdash; but even "falling short" at 300K&ndash;500K followers would transform your business entirely.
+      <br><br>
+      The best time to start was a year ago. The second best time is today. Record your first video. Post it. Then do it again tomorrow.
+      <br><br>
+      Let's go, Coach.
+    </p>
+  </div>
+</section>
+
+</div>
+
+<div class="footer-note">
+  Strategy prepared for Cameron Macias / Coach Cam &bull; Forward Learning Group<br>
+  February 2026 &bull; Built by Claude
+</div>
+
+</body>
+</html>
